@@ -4,4 +4,3 @@ import '../dto/login_request.dart';
 abstract class LoginApi {
   Future<LoginEntity> login(LoginRequest loginRequest);
 }
-  // Future<BaseResult<LoginEntity, BaseException>> login(LoginRequest loginRequest);

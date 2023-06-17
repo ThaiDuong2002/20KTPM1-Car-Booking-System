@@ -14,7 +14,7 @@ class AppRoute {
       case AppRouterName.homePage:
         return MaterialPageRoute(builder: (_) => const HomePage());
       default:
-        _errPage();
+        _errPage(); 
     }
     return _errPage();
   }
