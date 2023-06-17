@@ -2,6 +2,7 @@ import express from 'express';
 import cors from "cors";
 import dotenv from 'dotenv';
 import { notFound, errorHandler } from './helper/errorHandler.js';
+import db from './configs/db.js';
 dotenv.config();
 const app = express();
 var corsOptions = {

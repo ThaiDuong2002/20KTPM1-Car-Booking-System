@@ -16,6 +16,8 @@
     "express": "^4.18.2",
     "http-errors": "^2.0.0",
     "http-proxy-middleware": "^2.0.6",
+    "mongo": "^0.1.0",
+    "mongoose": "^7.3.0",
     "nodemon": "^2.0.22"
   }
 }
