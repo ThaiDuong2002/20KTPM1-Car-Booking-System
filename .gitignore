@@ -228,7 +228,7 @@ dist
 ### Node Patch ###
 # Serverless Webpack directories
 .webpack/
-
+.DS_Store
 # Optional stylelint cache
 
 # SvelteKit build / generate output
