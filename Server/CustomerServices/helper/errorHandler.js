@@ -5,7 +5,9 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (error, req, res, next) => {
-  res.status(error.status || 500).send({ message: error.message, status: error.status || 500 });
+  res
+    .status(error.status || 500)
+    .send({ message: error.message, status: error.status || 500 });
 };
 
 export { errorHandler, notFound };
