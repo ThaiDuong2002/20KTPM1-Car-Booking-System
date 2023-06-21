@@ -1,6 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
 import routes from './routes/index.js';
 
@@ -19,6 +20,8 @@ const initializeExpress = (app) => {
 initializeExpress(app);
 
 routes(app);
+
+db();
 
 app.use(notFound);
 app.use(errorHandler);
