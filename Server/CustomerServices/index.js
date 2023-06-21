@@ -2,9 +2,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import { errorHandler, notFound } from './helper/errorHandler.js';
+import routes from './routes/index.js';
+
 dotenv.config();
 const app = express();
-var corsOptions = {
+const corsOptions = {
   origin: 'http://localhost:' + process.env.PORT,
 };
 const initializeExpress = (app) => {
@@ -15,14 +17,12 @@ const initializeExpress = (app) => {
 
 initializeExpress(app);
 
-app.get('/', (req, res) => {
-  res.send('Hello from Booking Services');
-});
+routes(app);
 
 app.use(notFound);
 app.use(errorHandler);
 
 app.listen(process.env.PORT, () => {
-  console.log('Booking Services is running on port:' + process.env.PORT);
+  console.log('Customer Services is running on port:' + process.env.PORT);
   console.log('http://localhost:' + process.env.PORT);
 });

@@ -18,10 +18,10 @@ const initializeExpress = (app) => {
 initializeExpress(app);
 
 const routes = {
-  '/api/users': 'http://localhost:3001',
-  '/api/bookings': 'http://localhost:3002',
-  '/api/ratings': 'http://localhost:3003',
-  '/api/promotions': 'http://localhost:3004',
+  '/api/admin': 'http://localhost:3001',
+  '/api/callcenter': 'http://localhost:3002',
+  '/api/customer': 'http://localhost:3003',
+  '/api/driver': 'http://localhost:3004',
 };
 
 for (const route in routes) {
