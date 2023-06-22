@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 const TokenService = {
     async verifyToken(req, res, next) {
+        console.log("Verify token");
         if (!req.headers['authorization']) {
 
             next(createError.Unauthorized("You are not authorized to access this page.1"));

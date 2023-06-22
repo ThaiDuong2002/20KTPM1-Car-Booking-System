@@ -7,6 +7,7 @@ const CustomerController = {
         res.send("Hello from User route")
     },
     async login(req, res, next) {
+        console.log("Tới day chua");
         try {
             const { email, password } = req.body;
 
