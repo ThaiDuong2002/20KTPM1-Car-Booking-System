@@ -3,6 +3,13 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import { notFound, errorHandler } from './helper/errorHandler.js';
 import db from './configs/db.js';
+
+
+import CustormerRoute from './routes/Customer.route.js';
+import AdminRoute from './routes/Admin.route.js';
+import ConsultantRoute from './routes/Consultant.route.js';
+import DriverRoute from './routes/Driver.route.js';
+import UserRoute from './routes/User.route.js';
 dotenv.config();
 
 
@@ -17,11 +24,11 @@ const initializeExpress = (app) => {
 };
 
 initializeExpress(app);
-
-
-app.get('/', (req, res) => {
-    res.send("Hello from User Services");
-});
+app.use(UserRoute)
+app.use(CustormerRoute)
+app.use(AdminRoute);
+app.use(ConsultantRoute);
+app.use(DriverRoute)
 
 app.use(notFound);
 app.use(errorHandler);
