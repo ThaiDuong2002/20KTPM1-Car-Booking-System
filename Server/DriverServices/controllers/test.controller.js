@@ -6,7 +6,6 @@ const TestController = {
     res.send('Hello from Driver Services');
   },
   create: async (req, res) => {
-    console.log(req.body);
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
