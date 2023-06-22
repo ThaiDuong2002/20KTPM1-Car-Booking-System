@@ -1,21 +1,22 @@
 import bcrypt from 'bcryptjs';
-import Admin from '../models/Admin.js';
+import Customer from '../models/Customer.js';
 
 const TestController = {
   test: (req, res) => {
     res.send('Hello from Driver Services');
   },
   create: async (req, res) => {
+    console.log(req.body);
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
-    const newAdmin = new Admin({
+    const newCustomer = new Customer({
       ...req.body,
       password: hash,
     });
     try {
-      const admin = await newAdmin.save();
-      res.status(200).json(admin);
+      const customer = await newCustomer.save();
+      res.status(200).json(customer);
     } catch (error) {
       res.status(400).json({ message: error });
     }

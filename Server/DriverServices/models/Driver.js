@@ -5,24 +5,24 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const Driver = new Schema({
-  driverLicense: {
+  driver_license: {
     type: String,
     required: true,
     trim: true,
     default: '',
   },
-  vehicleId: {
+  vehicle_id: {
     type: ObjectId,
     required: true,
     default: null,
     ref: 'Vehicle',
   },
-  isActive: {
+  is_active: {
     type: Boolean,
     required: true,
     default: true,
   },
-  isDisable: {
+  is_disabled: {
     type: Boolean,
     required: true,
     default: false,

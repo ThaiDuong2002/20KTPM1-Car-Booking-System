@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import User from './User';
+import User from './User.js';
 
 const Schema = mongoose.Schema;
 
@@ -20,11 +20,12 @@ const Customer = new Schema({
       },
     ],
   },
-  userType: {
-    type: String,
+  user_type: {
+    type: Boolean,
     required: true,
+    default: false,
   },
-  isDisable: {
+  is_disabled: {
     type: Boolean,
     required: true,
     default: false,
