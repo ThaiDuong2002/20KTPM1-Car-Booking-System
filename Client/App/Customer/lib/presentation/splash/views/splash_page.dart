@@ -18,15 +18,11 @@ class _SplashPageState extends State<SplashPage> {
   startSplash() async {
     return Timer(Duration(seconds: 2), () {
       pref.getUserInfo().then((value) => {
-        // Goi API để check token có hết hạn hay chưa, nếu token chưa hết hạn thì chuyển sang trang home, nếu hết hạn thì show Dialog "Hết phiên đăng nhập ! Vui lòng đăng nhập lại"
+            // Goi API để check token có hết hạn hay chưa, nếu token chưa hết hạn thì chuyển sang trang home, nếu hết hạn thì show Dialog "Hết phiên đăng nhập ! Vui lòng đăng nhập lại"
             if (value.isNotEmpty)
-              {
-                Navigator.pushNamed(context, AppRouterName.homePage)
-              }
+              {Navigator.pushNamed(context, AppRouterName.homePage)}
             else
-              {
-                Navigator.pushNamed(context, AppRouterName.loginPage)
-              }
+              {Navigator.pushNamed(context, AppRouterName.loginPage)}
           });
     });
   }
@@ -39,11 +35,18 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
-          child: Center(
-        child: Text("Splash screen"),
-      )),
+     return Scaffold(
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+        ),
+        child: const Image(
+          image: AssetImage("assets/images/splash/background.png"),
+          fit: BoxFit.fitWidth,
+        ),
+      ),
     );
   }
 }

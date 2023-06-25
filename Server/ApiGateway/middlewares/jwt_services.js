@@ -6,8 +6,7 @@ const TokenService = {
     async verifyToken(req, res, next) {
         console.log("Verify token");
         if (!req.headers['authorization']) {
-
-            next(createError.Unauthorized("You are not authorized to access this page.1"));
+            next(createError.Unauthorized("You are not authorized to access this page"));
         } else {
             const authorization = req.headers['authorization'];
             const bearToken = authorization.split(' ');
@@ -28,7 +27,6 @@ const TokenService = {
 
         }
     },
-
 }
 
 export default TokenService;

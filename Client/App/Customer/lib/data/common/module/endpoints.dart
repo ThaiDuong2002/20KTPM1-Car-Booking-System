@@ -1,7 +1,7 @@
 class Endpoints {
   Endpoints._();
 
-  static const String baseURL = 'http://localhost:8080/api';
+  static const String baseURL = 'http://localhost:3000/api';
 
   static const Duration receiveTimeout = Duration(milliseconds: 5000);
 

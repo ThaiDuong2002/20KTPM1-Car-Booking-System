@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:user/domain/base/base_result.dart';
 import '../../../../domain/login/entity/login_entity.dart';
 import '../../../../domain/base/base_exception.dart';
 import '../../../common/response/response_wrapper.dart';

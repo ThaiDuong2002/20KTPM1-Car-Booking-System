@@ -12,7 +12,7 @@ class RequestInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     pref.getUserInfo().then((value) => {
-          if (value!.isNotEmpty)
+          if (value.isNotEmpty)
             {options.headers["Authorization"] = value['token'].toString()}
         });
 

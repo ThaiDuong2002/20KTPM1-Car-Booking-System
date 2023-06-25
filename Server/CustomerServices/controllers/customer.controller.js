@@ -1,3 +1,5 @@
+import Customer from "../models/Customer.model.js";
+
 const CustomerController = {
   test: (req, res) => {
     res.send('Hello from Customer Services');
@@ -10,7 +12,7 @@ const CustomerController = {
         next(createError.BadRequest("Invalid email or password"))
       }
       else {
-        const user = await User.findOne({
+        const user = await Customer.findOne({
           email: email
         });
         if (!user) {
@@ -24,7 +26,7 @@ const CustomerController = {
         else {
           const access_Token = await TokenService.signAccessToken(user._id, user.__t)
           const refesh_Token = await TokenService.signRefreshToken(user._id)
-          const updatedUser = await User.findOneAndUpdate(
+          const updatedUser = await Customer.findOneAndUpdate(
             { _id: user._id },
             { refeshToken: refesh_Token },
             { new: true }
@@ -61,7 +63,7 @@ const CustomerController = {
   async logout(req, res, next) {
     try {
       const { user } = req.body;
-      const updatedUser = await User.findOneAndUpdate(
+      const updatedUser = await Customer.findOneAndUpdate(
         { _id: user.id },
         { refeshToken: '' },
         { new: true }
