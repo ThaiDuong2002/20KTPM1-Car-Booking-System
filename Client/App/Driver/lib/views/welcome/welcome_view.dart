@@ -1,3 +1,6 @@
+import 'package:driver/constants/images.dart';
+import 'package:driver/constants/size.dart';
+import 'package:driver/helpers/widgets/header_widget.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeView extends StatelessWidget {
@@ -6,20 +9,36 @@ class WelcomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Login'),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: headerWidgetHeight,
+            child: HeaderWidget(),
+          ),
+          const SizedBox(
+            height: 20,
+            child: Text(
+              'Welcome to Driver App',
+              style: TextStyle(fontSize: 20),
             ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Register'),
+          ),
+          const SizedBox(
+            height: 100,
+            child: Image(
+              image: AssetImage(welcomeImage),
             ),
-          ],
-        ),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text('Login'),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text('Register'),
+          ),
+        ],
       ),
     );
   }

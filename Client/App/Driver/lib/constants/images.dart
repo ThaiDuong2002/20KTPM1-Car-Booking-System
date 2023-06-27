@@ -1,0 +1,1 @@
+const welcomeImage = 'assets/images/welcome.png';
