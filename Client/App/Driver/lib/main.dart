@@ -1,5 +1,5 @@
-import 'package:driver/constants/colors.dart';
-import 'package:driver/views/welcome/welcome_view.dart';
+import 'package:driver/global/utils/constants/colors.dart';
+import 'package:driver/modules/welcome/welcome_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {

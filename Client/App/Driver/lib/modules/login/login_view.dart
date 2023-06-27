@@ -1,5 +1,5 @@
-import 'package:driver/constants/size.dart';
-import 'package:driver/helpers/widgets/header_widget.dart';
+import 'package:driver/global/utils/constants/size.dart';
+import 'package:driver/global/utils/helpers/widgets/header_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginView extends StatefulWidget {

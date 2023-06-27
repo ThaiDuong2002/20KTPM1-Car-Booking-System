@@ -1,6 +1,6 @@
-import 'package:driver/constants/images.dart';
-import 'package:driver/constants/size.dart';
-import 'package:driver/helpers/widgets/header_widget.dart';
+import 'package:driver/global/utils/constants/images.dart';
+import 'package:driver/global/utils/constants/size.dart';
+import 'package:driver/global/utils/helpers/widgets/header_widget.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeView extends StatelessWidget {
