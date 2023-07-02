@@ -2,7 +2,6 @@ import callcenter_registration_schema from '../middlewares/validate.js'
 import User from '../models/User.js'
 import Consultant from '../models/Consultant.js'
 import bcrypt from 'bcryptjs';
-import TokenService from '../middlewares/jwt_services.js'
 import createError from 'http-errors';
 
 const CallcenterController = {
