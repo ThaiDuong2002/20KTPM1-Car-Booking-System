@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 import express from 'express';
 import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
-import routes from './routes/index.js';
+// import routes from './routes/index.js';
+import CallcenterRoute from './routes/callcenter.route.js';
+
 
 dotenv.config();
 
@@ -16,13 +18,9 @@ const initializeExpress = (app) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 };
-
-initializeExpress(app);
-
-routes(app);
-
 db();
-
+initializeExpress(app);
+app.use(CallcenterRoute)
 app.use(notFound);
 app.use(errorHandler);
 
