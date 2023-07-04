@@ -8,7 +8,6 @@ const AuthenController = {
     async login(req, res, next) {
         try {
             const { identifier, password } = req.body;
-            console.log(req.body);
             if (!identifier || !password) {
                 next(createError.BadRequest("Invalid email or password"))
             }
@@ -49,7 +48,6 @@ const AuthenController = {
                             token: access_token,
                         };
                         req.user = updatedUser
-                        console.log("req.user", req.user)
                         if (checkAuthen) {
                             res.json({
                                 message: "Login successfully",
@@ -99,7 +97,6 @@ const AuthenController = {
                 phone,
                 password: hash,
             })
-            console.log(newConsultant)
 
             // Save to db
             const result = await newConsultant.save()
@@ -130,7 +127,7 @@ const AuthenController = {
                 data: response
             })
         } catch (error) {
-            next(error)
+            next(createError.BadRequest(error.message))
         }
     },
 }
