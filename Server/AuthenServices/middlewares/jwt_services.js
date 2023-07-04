@@ -9,7 +9,7 @@ const TokenService = {
             // const secret = process.env.ACCESS_TOKEN_SECRET;
             const secret = "KEY"
             const options = {
-                expiresIn: "60s",
+                expiresIn: "10m",
             };
             jwt.sign(payload, secret, options, (err, token) => {
                 if (err) {

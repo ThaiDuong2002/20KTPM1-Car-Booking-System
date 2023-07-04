@@ -20,9 +20,9 @@ const TokenService = {
                     return next(createError.Unauthorized(err.message));
                 }
                 req.payload = payload;
+                req.headers['x-user-id'] = req.payload.userId;
                 req.headers['x-user-role'] = req.payload.userType;
                 next();
-
             });
 
         }

@@ -48,6 +48,7 @@ for (const route in routes) {
         ///
     );
 }
+
 const initializeExpress = (app) => {
     app.use(cors(corsOptions));
     app.use(express.json());

@@ -1,14 +1,10 @@
 import createError from 'http-errors';
 import { User, Consultant } from '../models/User.model.js';
 import TokenService from '../middlewares/jwt_services.js';
-// import bcrypt from "bcrypt";
-import bcrypt from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import conslutant_registration_schema from '../middlewares/validate.js'
 
 const AuthenController = {
-    async testRoute(req, res, next) {
-        res.send("Hello from User route")
-    },
     async login(req, res, next) {
         try {
             const { identifier, password } = req.body;
@@ -26,17 +22,16 @@ const AuthenController = {
                 if (!user) {
                     next(createError.BadRequest("User is not exist"))
                 }
-                const salt = bcrypt.genSaltSync(10);
-                const checkAuthen = bcrypt.compareSync(password, user.password); // true
+                const checkAuthen = bcryptjs.compareSync(password, user.password); // true
                 if (!checkAuthen) {
                     next(createError.BadRequest("Wrong password"))
                 }
                 else {
-                    const access_Token = await TokenService.signAccessToken(user._id, user.__t)
-                    const refesh_Token = await TokenService.signRefreshToken(user._id)
+                    const access_token = await TokenService.signAccessToken(user._id, user.__t)
+                    const refresh_token = await TokenService.signRefreshToken(user._id)
                     const updatedUser = await User.findOneAndUpdate(
                         { _id: user._id },
-                        { refeshToken: refesh_Token },
+                        { refreshToken: refresh_token },
                         { new: true }
                     );
                     if (updatedUser) {
@@ -51,9 +46,10 @@ const AuthenController = {
                                 phone: updatedUser.phone,
                                 avatar: updatedUser.avatar
                             },
-                            token: access_Token,
+                            token: access_token,
                         };
                         req.user = updatedUser
+                        console.log("req.user", req.user)
                         if (checkAuthen) {
                             res.json({
                                 message: "Login successfully",
@@ -63,25 +59,6 @@ const AuthenController = {
                         }
                     }
                 }
-            }
-        } catch (error) {
-            next(error)
-        }
-    },
-    async logout(req, res, next) {
-        try {
-            const { user } = req.body;
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: user.id },
-                { refeshToken: '' },
-                { new: true }
-            );
-            if (updatedUser) {
-                res.json({
-                    message: "Logout successfully",
-                    status: 200,
-                    data: {}
-                })
             }
         } catch (error) {
             next(error)
@@ -111,8 +88,8 @@ const AuthenController = {
             }
 
             // Hash password
-            const salt = bcrypt.genSaltSync(10)
-            const hash = bcrypt.hashSync(password, salt)
+            const salt = bcryptjs.genSaltSync(10)
+            const hash = bcryptjs.hashSync(password, salt)
 
             // Create new consultant
             const newConsultant = new Consultant({

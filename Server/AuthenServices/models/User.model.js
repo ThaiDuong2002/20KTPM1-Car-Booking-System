@@ -27,7 +27,7 @@ const UserSchema = new Schema({
         type: String,
         default: "https://haycafe.vn/wp-content/uploads/2022/02/Avatar-trang-den.png",
     },
-    refeshToken: {
+    refreshToken: {
         type: String,
         default: 'null',
     }
