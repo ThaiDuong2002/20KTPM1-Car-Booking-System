@@ -5,7 +5,8 @@ import { useTheme } from "@mui/material/styles";
 import { Avatar, Box, ButtonBase } from "@mui/material";
 
 // component imports
-// import ProfileSection from "./ProfileSection";
+import NotificationSection from "./NotificationSection/NotificationSection";
+import ProfileSection from "./ProfileSection/ProfileSection";
 import LogoSection from "./LogoSection/LogoSection";
 
 //assets
@@ -55,7 +56,11 @@ const Header = () => {
         </ButtonBase>
       </Box>
 
-      {/* <ProfileSection /> */}
+      <Box sx={{ flexGrow: 1 }} />
+      <Box sx={{ flexGrow: 1 }} />
+
+      <NotificationSection />
+      <ProfileSection />
     </>
   );
 };
