@@ -22,7 +22,7 @@ class _SplashPageState extends State<SplashPage> {
             if (value.isNotEmpty)
               {Navigator.pushNamed(context, AppRouterName.homePage)}
             else
-              {Navigator.pushNamed(context, AppRouterName.loginPage)}
+              {Navigator.pushNamed(context, AppRouterName.introPage)}
           });
     });
   }
@@ -35,7 +35,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,

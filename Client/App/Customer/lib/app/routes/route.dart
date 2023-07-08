@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:user/presentation/intro/views/intro_view.dart';
 import '../../presentation/presentation.dart';
 import 'route_name.dart';
 
 class AppRoute {
   static Route onGenerateRoute(RouteSettings settings) {
-    final args = settings.arguments; 
+    final args = settings.arguments;
     // check các điều kiện để trả về route tương ứng với settings.name
     switch (settings.name) {
       case AppRouterName.splashPage:
@@ -13,8 +14,10 @@ class AppRoute {
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case AppRouterName.homePage:
         return MaterialPageRoute(builder: (_) => const HomePage());
+      case AppRouterName.introPage:
+        return MaterialPageRoute(builder: (_) => const IntroView());
       default:
-        _errPage(); 
+        _errPage();
     }
     return _errPage();
   }
