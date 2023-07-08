@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const conslutant_registration_schema = Joi.object({
+const registration_schema = Joi.object({
   firstname: Joi.string().required(),
   lastname: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -12,4 +12,4 @@ const conslutant_registration_schema = Joi.object({
     .required(),
 });
 
-export default conslutant_registration_schema;
+export default registration_schema;

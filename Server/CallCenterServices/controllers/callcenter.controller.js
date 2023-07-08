@@ -4,11 +4,9 @@ import Consultant from '../models/Consultant.js'
 const CallcenterController = {
   me: async (req, res, next) => {
     try {
-      const consultant = {
-        id: req.headers['x-user-id'],
-        role: req.headers['x-user-role']
-      }
-      const result = await User.findOne({ _id: consultant.id }).select('-_id firstname lastname email phone avatar');
+      const consultant_id = req.headers['x-user-id']
+
+      const result = await User.findOne({ _id: consultant_id }).select('-_id firstname lastname email phone avatar');
       if (!result) {
         res.json({
           message: "consultant not found",
@@ -27,13 +25,10 @@ const CallcenterController = {
   },
   edit_info: async (req, res, next) => {
     try {
-      const consultant = {
-        id: req.headers['x-user-id'],
-        role: req.headers['x-user-role']
-      }
+      const consultant_id = req.headers['x-user-id']
       const update_info = req.body
       const result = await User.findOneAndUpdate(
-        { _id: consultant.id },
+        { _id: consultant_id },
         update_info,
         { new: true }
       ).select('-_id firstname lastname email phone avatar')
@@ -56,12 +51,9 @@ const CallcenterController = {
   },
   logout: async (req, res, next) => {
     try {
-      const user = {
-        id: req.headers['x-user-id'],
-        role: req.headers['x-user-role']
-      }
+      const user_id = req.headers['x-user-id']
       const updatedUser = await User.findOneAndUpdate(
-        { _id: user.id },
+        { _id: user_id },
         { refreshToken: '' },
         { new: true }
       );

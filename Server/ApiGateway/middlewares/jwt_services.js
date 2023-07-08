@@ -2,8 +2,12 @@ import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import dotenv from 'dotenv';
 dotenv.config();
+
+const secret = process.env.ACCESS_TOKEN_SECRET;
+
 const TokenService = {
-    async verifyToken(req, res, next) {
+    async verifyAccessToken(req, res, next) {
+        console.log("secret", secret)
         console.log("Verify token");
         if (!req.headers['authorization']) {
             next(createError.Unauthorized("You are not authorized to access this page"));
@@ -12,7 +16,7 @@ const TokenService = {
             const bearToken = authorization.split(' ');
             const token = bearToken[1];
             console.log(token);
-            jwt.verify(token, "KEY", (err, payload) => {
+            jwt.verify(token, secret, (err, payload) => {
                 if (err) {
                     if (err.name === "JsonWebTokenError") {
                         return next(createError.Unauthorized("You are not authorized to access this page"));
@@ -22,6 +26,7 @@ const TokenService = {
                 req.payload = payload;
                 req.headers['x-user-id'] = req.payload.userId;
                 req.headers['x-user-role'] = req.payload.userType;
+                console.log("req.headers['x-user-role']", req.headers['x-user-role'])
                 next();
             });
 

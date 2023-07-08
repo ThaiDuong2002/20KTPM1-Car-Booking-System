@@ -6,7 +6,6 @@ import db from './configs/db.js';
 import AuthenRoute from './routes/Authentication.route.js';
 dotenv.config();
 
-
 const app = express();
 var corsOptions = {
     origin: "http://localhost:" + process.env.PORT,

@@ -29,7 +29,7 @@ const UserSchema = new Schema({
     },
     refreshToken: {
         type: String,
-        default: 'null',
+        default: '',
     }
 });
 
@@ -83,8 +83,8 @@ DriverSchema.add({
     },
 });
 
-export const User = mongoose.model('users', UserSchema);
-export const Admin = User.discriminator('admins', AdminSchema);
-export const Consultant = User.discriminator('consultants', ConsultantSchema);
-export const Customer = User.discriminator('customers', CustomerSchema);
-export const Driver = User.discriminator('drivers', DriverSchema);
+export const User = mongoose.model('User', UserSchema);
+export const Admin = User.discriminator('Admin', AdminSchema);
+export const Consultant = User.discriminator('Consultant', ConsultantSchema);
+export const Customer = User.discriminator('Customer', CustomerSchema);
+export const Driver = User.discriminator('Driver', DriverSchema);

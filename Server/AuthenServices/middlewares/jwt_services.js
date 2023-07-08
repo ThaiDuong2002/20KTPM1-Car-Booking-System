@@ -2,12 +2,13 @@ import jwt from "jsonwebtoken";
 import createError from "http-errors";
 import dotenv from 'dotenv';
 dotenv.config();
+
+const secret = process.env.ACCESS_TOKEN_SECRET;
+
 const TokenService = {
     async signAccessToken(userId, userType) {
         return new Promise((resolve, reject) => {
             const payload = { userId, userType };
-            // const secret = process.env.ACCESS_TOKEN_SECRET;
-            const secret = "KEY"
             const options = {
                 expiresIn: "10m",
             };
@@ -19,16 +20,16 @@ const TokenService = {
             });
         });
     },
-    async verifyToken(req, res, next) {
+    async verifyAccessToken(req, res, next) {
         if (!req.headers['authorization']) {
 
-            next(createError.Unauthorized("You are not authorized to access this page.1"));
+            next(createError.Unauthorized("You are not authorized to access this page"));
         } else {
             const authorization = req.headers['authorization'];
             const bearToken = authorization.split(' ');
             const token = bearToken[1];
             console.log(token);
-            jwt.verify(token, "KEY", (err, payload) => {
+            jwt.verify(token, secret, (err, payload) => {
                 if (err) {
                     if (err.name === "JsonWebTokenError") {
                         return next(createError.Unauthorized("You are not authorized to access this page"));
@@ -38,16 +39,13 @@ const TokenService = {
                 req.payload = payload;
                 next();
             });
-
         }
     },
-    async signRefreshToken(userId) {
+    async signRefreshToken(userId, refreshTokenExpiration) {
         return new Promise((resolve, reject) => {
             const payload = { userId };
-            // const secret = process.env.ACCESS_TOKEN_SECRET;
-            const secret = "KEY"
             const options = {
-                expiresIn: "1y",
+                expiresIn: refreshTokenExpiration,
             };
             jwt.sign(payload, secret, options, (err, token) => {
                 if (err) {
@@ -59,15 +57,14 @@ const TokenService = {
     },
     async verifyRefreshToken(refreshToken) {
         return new Promise((resolve, reject) => {
-            jwt.verify(refreshToken, "KEY", (err, payload) => {
+            jwt.verify(refreshToken, secret, (err, decoded) => {
                 if (err) {
-                    return reject(err)
+                    reject(err)
                 }
-                resolve(payload)
+                resolve(decoded)
             })
         });
     }
-
 }
 
 export default TokenService;
