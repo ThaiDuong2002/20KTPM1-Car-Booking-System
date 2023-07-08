@@ -1,7 +1,5 @@
 import createError from "http-errors";
-import dotenv from 'dotenv';
-dotenv.config();
-const Authentication = {
+const Authorization = {
     async isAdmin(req, res, next) {
         const role = req.headers['x-user-role'] || null;
         if (role != null) {
@@ -14,4 +12,4 @@ const Authentication = {
     },
 }
 
-export default Authentication;
+export default Authorization;
