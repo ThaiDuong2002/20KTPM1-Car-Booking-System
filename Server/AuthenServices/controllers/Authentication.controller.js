@@ -172,37 +172,41 @@ const AuthenController = {
         try {
             // Verify refresh token
             const decoded = await TokenService.verifyRefreshToken(refreshToken)
-            console.log("decoded.exp", decoded.exp)
 
-            // // Check if the refresh token is associated with a valid user
-            // const user = await User.findOne({ _id: decoded.user_id })
-            // if (!user) {
-            //     next(createError.BadRequest("Invalid refresh token"))
-            // }
+            // Check if the refresh token is associated with a valid user
+            const auth_user = await User.findOne({
+                _id: decoded.userId,
+                refreshToken: refreshToken
+            })
 
-            // // Issue new access token and refresh token
-            // const refreshTokenExpiration = decoded.exp - Math.floor(Date.now() / 1000)
-            // const access_token = await TokenService.signAccessToken(user._id, user.__t)
-            // const refresh_token = await TokenService.signRefreshToken(user._id, refreshTokenExpiration)
+            if (!auth_user) {
+                next(createError.BadRequest("Invalid refresh token"))
+            }
 
-            // // Save refresh token to db
-            // const updatedUser = await User.findOneAndUpdate(
-            //     { _id: user._id },
-            //     { refreshToken: refresh_token },
-            //     { new: true }
-            // );
-            // if (!updatedUser) {
-            //     next(createError.BadRequest("Failed to save refresh token to database"))
-            // }
+            // Issue new access token and refresh token
+            const refreshTokenExpiration = decoded.exp - Math.floor(Date.now() / 1000)
+            const access_token = await TokenService.signAccessToken(auth_user._id, auth_user.__t)
+            const refresh_token = await TokenService.signRefreshToken(auth_user._id, refreshTokenExpiration)
 
-            // // Return access token
-            // res.json({
-            //     message: "Renew access token successfully",
-            //     status: 201,
-            //     data: {
-            //         token: access_token
-            //     }
-            // })
+            // Save refresh token to db
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: auth_user._id },
+                { refreshToken: refresh_token },
+                { new: true }
+            );
+            if (!updatedUser) {
+                next(createError.BadRequest("Failed to save refresh token to database"))
+            }
+
+            // Return access token
+            res.json({
+                message: "Renew access token successfully",
+                status: 201,
+                data: {
+                    accessToken: access_token,
+                    refreshToken: refresh_token
+                }
+            })
 
         } catch (err) {
             if (err.name === "TokenExpiredError") {
