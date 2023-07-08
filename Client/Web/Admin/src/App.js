@@ -23,11 +23,9 @@ const App = () => {
         <CssBaseline />
         <NavigationScroll>
           <Routes />
-          {/* <div>Hello</div> */}
         </NavigationScroll>
       </ThemeProvider>
     </StyledEngineProvider>
-    // <div>Hello</div>
   );
 };
 
