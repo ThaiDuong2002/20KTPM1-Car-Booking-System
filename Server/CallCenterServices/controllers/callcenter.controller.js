@@ -1,18 +1,15 @@
-import User from '../models/User.js'
-import Consultant from '../models/Consultant.js'
+import createError from 'http-errors'
+import UserService from '../services/database_services.js';
 
 const CallcenterController = {
   me: async (req, res, next) => {
     try {
       const consultant_id = req.headers['x-user-id']
 
-      const result = await User.findOne({ _id: consultant_id }).select('-_id firstname lastname email phone avatar');
+      const result = await UserService.getUserById(consultant_id, {}, '-_id firstname lastname email phone avatar')
+
       if (!result) {
-        res.json({
-          message: "consultant not found",
-          status: 404,
-          data: {}
-        })
+        next(createError.BadRequest("consultant not found"))
       }
       res.json({
         message: "Get consultant's info successfully",
@@ -27,18 +24,14 @@ const CallcenterController = {
     try {
       const consultant_id = req.headers['x-user-id']
       const update_info = req.body
-      const result = await User.findOneAndUpdate(
-        { _id: consultant_id },
-        update_info,
-        { new: true }
-      ).select('-_id firstname lastname email phone avatar')
-      console.log("Update result", result)
+      if (update_info.password || update_info.__t || update_info.email || update_info.phone) {
+        next(createError.BadRequest("Invalid update fields"))
+      }
+
+      const result = await UserService.updateUser(consultant_id, update_info, '-_id firstname lastname email phone avatar')
+
       if (!result) {
-        res.json({
-          message: "consultant not found",
-          status: 404,
-          data: {}
-        })
+        next(createError.BadRequest("consultant not found"))
       }
       res.json({
         message: "Update consultant's info successfully",
@@ -52,18 +45,22 @@ const CallcenterController = {
   logout: async (req, res, next) => {
     try {
       const user_id = req.headers['x-user-id']
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: user_id },
-        { refreshToken: '' },
-        { new: true }
-      );
-      if (updatedUser) {
-        res.json({
-          message: "Logout successfully",
-          status: 200,
-          data: {}
-        })
+      const user = await UserService.getUser({
+        _id: user_id,
+        refreshToken: ""
+      })
+      if (user) {
+        next(createError.BadRequest("User already logged out"))
       }
+      const updatedUser = await UserService.updateUser(user_id, { refreshToken: '' })
+      if (!updatedUser) {
+        next(createError.BadRequest("Update failed"))
+      }
+      res.json({
+        message: "Logout successfully",
+        status: 200,
+        data: {}
+      })
     } catch (error) {
       next(createError.BadRequest(error.message))
     }

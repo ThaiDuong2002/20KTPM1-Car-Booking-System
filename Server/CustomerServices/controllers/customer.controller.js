@@ -1,9 +1,6 @@
 import Customer from "../models/Customer.model.js";
 
 const CustomerController = {
-  test: (req, res) => {
-    res.send('Hello from Customer Services');
-  },
   async login(req, res, next) {
     try {
       const { email, password } = req.body;

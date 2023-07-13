@@ -1,9 +1,9 @@
 import createError from 'http-errors';
-import { User, Consultant, Driver, Customer } from '../models/User.model.js';
+import UserService from '../services/database_services.js';
 import TokenService from '../middlewares/jwt_services.js';
 import bcryptjs from 'bcryptjs';
 import registration_schema from '../middlewares/validate.js'
-import dotenv from 'dotenv';
+import { User } from '../models/User.model.js';
 
 const AuthenController = {
     async login(req, res, next) {
@@ -13,51 +13,43 @@ const AuthenController = {
                 next(createError.BadRequest("Invalid email or password"))
             }
             else {
-                const user = await User.findOne({
-                    $or: [
-                        { email: identifier },
-                        { phone: identifier }
-                    ]
-                });
+                // Lowercase identifier
+                let _identifier = identifier.toLowerCase()
+                const user = await UserService.getUserByIdentifier(_identifier, _identifier)
                 if (!user) {
-                    next(createError.BadRequest("User is not exist"))
+                    next(createError.BadRequest("User is not exists"))
                 }
-                const checkAuthen = bcryptjs.compareSync(password, user.password); // true
+                const checkAuthen = bcryptjs.compareSync(password, user.password)
                 if (!checkAuthen) {
                     next(createError.BadRequest("Wrong password"))
                 }
                 else {
                     const access_token = await TokenService.signAccessToken(user._id, user.__t)
                     const refresh_token = await TokenService.signRefreshToken(user._id, "30d")
-                    const updatedUser = await User.findOneAndUpdate(
-                        { _id: user._id },
-                        { refreshToken: refresh_token },
-                        { new: true }
-                    );
-                    if (updatedUser) {
-                        const response = {
-                            user: {
-                                id: updatedUser._id,
-                                __t: updatedUser.__t,
-                                address: updatedUser.address,
-                                firstname: updatedUser.firstname,
-                                lastname: updatedUser.lastname,
-                                email: updatedUser.email,
-                                phone: updatedUser.phone,
-                                avatar: updatedUser.avatar
-                            },
-                            accessToken: access_token,
-                            refreshToken: refresh_token,
-                        };
-                        req.user = updatedUser
-                        if (checkAuthen) {
-                            res.json({
-                                message: "Login successfully",
-                                status: 200,
-                                data: response
-                            })
-                        }
+                    const updatedUser = await UserService.updateUser(user._id, { refreshToken: refresh_token })
+                    if (!updatedUser) {
+                        next(createError.BadRequest("Update user's info failed"))
                     }
+                    const response = {
+                        user: {
+                            id: updatedUser._id,
+                            __t: updatedUser.__t,
+                            address: updatedUser.address,
+                            firstname: updatedUser.firstname,
+                            lastname: updatedUser.lastname,
+                            email: updatedUser.email,
+                            phone: updatedUser.phone,
+                            avatar: updatedUser.avatar
+                        },
+                        accessToken: access_token,
+                        refreshToken: refresh_token,
+                    };
+                    req.user = updatedUser
+                    res.json({
+                        message: "Login successfully",
+                        status: 200,
+                        data: response
+                    })
                 }
             }
         } catch (error) {
@@ -78,65 +70,14 @@ const AuthenController = {
                 next(createError.BadRequest("Invalid role"))
             }
 
-            const { firstname, lastname, email, phone, password } = value
-
             // Check if user is already exists
-            const user = await User.findOne({
-                $or: [
-                    { email: email },
-                    { phone: phone }
-                ]
-            });
-
+            const user = await UserService.getUserByIdentifier(value.email, value.phone)
             if (user) {
                 next(createError.BadRequest("User is already exists"))
             }
 
-            // Hash password
-            const salt = bcryptjs.genSaltSync(10)
-            const hash = bcryptjs.hashSync(password, salt)
-
-            let newUser;
-
-            // Create new user based on role
-            switch (user_role) {
-                case "consultant":
-                    newUser = new Consultant({
-                        firstname,
-                        lastname,
-                        email,
-                        phone,
-                        password: hash,
-                    });
-                    break;
-                case "driver":
-                    newUser = new Driver({
-                        firstname,
-                        lastname,
-                        email,
-                        phone,
-                        password: hash,
-                    });
-                    break;
-                case "customer":
-                    newUser = new Customer({
-                        firstname,
-                        lastname,
-                        email,
-                        phone,
-                        password: hash,
-                    });
-                    break;
-                default:
-                    next(createError.BadRequest("Invalid role"))
-            }
-
-            // Save new user to the database
-            const result = await newUser.save();
-
-            if (!result) {
-                throw createError.BadRequest("Failed to save new user to the database");
-            }
+            // Create new user
+            const newUser = await UserService.createUser(user_role, value)
 
             // Send response
             const response = {
@@ -161,7 +102,7 @@ const AuthenController = {
                 data: response
             })
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(error.message)
         }
     },
     async renewAccessToken(req, res, next) {
@@ -174,10 +115,7 @@ const AuthenController = {
             const decoded = await TokenService.verifyRefreshToken(refreshToken)
 
             // Check if the refresh token is associated with a valid user
-            const auth_user = await User.findOne({
-                _id: decoded.userId,
-                refreshToken: refreshToken
-            })
+            const auth_user = await UserService.getUserById(decoded.userId, { refreshToken: refreshToken })
 
             if (!auth_user) {
                 next(createError.BadRequest("Invalid refresh token"))
@@ -188,12 +126,8 @@ const AuthenController = {
             const access_token = await TokenService.signAccessToken(auth_user._id, auth_user.__t)
             const refresh_token = await TokenService.signRefreshToken(auth_user._id, refreshTokenExpiration)
 
-            // Save refresh token to db
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: auth_user._id },
-                { refreshToken: refresh_token },
-                { new: true }
-            );
+            // Save new refresh token to database
+            const updatedUser = await UserService.updateUser(auth_user._id, { refreshToken: refresh_token })
             if (!updatedUser) {
                 next(createError.BadRequest("Failed to save refresh token to database"))
             }
