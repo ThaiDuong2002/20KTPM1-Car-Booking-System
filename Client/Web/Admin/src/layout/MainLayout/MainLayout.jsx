@@ -15,7 +15,6 @@ import {
 import Breadcrumbs from "ui-component/extended/Breadcrumbs";
 import Header from "./Header/Header";
 import Sidebar from "./Sidebar/Sidebar";
-import Customization from "../Customization/Customization";
 import navigation from "menu-items";
 import { drawerWidth } from "store/constant";
 import { SET_MENU } from "store/actions";
@@ -111,7 +110,6 @@ const MainLayout = () => {
         />
         <Outlet />
       </Main>
-      <Customization />
     </Box>
   );
 };
