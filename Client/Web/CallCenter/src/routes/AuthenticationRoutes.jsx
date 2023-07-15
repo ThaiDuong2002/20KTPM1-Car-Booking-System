@@ -9,6 +9,9 @@ import { lazy } from "react";
 const AuthLogin3 = Loadable(
   lazy(() => import("../views/pages/authentication/authentication3/Login3"))
 );
+const AuthRegister3 = Loadable(
+  lazy(() => import("../views/pages/authentication/authentication3/Register3"))
+);
 
 const AuthenRoutes = {
   path: "/",
@@ -20,7 +23,7 @@ const AuthenRoutes = {
     },
     {
       path: "/pages/register/register3",
-      element: "",
+      element: <AuthRegister3 />,
     },
   ],
 };
