@@ -20,12 +20,12 @@ const Customer = new Schema({
             },
         ],
     },
-    user_type: {
+    userType: {
         type: Boolean,
         required: true,
         default: false,
     },
-    is_disabled: {
+    isDisabled: {
         type: Boolean,
         required: true,
         default: false,

@@ -9,7 +9,7 @@ const CallcenterController = {
       const result = await UserService.getUserById(consultant_id, {}, '-_id firstname lastname email phone avatar')
 
       if (!result) {
-        next(createError.BadRequest("consultant not found"))
+        return next(createError.BadRequest("consultant not found"))
       }
       res.json({
         message: "Get consultant's info successfully",
@@ -25,13 +25,13 @@ const CallcenterController = {
       const consultant_id = req.headers['x-user-id']
       const update_info = req.body
       if (update_info.password || update_info.__t || update_info.email || update_info.phone) {
-        next(createError.BadRequest("Invalid update fields"))
+        return next(createError.BadRequest("Invalid update fields"))
       }
 
       const result = await UserService.updateUser(consultant_id, update_info, '-_id firstname lastname email phone avatar')
 
       if (!result) {
-        next(createError.BadRequest("consultant not found"))
+        return next(createError.BadRequest("consultant not found"))
       }
       res.json({
         message: "Update consultant's info successfully",
@@ -50,11 +50,11 @@ const CallcenterController = {
         refreshToken: ""
       })
       if (user) {
-        next(createError.BadRequest("User already logged out"))
+        return next(createError.BadRequest("User already logged out"))
       }
       const updatedUser = await UserService.updateUser(user_id, { refreshToken: '' })
       if (!updatedUser) {
-        next(createError.BadRequest("Update failed"))
+        return next(createError.BadRequest("Update failed"))
       }
       res.json({
         message: "Logout successfully",

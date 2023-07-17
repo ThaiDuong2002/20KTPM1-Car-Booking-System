@@ -48,7 +48,7 @@ const User = new Schema(
       required: false,
       default: '',
     },
-    refresh_token: {
+    refreshToken: {
       type: String,
       required: true,
       default: "",

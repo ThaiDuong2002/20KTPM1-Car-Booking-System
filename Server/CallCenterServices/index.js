@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
-// import routes from './routes/index.js';
 import CallcenterRoute from './routes/callcenter.route.js';
-
 
 dotenv.config();
 

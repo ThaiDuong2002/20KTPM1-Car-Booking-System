@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
-import routes from './routes/index.js';
+import driverRoute from './routes/driver.route.js';
 import bodyParser from 'body-parser';
 
 dotenv.config();
@@ -23,10 +23,9 @@ const initializeExpress = (app) => {
 };
 
 initializeExpress(app);
-
-routes(app);
 db();
 
+app.use(driverRoute);
 app.use(notFound);
 app.use(errorHandler);
 

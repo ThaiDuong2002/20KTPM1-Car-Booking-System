@@ -58,7 +58,7 @@ CustomerSchema.add({
         type: String,
         default: "standard",
     },
-    isDisable: {
+    isDisabled: {
         type: Boolean,
         default: false,
     },

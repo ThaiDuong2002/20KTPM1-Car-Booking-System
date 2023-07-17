@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
-import routes from './routes/index.js';
+import CustomerRoute from './routes/customer.route.js';
 
 dotenv.config();
 const app = express();
@@ -15,13 +15,9 @@ const initializeExpress = (app) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 };
-
-initializeExpress(app);
-
-routes(app);
-
 db();
-
+initializeExpress(app);
+app.use(CustomerRoute)
 app.use(notFound);
 app.use(errorHandler);
 

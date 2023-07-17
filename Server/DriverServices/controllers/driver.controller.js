@@ -1,19 +1,18 @@
 import createError from "http-errors";
 import UserService from "../services/database_services.js";
-import Customer from "../models/Customer.model.js";
 
-const CustomerController = {
+const DriverController = {
   me: async (req, res, next) => {
     try {
-      const customer_id = req.headers['x-user-id']
+      const driver_id = req.headers['x-user-id']
 
-      const result = await UserService.getUserById(customer_id, {}, '-_id firstname lastname email phone avatar')
+      const result = await UserService.getUserById(driver_id, {}, '-_id firstname lastname email phone avatar')
 
       if (!result) {
-        return next(createError.BadRequest("customer not found"))
+        return next(createError.BadRequest("driver not found"))
       }
       res.json({
-        message: "Get customer's info successfully",
+        message: "Get driver's info successfully",
         status: 200,
         data: result
       })
@@ -23,19 +22,19 @@ const CustomerController = {
   },
   edit_info: async (req, res, next) => {
     try {
-      const customer_id = req.headers['x-user-id']
+      const driver_id = req.headers['x-user-id']
       const update_info = req.body
       if (update_info.password || update_info.__t || update_info.email || update_info.phone) {
         return next(createError.BadRequest("Invalid update fields"))
       }
 
-      const result = await UserService.updateUser(customer_id, update_info, '-_id firstname lastname email phone avatar')
+      const result = await UserService.updateUser(driver_id, update_info, '-_id firstname lastname email phone avatar')
 
       if (!result) {
-        return next(createError.BadRequest("customer not found"))
+        return next(createError.BadRequest("driver not found"))
       }
       res.json({
-        message: "Update customer's info successfully",
+        message: "Update driver's info successfully",
         status: 200,
         data: result
       })
@@ -69,4 +68,4 @@ const CustomerController = {
   },
 };
 
-export default CustomerController;
+export default DriverController;

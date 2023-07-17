@@ -1,4 +1,4 @@
-import User from '../models/User.js'
+import User from '../models/User.model.js'
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
