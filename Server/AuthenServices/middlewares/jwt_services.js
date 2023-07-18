@@ -28,7 +28,6 @@ const TokenService = {
             const authorization = req.headers['authorization'];
             const bearToken = authorization.split(' ');
             const token = bearToken[1];
-            console.log(token);
             jwt.verify(token, secret, (err, payload) => {
                 if (err) {
                     if (err.name === "JsonWebTokenError") {

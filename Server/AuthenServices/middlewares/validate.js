@@ -12,4 +12,20 @@ const registration_schema = Joi.object({
     .required(),
 });
 
-export default registration_schema;
+const change_password_schema = Joi.object({
+  old_password: Joi.string()
+      .min(6)
+      .max(20)
+      .regex(/^[a-zA-Z0-9!@#$%^&*]{6,20}$/)
+      .required(),
+  new_password: Joi.string()
+      .min(6)
+      .max(20)
+      .regex(/^[a-zA-Z0-9!@#$%^&*]{6,20}$/)
+      .required(),
+});
+
+export default {
+    registration_schema,
+    change_password_schema
+}

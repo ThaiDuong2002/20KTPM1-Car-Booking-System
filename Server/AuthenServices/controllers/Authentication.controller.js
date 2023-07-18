@@ -2,7 +2,9 @@ import createError from 'http-errors';
 import UserService from '../services/database_services.js';
 import TokenService from '../middlewares/jwt_services.js';
 import bcryptjs from 'bcryptjs';
-import registration_schema from '../middlewares/validate.js'
+import validateSchemas from '../middlewares/validate.js';
+
+const { registration_schema, change_password_schema } = validateSchemas;
 
 const AuthenController = {
     async login(req, res, next) {
@@ -148,6 +150,35 @@ const AuthenController = {
             return next(createError.Unauthorized(err.message));
         }
     },
+    async change_password(req, res, next) {
+        const { error, value } = change_password_schema.validate(req.body)
+        if (error) {
+            return next(createError.BadRequest(error.details[0].message))
+        }
+        const user_id = req.payload.userId
+        let user = await UserService.getUserById(user_id)
+        if(!user) {
+            return next(createError.NotFound("User is not exists"))
+        }
+        const check_password = bcryptjs.compareSync(value.old_password, user.password)
+        if(!check_password) {
+            return next(createError.BadRequest("Wrong password"))
+        }
+        const salt = bcryptjs.genSaltSync(10)
+        const hash_password = bcryptjs.hashSync(value.new_password, salt)
+
+        try {
+            await UserService.updateUser(user_id, {password: hash_password})
+        } catch (error) {
+            return next(createError.BadRequest(error.message))
+        }
+
+        res.status(200).json({
+            message: "Change password successfully",
+            status: 200,
+            data: "ok"
+        })
+    }
 }
 
 export default AuthenController;
