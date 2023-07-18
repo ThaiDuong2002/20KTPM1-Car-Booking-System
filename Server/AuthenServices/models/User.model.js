@@ -26,15 +26,14 @@ const UserSchema = new Schema({
         type: String,
         default: "https://haycafe.vn/wp-content/uploads/2022/02/Avatar-trang-den.png",
     },
+    role: {
+        type: String,
+        required: true,
+    },
     refreshToken: {
         type: String,
         default: '',
     }
-});
-
-const AdminSchema = new Schema(UserSchema);
-AdminSchema.add({
-    // other admin-specific fields
 });
 
 const ConsultantSchema = new Schema(UserSchema);
@@ -83,7 +82,6 @@ DriverSchema.add({
 });
 
 export const User = mongoose.model('User', UserSchema);
-export const Admin = User.discriminator('Admin', AdminSchema);
 export const Consultant = User.discriminator('Consultant', ConsultantSchema);
 export const Customer = User.discriminator('Customer', CustomerSchema);
 export const Driver = User.discriminator('Driver', DriverSchema);

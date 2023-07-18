@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import bcryptjs from 'bcryptjs';
-import { User, Customer, Consultant, Driver } from '../models/User.model.js'
+import {Consultant, Customer, Driver, User} from '../models/User.model.js'
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
@@ -31,20 +31,21 @@ const UserService = {
     async createUser(role, data) {
         // Hash password
         const salt = bcryptjs.genSaltSync(10)
-        const hash = bcryptjs.hashSync(data.password, salt)
-
-        data.password = hash
+        data.password = bcryptjs.hashSync(data.password, salt)
 
         let newUser
 
         switch (role) {
             case "customer":
+                data.role = "customer"
                 newUser = new Customer(data)
                 break
             case "consultant":
+                data.role = "consultant"
                 newUser = new Consultant(data)
                 break
             case "driver":
+                data.role = "driver"
                 newUser = new Driver(data)
                 break
             default:

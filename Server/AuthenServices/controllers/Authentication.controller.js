@@ -3,7 +3,6 @@ import UserService from '../services/database_services.js';
 import TokenService from '../middlewares/jwt_services.js';
 import bcryptjs from 'bcryptjs';
 import registration_schema from '../middlewares/validate.js'
-import { User } from '../models/User.model.js';
 
 const AuthenController = {
     async login(req, res, next) {
@@ -33,7 +32,7 @@ const AuthenController = {
                     const response = {
                         user: {
                             id: updatedUser._id,
-                            __t: updatedUser.__t,
+                            role: updatedUser.role,
                             address: updatedUser.address,
                             firstname: updatedUser.firstname,
                             lastname: updatedUser.lastname,
@@ -83,7 +82,7 @@ const AuthenController = {
             const response = {
                 user: {
                     id: newUser._id,
-                    __t: newUser.__t,
+                    role: newUser.role,
                     firstname: newUser.firstname,
                     lastname: newUser.lastname,
                     email: newUser.email,

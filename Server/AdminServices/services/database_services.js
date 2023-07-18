@@ -1,18 +1,8 @@
-import Admin from '../models/Admin.js'
+import User from '../models/User.js'
 
 const AdminServices = {
     async getAllUsers(filter, projection) {
-        const result = await Admin.find(filter).select(projection);
-        return result
-    },
-    async getUserByIdentifier(email, phone) {
-        const result = await Admin.findOne({
-            $or: [
-                { email: email },
-                { phone: phone }
-            ]
-        });
-        return result
+        return User.find(filter).select(projection)
     },
 }
 

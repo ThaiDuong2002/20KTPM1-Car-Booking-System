@@ -4,7 +4,6 @@ import Authorization from '../middlewares/authorization.js';
 
 const router = express.Router();
 
-router.get('/getAdmins', Authorization.isAdmin, AdminController.get_admins);
 router.get('/getUsers', Authorization.isAdmin, AdminController.get_users);
 
 export default router;
