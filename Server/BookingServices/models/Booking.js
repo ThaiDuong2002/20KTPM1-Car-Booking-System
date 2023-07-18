@@ -114,4 +114,4 @@ const Booking = new Schema(
   }
 );
 
-export default mongoose.model('Booking', Booking);
+export default mongoose.model('Booking', Booking, "bookings");
