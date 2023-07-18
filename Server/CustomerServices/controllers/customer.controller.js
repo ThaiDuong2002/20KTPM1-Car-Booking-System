@@ -18,7 +18,7 @@ const CustomerController = {
         data: result
       })
     } catch (error) {
-      next(createError.BadRequest(error.message))
+      return next(createError.BadRequest(error.message))
     }
   },
   edit_info: async (req, res, next) => {
@@ -40,7 +40,7 @@ const CustomerController = {
         data: result
       })
     } catch (error) {
-      next(createError.BadRequest(error.message))
+      return next(createError.BadRequest(error.message))
     }
   },
   logout: async (req, res, next) => {
@@ -64,7 +64,7 @@ const CustomerController = {
         data: {}
       })
     } catch (error) {
-      next(createError.BadRequest(error.message))
+      return next(createError.BadRequest(error.message))
     }
   },
 };

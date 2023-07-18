@@ -17,7 +17,7 @@ const DriverController = {
         data: result
       })
     } catch (error) {
-      next(createError.BadRequest(error.message))
+      return next(createError.BadRequest(error.message))
     }
   },
   edit_info: async (req, res, next) => {
@@ -39,7 +39,7 @@ const DriverController = {
         data: result
       })
     } catch (error) {
-      next(createError.BadRequest(error.message))
+      return next(createError.BadRequest(error.message))
     }
   },
   logout: async (req, res, next) => {
@@ -63,7 +63,7 @@ const DriverController = {
         data: {}
       })
     } catch (error) {
-      next(createError.BadRequest(error.message))
+      return next(createError.BadRequest(error.message))
     }
   },
 };

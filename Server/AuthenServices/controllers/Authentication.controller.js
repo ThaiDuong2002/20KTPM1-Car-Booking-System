@@ -11,25 +11,25 @@ const AuthenController = {
         try {
             const { identifier, password } = req.body;
             if (!identifier || !password) {
-                next(createError.BadRequest("Invalid email or password"))
+                return next(createError.BadRequest("Invalid email or password"))
             }
             else {
                 // Lowercase identifier
                 let _identifier = identifier.toLowerCase()
                 const user = await UserService.getUserByIdentifier(_identifier, _identifier)
                 if (!user) {
-                    next(createError.BadRequest("User is not exists"))
+                    return next(createError.BadRequest("User is not exists"))
                 }
                 const checkAuthen = bcryptjs.compareSync(password, user.password)
                 if (!checkAuthen) {
-                    next(createError.BadRequest("Wrong password"))
+                    return next(createError.BadRequest("Wrong password"))
                 }
                 else {
                     const access_token = await TokenService.signAccessToken(user._id, user.__t)
                     const refresh_token = await TokenService.signRefreshToken(user._id, "30d")
                     const updatedUser = await UserService.updateUser(user._id, { refreshToken: refresh_token })
                     if (!updatedUser) {
-                        next(createError.BadRequest("Update user's info failed"))
+                        return next(createError.BadRequest("Update user's info failed"))
                     }
                     const response = {
                         user: {
@@ -54,7 +54,7 @@ const AuthenController = {
                 }
             }
         } catch (error) {
-            next(error)
+            return next(error)
         }
     },
     async register(req, res, next) {
@@ -63,18 +63,18 @@ const AuthenController = {
             const { error, value } = registration_schema.validate(req.body)
 
             if (error) {
-                next(createError.BadRequest(error.details[0].message))
+                return next(createError.BadRequest(error.details[0].message))
             }
 
             const user_role = req.params.role
             if (user_role !== "consultant" && user_role !== "driver" && user_role !== "customer") {
-                next(createError.BadRequest("Invalid role"))
+                return next(createError.BadRequest("Invalid role"))
             }
 
             // Check if user is already exists
             const user = await UserService.getUserByIdentifier(value.email, value.phone)
             if (user) {
-                next(createError.BadRequest("User is already exists"))
+                return next(createError.BadRequest("User is already exists"))
             }
 
             // Create new user
@@ -103,13 +103,13 @@ const AuthenController = {
                 data: response
             })
         } catch (error) {
-            next(error.message)
+            return next(error.message)
         }
     },
     async renewAccessToken(req, res, next) {
         const { refreshToken } = req.body;
         if (!refreshToken) {
-            next(createError.BadRequest("Need to provide refresh token"))
+            return next(createError.BadRequest("Need to provide refresh token"))
         }
         try {
             // Verify refresh token
@@ -119,7 +119,7 @@ const AuthenController = {
             const auth_user = await UserService.getUserById(decoded.userId, { refreshToken: refreshToken })
 
             if (!auth_user) {
-                next(createError.BadRequest("Invalid refresh token"))
+                return next(createError.BadRequest("Invalid refresh token"))
             }
 
             // Issue new access token and refresh token
@@ -130,7 +130,7 @@ const AuthenController = {
             // Save new refresh token to database
             const updatedUser = await UserService.updateUser(auth_user._id, { refreshToken: refresh_token })
             if (!updatedUser) {
-                next(createError.BadRequest("Failed to save refresh token to database"))
+                return next(createError.BadRequest("Failed to save refresh token to database"))
             }
 
             // Return access token
