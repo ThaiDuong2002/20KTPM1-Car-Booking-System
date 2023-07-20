@@ -54,7 +54,7 @@ const AuthenController = {
                 }
             }
         } catch (error) {
-            return next(error)
+            next(createError.BadRequest(error.message))
         }
     },
     async register(req, res, next) {
@@ -103,7 +103,7 @@ const AuthenController = {
                 data: response
             })
         } catch (error) {
-            return next(error.message)
+            next(error.message)
         }
     },
     async renewAccessToken(req, res, next) {
@@ -145,39 +145,39 @@ const AuthenController = {
 
         } catch (err) {
             if (err.name === "TokenExpiredError") {
-                return next(createError.Unauthorized("Refresh token expired"));
+                next(createError.Unauthorized("Refresh token expired"));
             }
-            return next(createError.Unauthorized(err.message));
+            next(createError.Unauthorized(err.message));
         }
     },
     async change_password(req, res, next) {
-        const { error, value } = change_password_schema.validate(req.body)
-        if (error) {
-            return next(createError.BadRequest(error.details[0].message))
-        }
-        const user_id = req.payload.userId
-        let user = await UserService.getUserById(user_id)
-        if(!user) {
-            return next(createError.NotFound("User is not exists"))
-        }
-        const check_password = bcryptjs.compareSync(value.old_password, user.password)
-        if(!check_password) {
-            return next(createError.BadRequest("Wrong password"))
-        }
-        const salt = bcryptjs.genSaltSync(10)
-        const hash_password = bcryptjs.hashSync(value.new_password, salt)
-
         try {
-            await UserService.updateUser(user_id, {password: hash_password})
-        } catch (error) {
-            return next(createError.BadRequest(error.message))
-        }
+            const { error, value } = change_password_schema.validate(req.body)
+            if (error) {
+                return next(createError.BadRequest(error.details[0].message))
+            }
+            const user_id = req.payload.userId
+            let user = await UserService.getUserById(user_id)
+            if (!user) {
+                return next(createError.NotFound("User is not exists"))
+            }
+            const check_password = bcryptjs.compareSync(value.old_password, user.password)
+            if (!check_password) {
+                return next(createError.BadRequest("Wrong password"))
+            }
+            const salt = bcryptjs.genSaltSync(10)
+            const hash_password = bcryptjs.hashSync(value.new_password, salt)
 
-        res.status(200).json({
-            message: "Change password successfully",
-            status: 200,
-            data: "ok"
-        })
+            await UserService.updateUser(user_id, { password: hash_password })
+
+            res.status(200).json({
+                message: "Change password successfully",
+                status: 200,
+                data: "ok"
+            })
+        } catch (error) {
+            next(createError.BadRequest(error.message))
+        }
     }
 }
 

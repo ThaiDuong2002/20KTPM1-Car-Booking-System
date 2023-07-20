@@ -17,7 +17,7 @@ const CallcenterController = {
         data: result
       })
     } catch (error) {
-      return next(createError.BadRequest(error.message))
+      next(createError.BadRequest(error.message))
     }
   },
   edit_info: async (req, res, next) => {
@@ -39,7 +39,7 @@ const CallcenterController = {
         data: result
       })
     } catch (error) {
-      return next(createError.BadRequest(error.message))
+      next(createError.BadRequest(error.message))
     }
   },
   logout: async (req, res, next) => {
@@ -62,7 +62,7 @@ const CallcenterController = {
         data: {}
       })
     } catch (error) {
-      return next(createError.BadRequest(error.message))
+      next(createError.BadRequest(error.message))
     }
   },
 };
