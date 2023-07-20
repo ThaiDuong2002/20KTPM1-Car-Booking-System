@@ -14,48 +14,40 @@ const Booking = new Schema(
       required: true,
     },
     pickup_location: {
-      type: {
-        address: {
-          type: String,
+      address: {
+        type: String,
+        required: true,
+        default: '',
+      },
+      coordinate: {
+        x: {
+          type: Number,
           required: true,
-          default: '',
+          default: 0,
         },
-        coordinate: {
-          type: {
-            x: {
-              type: Number,
-              required: true,
-              default: 0,
-            },
-            y: {
-              type: Number,
-              required: true,
-              default: 0,
-            },
-          },
+        y: {
+          type: Number,
+          required: true,
+          default: 0,
         },
       },
     },
     destination_location: {
-      type: {
-        address: {
-          type: String,
+      address: {
+        type: String,
+        required: true,
+        default: '',
+      },
+      coordinate: {
+        x: {
+          type: Number,
           required: true,
-          default: '',
+          default: 0,
         },
-        coordinate: {
-          type: {
-            x: {
-              type: Number,
-              required: true,
-              default: 0,
-            },
-            y: {
-              type: Number,
-              required: true,
-              default: 0,
-            },
-          },
+        y: {
+          type: Number,
+          required: true,
+          default: 0,
         },
       },
     },
@@ -89,23 +81,22 @@ const Booking = new Schema(
       required: false,
       default: null,
     },
+    // ???????????????????????????????????????????????????
     refund_id: {
       type: Number,
       required: false,
       default: null,
     },
     rating: {
-      type: {
-        comment: {
-          type: String,
-          required: false,
-          default: '',
-        },
-        score: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
+      comment: {
+        type: String,
+        required: false,
+        default: '',
+      },
+      score: {
+        type: Number,
+        required: true,
+        default: 0,
       },
     },
   },
