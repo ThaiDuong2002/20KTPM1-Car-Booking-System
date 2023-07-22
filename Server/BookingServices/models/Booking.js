@@ -7,7 +7,7 @@ const Booking = new Schema(
   {
     user_id: {
       type: ObjectId,
-      required: true,
+      required: false,
     },
     driver_id: {
       type: ObjectId,

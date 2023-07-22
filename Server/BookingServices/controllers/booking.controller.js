@@ -51,14 +51,17 @@ const BookingController = {
                 return next(createError.BadRequest("User not found"));
             }
             const user_id = req.headers['x-user-id']
-            booking_data.user_id = user_id
+            // If the user is anonymous, set user_id to null
+            if (!user_id) {
+                booking_data.user_id = null
+            }
+            else {
+                booking_data.user_id = user_id
+            }
             // Create booking
-
             const booking_re = await BookingService.create_booking(booking_data);
             res.status(201).json({
-                message: 'Create booking successfully',
-                status: 201,
-                data: booking_re,
+                booking_result: booking_re,
             })
         } catch (err) {
             return next(createError.BadRequest(err.message));

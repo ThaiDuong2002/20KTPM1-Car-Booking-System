@@ -1,4 +1,8 @@
 import User from '../models/User.js'
+import dotenv from 'dotenv';
+import axios from 'axios'
+
+dotenv.config();
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
@@ -32,4 +36,20 @@ const UserService = {
     },
 }
 
-export default UserService
+const CallcenterService = {
+    async booking(booking_info) {
+        try {
+            // Call booking service
+            const url = process.env.BOOKING_SERVICE_URI
+            const response = await axios.post(url, booking_info)
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    },
+}
+
+export {
+    UserService,
+    CallcenterService,
+}

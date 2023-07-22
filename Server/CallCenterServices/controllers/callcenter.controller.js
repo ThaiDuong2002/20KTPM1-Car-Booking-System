@@ -1,5 +1,8 @@
 import createError from 'http-errors'
-import UserService from '../services/database_services.js';
+import {
+  UserService,
+  CallcenterService,
+} from '../services/database_services.js';
 
 const CallcenterController = {
   me: async (req, res, next) => {
@@ -61,6 +64,23 @@ const CallcenterController = {
         status: 200,
         data: {}
       })
+    } catch (error) {
+      next(createError.BadRequest(error.message))
+    }
+  },
+  booking: async (req, res, next) => {
+    try {
+      const booking_info = req.body
+      const booking_result = await CallcenterService.booking(booking_info)
+      if (!booking_result) {
+        return next(createError.BadRequest("Booking failed"))
+      }
+      res.status(201).json({
+        message: "Booking successfully",
+        status: 201,
+        data: booking_result
+      })
+
     } catch (error) {
       next(createError.BadRequest(error.message))
     }
