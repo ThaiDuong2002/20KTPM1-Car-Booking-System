@@ -328,7 +328,7 @@ const ProfileSection = () => {
                               >
                                 <Grid item>
                                   <Typography variant="body2">
-                                    Social Profile
+                                    My Profile
                                   </Typography>
                                 </Grid>
                                 <Grid item>
