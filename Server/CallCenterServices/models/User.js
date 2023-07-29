@@ -46,12 +46,12 @@ const User = new Schema(
     avatar: {
       type: String,
       required: false,
-      default: '',
+      default: "https://haycafe.vn/wp-content/uploads/2022/02/Avatar-trang-den.png",
     },
-    refresh_token: {
+    refreshToken: {
       type: String,
       required: true,
-      default: "",
+      default: '',
     },
   },
   {
