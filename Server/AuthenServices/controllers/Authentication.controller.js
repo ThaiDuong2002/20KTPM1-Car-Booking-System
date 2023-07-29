@@ -169,7 +169,7 @@ const AuthenController = {
             const hash_password = bcryptjs.hashSync(value.new_password, salt)
 
             await UserService.updateUser(user_id, { password: hash_password })
-
+N
             res.status(200).json({
                 message: "Change password successfully",
                 status: 200,
@@ -178,6 +178,14 @@ const AuthenController = {
         } catch (error) {
             next(createError.BadRequest(error.message))
         }
+    },
+    async get_user_info(req, res) {
+        const user_id = req.params.id
+        const result = await UserService.getUserById(user_id)
+        res.status(200).json({
+            status: 200,
+            data: result
+        })
     }
 }
 

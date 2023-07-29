@@ -2,8 +2,8 @@ import Booking from '../models/Booking.js';
 import {User} from '../models/User.js';
 
 const BookingService = {
-    async get_bookings_list(filter) {
-        return await Booking.find(filter);
+    async get_booking_list(filter, projection) {
+        return await Booking.find(filter).select(projection);
     },
     async get_booking_details(booking_id) {
         return await Booking.findById(booking_id);

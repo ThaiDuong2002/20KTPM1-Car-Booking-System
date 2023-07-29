@@ -7,5 +7,6 @@ AuthenRoute.post('/login', AuthenticationController.login);
 AuthenRoute.post('/register/:role', AuthenticationController.register);
 AuthenRoute.post('/renewAccessToken', AuthenticationController.renewAccessToken);
 AuthenRoute.put('/changePassword', TokenService.verifyAccessToken, AuthenticationController.change_password);
+AuthenRoute.get('/info/:id', AuthenticationController.get_user_info);
 
 export default AuthenRoute;

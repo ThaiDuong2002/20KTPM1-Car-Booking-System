@@ -42,11 +42,11 @@ const PromotionController = {
         try {
             let filter = req.body
             let projection = {
-                _id: 0,
+                // _id: 0,
                 name: 1,
                 discount: 1,
             }
-            const list = await PromotionService.get_promotions_list(
+            const list = await PromotionService.get_promotion_list(
                 filter,
                 projection
             );

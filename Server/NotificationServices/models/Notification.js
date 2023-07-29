@@ -26,7 +26,7 @@ const Notification = new Schema(
             ref: 'User',
         },
         device_id: {
-            type: ObjectId,
+            type: String,
             required: true,
         },
         is_read: {

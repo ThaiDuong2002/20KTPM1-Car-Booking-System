@@ -52,7 +52,11 @@ const BookingController = {
     async get_booking_list(req, res, next) {
         try {
             let filter = req.body
-            const list = await BookingService.get_bookings_list(filter);
+            let projection = {
+                // _id: 0
+
+            }
+            const list = await BookingService.get_booking_list(filter);
             if (!list) {
                 return next(createError.BadRequest("Get list failed"));
             }

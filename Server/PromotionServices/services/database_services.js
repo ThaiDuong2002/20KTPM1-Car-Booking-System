@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const PromotionService = {
-    async get_promotions_list(filter, projection) {
+    async get_promotion_list(filter, projection) {
         return await Promtion.find(filter).select(projection);
     },
     async get_promotion_details(promotion_id) {

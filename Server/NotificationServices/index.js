@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
-import PromotionRoute from './routes/promotion.route.js';
+import NotificationRoute from './routes/notification.route.js';
 
 dotenv.config();
 
@@ -18,11 +18,11 @@ const initializeExpress = (app) => {
 };
 db();
 initializeExpress(app);
-app.use(PromotionRoute)
+app.use(NotificationRoute)
 app.use(notFound);
 app.use(errorHandler);
 
 app.listen(process.env.PORT, () => {
-  console.log('Promotion Services is running on port:' + process.env.PORT);
+  console.log('Notification Services is running on port:' + process.env.PORT);
   console.log('http://localhost:' + process.env.PORT);
 });
