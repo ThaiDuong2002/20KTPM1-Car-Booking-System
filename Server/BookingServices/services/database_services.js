@@ -38,8 +38,7 @@ const BookingService = {
 
 const UserService = {
     async get_user_by_id(user_id) {
-        const result = User.findById(user_id);
-        return result;
+        return await User.findById(user_id);
     },
 }
 

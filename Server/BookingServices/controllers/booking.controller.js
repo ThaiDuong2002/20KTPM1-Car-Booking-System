@@ -9,21 +9,26 @@ const BookingController = {
             if (error) {
                 return next(createError.BadRequest(error.details[0].message))
             }
-            let booking_data = value
             // Validate driver
-            const driver = UserService.get_user_by_id(booking_data.driver_id);
+            const driver = UserService.get_user_by_id(value.booking_driver_id);
             if (!driver) {
-                return next(createError.BadRequest("User not found"));
+                return next(createError.BadRequest("Driver not exist"));
             }
-            const user_id = req.headers['x-user-id']
-            // If the user is anonymous, set user_id to null
-            if (!user_id) {
-                booking_data.user_id = null
-            } else {
-                booking_data.user_id = user_id
+            const user_info = {
+                id: req.headers['x-user-id'],
+                role: req.headers['x-user-role']
+            }
+            // console.log(user_info)
+            if(user_info.role === 'customer')
+            {
+                value.booking_user_id = user_info.id;
+            }
+            else if(user_info.role === 'consultant')
+            {
+                value.booking_consultant_id = user_info.id;
             }
             // Create booking
-            const booking_re = await BookingService.create_booking(booking_data);
+            const booking_re = await BookingService.create_booking(value);
             res.status(201).json({
                 message: 'Create booking successfully',
                 status: 200,
@@ -53,10 +58,10 @@ const BookingController = {
         try {
             let filter = req.body
             let projection = {
-                // _id: 0
-
+                trip_type: 1,
+                trip_status: 1,
             }
-            const list = await BookingService.get_booking_list(filter);
+            const list = await BookingService.get_booking_list(filter, projection);
             if (!list) {
                 return next(createError.BadRequest("Get list failed"));
             }

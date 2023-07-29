@@ -25,7 +25,7 @@ const AuthenController = {
                     return next(createError.BadRequest("Wrong password"))
                 }
                 else {
-                    const access_token = await TokenService.signAccessToken(user._id, user.__t)
+                    const access_token = await TokenService.signAccessToken(user._id, user.role)
                     const refresh_token = await TokenService.signRefreshToken(user._id, "30d")
                     const updatedUser = await UserService.updateUser(user._id, { refreshToken: refresh_token })
                     if (!updatedUser) {
@@ -124,7 +124,7 @@ const AuthenController = {
 
             // Issue new access token and refresh token
             const refreshTokenExpiration = decoded.exp - Math.floor(Date.now() / 1000)
-            const access_token = await TokenService.signAccessToken(auth_user._id, auth_user.__t)
+            const access_token = await TokenService.signAccessToken(auth_user._id, auth_user.role)
             const refresh_token = await TokenService.signRefreshToken(auth_user._id, refreshTokenExpiration)
 
             // Save new refresh token to database
