@@ -13,7 +13,7 @@ const corsOptions = {
     origin: 'http://localhost:' + process.env.PORT,
 };
 const routes = {
-    '/api/authen': `http://localhost:${process.env.PORT_AUTHEN}`, // login, register, get user info
+    '/api/authen': `http://localhost:${process.env.PORT_AUTHEN}`,
     '/api/admin': `http://localhost:${process.env.PORT_ADMIN}`,
     '/api/callcenter': `http://localhost:${process.env.PORT_CALLCENTER}`,
     '/api/customer': `http://localhost:${process.env.PORT_CUSTOMER}`,
@@ -21,6 +21,7 @@ const routes = {
     '/api/bookings': `http://localhost:${process.env.PORT_BOOKING}`,
     '/api/ratings': `http://localhost:${process.env.PORT_RATING}`,
     '/api/promotions': `http://localhost:${process.env.PORT_PROMOTION}`,
+    '/api/notifications': `http://localhost:${process.env.PORT_NOTIFICATION}`,
 };
 const unless = (path, middleware) => {
     return function (req, res, next) {

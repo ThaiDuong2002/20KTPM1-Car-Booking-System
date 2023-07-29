@@ -68,23 +68,6 @@ const CallcenterController = {
       next(createError.BadRequest(error.message))
     }
   },
-  booking: async (req, res, next) => {
-    try {
-      const booking_info = req.body
-      const booking_result = await CallcenterService.booking(booking_info)
-      if (!booking_result) {
-        return next(createError.BadRequest("Booking failed"))
-      }
-      res.status(201).json({
-        message: "Booking successfully",
-        status: 201,
-        data: booking_result
-      })
-
-    } catch (error) {
-      next(createError.BadRequest(error.message))
-    }
-  },
 };
 
 export default CallcenterController;

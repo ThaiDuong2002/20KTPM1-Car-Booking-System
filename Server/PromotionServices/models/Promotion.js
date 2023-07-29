@@ -2,37 +2,47 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const Promotion = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      default: '',
+const PromotionSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+            default: '',
+        },
+        strategy: {
+            type: String,
+            required: true,
+            default: '',
+        },
+        description: {
+            type: String,
+            required: true,
+            default: '',
+        },
+        discount: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        startDate: {
+            type: Date,
+            required: true,
+            default: Date.now(),
+        },
+        endDate: {
+            type: Date,
+            required: true,
+            default: Date.now(),
+        },
+        usage_limit: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
     },
-    description: {
-      type: String,
-      required: true,
-      default: '',
-    },
-    discount: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    start_date: {
-      type: Date,
-      required: true,
-      default: Date.now(),
-    },
-    end_date: {
-      type: Date,
-      required: true,
-      default: Date.now(),
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
-export default mongoose.model('Promotion', Promotion);
+export default mongoose.model('Promotion', PromotionSchema);

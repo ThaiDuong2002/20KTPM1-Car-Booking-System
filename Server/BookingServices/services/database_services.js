@@ -1,14 +1,12 @@
 import Booking from '../models/Booking.js';
-import { User } from '../models/User.js';
+import {User} from '../models/User.js';
 
 const BookingService = {
     async get_bookings_list(filter) {
-        const bookings = await Booking.find(filter);
-        return bookings;
+        return await Booking.find(filter);
     },
     async get_booking_details(booking_id) {
-        const booking = await Booking.findById(booking_id);
-        return booking;
+        return await Booking.findById(booking_id);
     },
     async create_booking(booking_data) {
         try {
@@ -21,15 +19,21 @@ const BookingService = {
     },
     async update_booking(booking_id, update_fields) {
         try {
-            const update_result = Booking.findOneAndUpdate(
-                { _id: booking_id },
+            return await Booking.findByIdAndUpdate(
+                booking_id,
                 update_fields,
-                { new: true });
-            return update_result;
+                {new: true});
         } catch (err) {
             throw new Error(err.message);
         }
     },
+    async delete_booking(booking_id){
+        try {
+            return await Booking.findByIdAndDelete(booking_id);
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    }
 }
 
 const UserService = {

@@ -29,7 +29,7 @@ const create_booking_schema = Joi.object({
 });
 
 const update_booking_schema = Joi.object({
-    status: Joi.string().valid('pending', 'accepted', 'rejected', 'canceled', 'completed'), // Hop de ban lai
+    status: Joi.string().valid('Pending', 'Confirm', 'In-progress', 'Completed', 'Cancel', 'Pre-book'),
     dropoff_time: Joi.date(),
     refund_id: Joi.number(),
     rating: Joi.object({
