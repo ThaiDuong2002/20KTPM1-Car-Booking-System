@@ -3,11 +3,15 @@ import Vehicle from './Vehicle.js';
 
 const Schema = mongoose.Schema;
 
-const Car = new Schema({
-  capacity: {
-    type: Number,
-    required: true,
-  },
+const CarSchema = new Schema({
+    capacity: {
+        type: Number,
+        required: true,
+    },
+    type: {
+        type: String,
+        required: true,
+    },
 });
 
-export default Vehicle.discriminator('Car', Car);
+export default Vehicle.discriminator('Car', CarSchema);

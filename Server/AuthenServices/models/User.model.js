@@ -1,40 +1,55 @@
 import mongoose from "mongoose";
+
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    firstname: {
-        type: String,
-        required: true,
+        firstname: {
+            type: String,
+            required: true,
+        },
+        lastname: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+        },
+        phone: {
+            type: String,
+            required: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        avatar: {
+            type: String,
+            default: "https://haycafe.vn/wp-content/uploads/2022/02/Avatar-trang-den.png",
+        },
+        dob: {
+            type: Date,
+        },
+        role: {
+            type: String,
+            required: true,
+            enum: ['admin', 'customer', 'consultant', 'driver'],
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female', 'other'],
+        },
+        refreshToken: {
+            type: String,
+            default: '',
+        }
     },
-    lastname: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    phone: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    avatar: {
-        type: String,
-        default: "https://haycafe.vn/wp-content/uploads/2022/02/Avatar-trang-den.png",
-    },
-    role: {
-        type: String,
-        required: true,
-    },
-    refreshToken: {
-        type: String,
-        default: '',
+    {
+        timestamps: true,
     }
-});
+);
+
+const AdminSchema = new Schema(UserSchema);
 
 const ConsultantSchema = new Schema(UserSchema);
 ConsultantSchema.add({
@@ -49,13 +64,14 @@ const CustomerSchema = new Schema(UserSchema);
 CustomerSchema.add({
     address: [
         {
-            name: String,
-            type: String,
-        }
+            type: Schema.Types.ObjectId,
+            ref: 'addresses',
+        },
     ],
     userType: {
         type: String,
         default: "standard",
+        enum: ['standard', 'premium'],
     },
     isDisabled: {
         type: Boolean,
@@ -65,8 +81,12 @@ CustomerSchema.add({
 
 const DriverSchema = new Schema(UserSchema);
 DriverSchema.add({
-    driverLicense: String,
-    vehicleId: Schema.Types.ObjectId,
+    driverLicense: {
+        type: String,
+    },
+    vehicleId: {
+        type: Schema.Types.ObjectId,
+    },
     isActive: {
         type: Boolean,
         default: false,
@@ -82,6 +102,7 @@ DriverSchema.add({
 });
 
 export const User = mongoose.model('User', UserSchema);
+export const Admin = User.discriminator('Admin', AdminSchema);
 export const Consultant = User.discriminator('Consultant', ConsultantSchema);
 export const Customer = User.discriminator('Customer', CustomerSchema);
 export const Driver = User.discriminator('Driver', DriverSchema);

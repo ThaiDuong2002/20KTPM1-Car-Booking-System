@@ -4,16 +4,15 @@ import TokenService from '../middlewares/jwt_services.js';
 import bcryptjs from 'bcryptjs';
 import validateSchemas from '../middlewares/validate.js';
 
-const { registration_schema, change_password_schema } = validateSchemas;
+const {registration_schema, change_password_schema} = validateSchemas;
 
 const AuthenController = {
     async login(req, res, next) {
         try {
-            const { identifier, password } = req.body;
+            const {identifier, password} = req.body;
             if (!identifier || !password) {
                 return next(createError.BadRequest("Invalid email or password"))
-            }
-            else {
+            } else {
                 // Lowercase identifier
                 let _identifier = identifier.toLowerCase()
                 const user = await UserService.getUserByIdentifier(_identifier, _identifier)
@@ -23,24 +22,24 @@ const AuthenController = {
                 const checkAuthen = bcryptjs.compareSync(password, user.password)
                 if (!checkAuthen) {
                     return next(createError.BadRequest("Wrong password"))
-                }
-                else {
+                } else {
                     const access_token = await TokenService.signAccessToken(user._id, user.role)
                     const refresh_token = await TokenService.signRefreshToken(user._id, "30d")
-                    const updatedUser = await UserService.updateUser(user._id, { refreshToken: refresh_token })
+                    const updatedUser = await UserService.updateUser(user._id, {refreshToken: refresh_token})
                     if (!updatedUser) {
-                        return next(createError.BadRequest("Update user's info failed"))
+                        return next(createError.BadRequest("Update refresh token failed"))
                     }
                     const response = {
                         user: {
-                            id: updatedUser._id,
+                            _id: updatedUser._id,
                             role: updatedUser.role,
-                            address: updatedUser.address,
                             firstname: updatedUser.firstname,
                             lastname: updatedUser.lastname,
                             email: updatedUser.email,
                             phone: updatedUser.phone,
-                            avatar: updatedUser.avatar
+                            dob: updatedUser.dob,
+                            gender: updatedUser.gender,
+                            avatar: updatedUser.avatar,
                         },
                         accessToken: access_token,
                         refreshToken: refresh_token,
@@ -60,7 +59,7 @@ const AuthenController = {
     async register(req, res, next) {
         try {
             // Validate registration form
-            const { error, value } = registration_schema.validate(req.body)
+            const {error, value} = registration_schema.validate(req.body)
 
             if (error) {
                 return next(createError.BadRequest(error.details[0].message))
@@ -83,13 +82,13 @@ const AuthenController = {
             // Send response
             const response = {
                 user: {
-                    id: newUser._id,
+                    _id: newUser._id,
                     role: newUser.role,
                     firstname: newUser.firstname,
                     lastname: newUser.lastname,
                     email: newUser.email,
                     phone: newUser.phone,
-                    avatar: newUser.avatar
+                    avatar: newUser.avatar,
                 }
             };
 
@@ -107,7 +106,7 @@ const AuthenController = {
         }
     },
     async renewAccessToken(req, res, next) {
-        const { refreshToken } = req.body;
+        const {refreshToken} = req.body;
         if (!refreshToken) {
             return next(createError.BadRequest("Need to provide refresh token"))
         }
@@ -116,7 +115,7 @@ const AuthenController = {
             const decoded = await TokenService.verifyRefreshToken(refreshToken)
 
             // Check if the refresh token is associated with a valid user
-            const auth_user = await UserService.getUserById(decoded.userId, { refreshToken: refreshToken })
+            const auth_user = await UserService.getUserById(decoded.userId, {refreshToken: refreshToken})
 
             if (!auth_user) {
                 return next(createError.BadRequest("Invalid refresh token"))
@@ -128,7 +127,7 @@ const AuthenController = {
             const refresh_token = await TokenService.signRefreshToken(auth_user._id, refreshTokenExpiration)
 
             // Save new refresh token to database
-            const updatedUser = await UserService.updateUser(auth_user._id, { refreshToken: refresh_token })
+            const updatedUser = await UserService.updateUser(auth_user._id, {refreshToken: refresh_token})
             if (!updatedUser) {
                 return next(createError.BadRequest("Failed to save refresh token to database"))
             }
@@ -152,7 +151,7 @@ const AuthenController = {
     },
     async change_password(req, res, next) {
         try {
-            const { error, value } = change_password_schema.validate(req.body)
+            const {error, value} = change_password_schema.validate(req.body)
             if (error) {
                 return next(createError.BadRequest(error.details[0].message))
             }
@@ -168,8 +167,8 @@ const AuthenController = {
             const salt = bcryptjs.genSaltSync(10)
             const hash_password = bcryptjs.hashSync(value.new_password, salt)
 
-            await UserService.updateUser(user_id, { password: hash_password })
-N
+            await UserService.updateUser(user_id, {password: hash_password})
+
             res.status(200).json({
                 message: "Change password successfully",
                 status: 200,
@@ -179,14 +178,6 @@ N
             next(createError.BadRequest(error.message))
         }
     },
-    async get_user_info(req, res) {
-        const user_id = req.params.id
-        const result = await UserService.getUserById(user_id)
-        res.status(200).json({
-            status: 200,
-            data: result
-        })
-    }
 }
 
 export default AuthenController;

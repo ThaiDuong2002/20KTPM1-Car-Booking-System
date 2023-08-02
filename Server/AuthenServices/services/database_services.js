@@ -2,12 +2,13 @@ import createError from 'http-errors';
 import bcryptjs from 'bcryptjs';
 import {Consultant, Customer, Driver, User} from '../models/User.model.js'
 
+
 const UserService = {
     async getUserByIdentifier(email, phone) {
         const result = await User.findOne({
             $or: [
-                { email: email },
-                { phone: phone }
+                {email: email},
+                {phone: phone}
             ]
         });
         return result
@@ -16,15 +17,14 @@ const UserService = {
         const result = await User.findOne({
             _id: user_id,
             ...filter
-        }
-        );
+        });
         return result
     },
     async updateUser(user_id, data) {
         const result = await User.findOneAndUpdate(
-            { _id: user_id },
+            {_id: user_id},
             data,
-            { new: true }
+            {new: true}
         );
         return result
     },

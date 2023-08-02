@@ -2,17 +2,20 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const PaymentMethod = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      default: '',
+const PaymentMethodSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        status: {
+            type: Boolean,
+            default: true,
+        },
     },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
-export default mongoose.model('PaymentMethod', PaymentMethod);
+export default mongoose.model('PaymentMethod', PaymentMethodSchema, 'paymentMethods');

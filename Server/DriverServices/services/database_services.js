@@ -4,17 +4,17 @@ const UserService = {
     async getUserByIdentifier(email, phone) {
         const result = await User.findOne({
             $or: [
-                { email: email },
-                { phone: phone }
+                {email: email},
+                {phone: phone}
             ]
         });
         return result
     },
     async getUserById(user_id, filter, projection) {
         const result = await User.findOne({
-            _id: user_id,
-            ...filter
-        }
+                _id: user_id,
+                ...filter
+            }
         ).select(projection)
         return result
     },
@@ -24,12 +24,12 @@ const UserService = {
     },
     async updateUser(user_id, data) {
         const result = await User.findOneAndUpdate(
-            { _id: user_id },
+            {_id: user_id},
             data,
-            { new: true }
+            {new: true}
         )
         return result
     },
-}
+};
 
 export default UserService
