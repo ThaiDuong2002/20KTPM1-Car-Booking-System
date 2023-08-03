@@ -1,4 +1,5 @@
 import User from '../models/User.model.js'
+import Customer from '../models/Customer.model.js'
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
@@ -23,8 +24,8 @@ const UserService = {
         return result
     },
     async updateUser(user_id, data) {
-        const result = await User.findOneAndUpdate(
-            {_id: user_id},
+        const result = await User.findByIdAndUpdate(
+            user_id,
             data,
             {new: true}
         )
@@ -32,4 +33,18 @@ const UserService = {
     },
 }
 
-export default UserService
+const CustomerService = {
+    async updateCustomer(user_id, data) {
+        const result = await Customer.findByIdAndUpdate(
+            user_id,
+            data,
+            {new: true}
+        )
+        return result
+    },
+}
+
+export {
+    UserService,
+    CustomerService,
+}

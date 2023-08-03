@@ -1,5 +1,8 @@
 import createError from "http-errors";
-import UserService from "../services/database_services.js";
+import {
+    UserService,
+    CustomerService,
+} from "../services/database_services.js";
 import Customer from "../models/Customer.model.js";
 
 const CustomerController = {
@@ -7,7 +10,7 @@ const CustomerController = {
         try {
             const customer_id = req.headers['x-user-id']
 
-            const result = await UserService.getUserById(customer_id, {}, '-_id firstname lastname email phone avatar dob gender')
+            const result = await UserService.getUserById(customer_id, {}, '-_id firstname lastname email phone avatar dob gender userType')
 
             if (!result) {
                 return next(createError.BadRequest("customer not found"))
@@ -50,7 +53,6 @@ const CustomerController = {
                 _id: user_id,
                 refreshToken: ""
             })
-            console.log(user)
             if (user) {
                 return next(createError.BadRequest("User already logged out"))
             }
@@ -62,6 +64,29 @@ const CustomerController = {
                 message: "Logout successfully",
                 status: 200,
                 data: {}
+            })
+        } catch (error) {
+            next(createError.BadRequest(error.message))
+        }
+    },
+    upgrade: async (req, res, next) => {
+        try {
+            const user_id = req.headers['x-user-id']
+            const user = await UserService.getUserById(user_id)
+            if (!user) {
+                return next(createError.BadRequest("User not found"))
+            }
+            if (user.userType === "premium") {
+                return next(createError.Conflict("User already upgraded"))
+            }
+            const updatedUser = await CustomerService.updateCustomer(user_id, {userType: "premium"})
+            if (!updatedUser) {
+                return next(createError.BadRequest("Upgrade failed"))
+            }
+            res.json({
+                message: "Upgrade successfully",
+                status: 200,
+                data: updatedUser
             })
         } catch (error) {
             next(createError.BadRequest(error.message))
