@@ -8,7 +8,7 @@ const CallcenterController = {
         try {
             const consultant_id = req.headers['x-user-id']
 
-            const result = await UserService.getUserById(consultant_id, {}, '-_id firstname lastname email phone avatar dob gender')
+            const result = await UserService.getUserById(consultant_id, {}, '-_id -password -refreshToken')
 
             if (!result) {
                 return next(createError.BadRequest("consultant not found"))
@@ -30,8 +30,8 @@ const CallcenterController = {
                 return next(createError.BadRequest("Invalid update fields"))
             }
 
-            const result = await UserService.updateUser(consultant_id, update_info, '-_id firstname lastname email phone avatar dob gender')
-            
+            const result = await UserService.updateUser(consultant_id, update_info, '-_id -password -refreshToken')
+
             if (!result) {
                 return next(createError.BadRequest("consultant not found"))
             }

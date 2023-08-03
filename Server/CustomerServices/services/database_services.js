@@ -34,12 +34,12 @@ const UserService = {
 }
 
 const CustomerService = {
-    async updateCustomer(user_id, data) {
+    async updateCustomer(user_id, data, projection) {
         const result = await Customer.findByIdAndUpdate(
             user_id,
             data,
             {new: true}
-        )
+        ).select(projection)
         return result
     },
 }

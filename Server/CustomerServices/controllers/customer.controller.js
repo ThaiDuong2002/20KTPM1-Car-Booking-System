@@ -10,7 +10,7 @@ const CustomerController = {
         try {
             const customer_id = req.headers['x-user-id']
 
-            const result = await UserService.getUserById(customer_id, {}, '-_id firstname lastname email phone avatar dob gender userType')
+            const result = await UserService.getUserById(customer_id, {}, '-_id -password -refreshToken')
 
             if (!result) {
                 return next(createError.BadRequest("customer not found"))
@@ -32,7 +32,7 @@ const CustomerController = {
                 return next(createError.BadRequest("Invalid update fields"))
             }
 
-            const result = await UserService.updateUser(customer_id, update_info, '-_id firstname lastname email phone avatar dob gender')
+            const result = await UserService.updateUser(customer_id, update_info, '-_id -password -refreshToken')
 
             if (!result) {
                 return next(createError.BadRequest("customer not found"))
@@ -79,7 +79,10 @@ const CustomerController = {
             if (user.userType === "premium") {
                 return next(createError.Conflict("User already upgraded"))
             }
-            const updatedUser = await CustomerService.updateCustomer(user_id, {userType: "premium"})
+            const updatedUser = await CustomerService.updateCustomer(
+                user_id,
+                {userType: "premium"},
+                '-_id -password -refreshToken')
             if (!updatedUser) {
                 return next(createError.BadRequest("Upgrade failed"))
             }

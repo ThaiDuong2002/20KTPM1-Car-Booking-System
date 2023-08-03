@@ -5,7 +5,7 @@ const AdminController = {
     get_users: async (req, res, next) => {
         const filter = req.body
 
-        const users = await AdminServices.getAllUsers(filter, '-_id firstname lastname email phone avatar role');
+        const users = await AdminServices.getAllUsers(filter, '-_id -password -refreshToken');
         if (!users) {
             return next(createError.BadRequest("users list not found"))
 

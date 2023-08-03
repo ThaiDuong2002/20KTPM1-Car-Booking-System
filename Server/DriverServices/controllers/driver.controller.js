@@ -6,7 +6,7 @@ const DriverController = {
         try {
             const driver_id = req.headers['x-user-id']
 
-            const result = await UserService.getUserById(driver_id, {}, '-_id firstname lastname email phone avatar dob gender')
+            const result = await UserService.getUserById(driver_id, {}, '-_id -password -refreshToken')
 
             if (!result) {
                 return next(createError.BadRequest("driver not found"))
@@ -28,7 +28,7 @@ const DriverController = {
                 return next(createError.BadRequest("Invalid update fields"))
             }
 
-            const result = await UserService.updateUser(driver_id, update_info, '-_id firstname lastname email phone avatar dob gender')
+            const result = await UserService.updateUser(driver_id, update_info, '-_id -password -refreshToken')
 
             if (!result) {
                 return next(createError.BadRequest("driver not found"))
