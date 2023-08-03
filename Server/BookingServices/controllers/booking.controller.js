@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import {create_booking_schema, update_booking_schema} from '../middlewares/validate.js';
-import {BookingService, UserService} from '../services/database_services.js';
+import {BookingService, UserService} from '../services/services.js';
 
 const BookingController = {
     async add_booking(req, res, next) {
@@ -19,12 +19,9 @@ const BookingController = {
                 role: req.headers['x-user-role']
             }
             // console.log(user_info)
-            if(user_info.role === 'customer')
-            {
+            if (user_info.role === 'customer') {
                 value.booking_user_id = user_info.id;
-            }
-            else if(user_info.role === 'consultant')
-            {
+            } else if (user_info.role === 'consultant') {
                 value.booking_consultant_id = user_info.id;
             }
             // Create booking
@@ -86,8 +83,7 @@ const BookingController = {
             }
             // Update booking
             const update_result = await BookingService.update_booking(booking_id, value);
-            if (!update_result)
-            {
+            if (!update_result) {
                 return res.status(404).json({
                     message: 'Booking not found',
                     status: 404,
@@ -102,13 +98,12 @@ const BookingController = {
             next(createError.InternalServerError(err.message));
         }
     },
-    async delete_booking(req, res, next){
+    async delete_booking(req, res, next) {
         try {
             const booking_id = req.params.id
             // Delete promotion
             const delete_result = await BookingService.delete_booking(booking_id);
-            if (!delete_result)
-            {
+            if (!delete_result) {
                 return res.status(404).json({
                     message: 'Booking not found',
                     status: 404,
