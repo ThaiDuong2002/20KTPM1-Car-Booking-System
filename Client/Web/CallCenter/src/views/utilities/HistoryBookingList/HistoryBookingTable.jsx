@@ -24,7 +24,7 @@ const HistoryBookingTable = (props) => {
   const { items = [] } = props;
 
   const handleTableRowClick = (bookingId) => {
-    navigate(`/booking/${bookingId}`);
+    navigate(`/utils/history-booking/${bookingId}`);
   };
 
   return (

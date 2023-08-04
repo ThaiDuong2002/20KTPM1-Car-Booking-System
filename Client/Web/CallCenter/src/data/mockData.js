@@ -184,3 +184,60 @@ export const mockDataHistoryBooking = [
     rating: {},
   },
 ];
+
+export const mockDataHistoryBookingDetail = {
+  trip_pickup_location: {
+    coordinate: {
+      x: 0.12,
+      y: 0.12,
+    },
+    address: "A",
+  },
+  trip_destination_location: {
+    coordinate: {
+      x: 0.15,
+      y: 0.15,
+    },
+    address: "B",
+  },
+  _id: "64cb614206f91305899d5107",
+  booking_user_id: {
+    _id: "64ca7737e1971471cca748b7",
+    firstname: "customer",
+    lastname: "customer",
+    email: "customer@gmail.com",
+    role: "customer",
+  },
+  booking_driver_id: {
+    _id: "64ca7742e1971471cca748ba",
+    firstname: "driver",
+    lastname: "driver",
+    email: "driver@gmail.com",
+    role: "driver",
+  },
+  trip_type: "Bike",
+  trip_distance: 500,
+  trip_duration: 30,
+  trip_pre_total: 500000,
+  trip_total: 700000,
+  trip_promotion_id: {
+    _id: "64c49eac0ff5e724021ac421",
+    name: "A",
+    strategy: "A",
+    description: "A",
+    discount: 0.5,
+    startDate: "2020-01-12T00:00:00.000Z",
+    endDate: "2020-01-13T00:00:00.000Z",
+    usage_limit: 5,
+    createdAt: "2023-07-29T05:07:56.668Z",
+    updatedAt: "2023-07-29T05:07:56.668Z",
+    __v: 0,
+  },
+  trip_status: "Pending",
+  trip_pickup_time: "2023-08-03T08:10:54.885Z",
+  trip_dropoff_time: "2023-08-03T08:10:54.885Z",
+  booking_payment_method_id: "64b8e6aa4153e8044d36b1d7",
+  createdAt: "2023-08-03T08:11:46.753Z",
+  updatedAt: "2023-08-03T08:11:46.753Z",
+  __v: 0,
+};
