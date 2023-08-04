@@ -22,18 +22,18 @@ const utilities = {
   type: "group",
   children: [
     {
-      id: "util-typography",
+      id: "booking",
       title: "Booking",
       type: "item",
-      url: "/utils/util-typography",
+      url: "/utils/booking",
       icon: icons.IconTypography,
       breadcrumbs: false,
     },
     {
-      id: "util-color",
-      title: "History",
+      id: "history-booking",
+      title: "History Booking",
       type: "item",
-      url: "/utils/util-color",
+      url: "/utils/history-booking",
       icon: icons.IconPalette,
       breadcrumbs: false,
     },
