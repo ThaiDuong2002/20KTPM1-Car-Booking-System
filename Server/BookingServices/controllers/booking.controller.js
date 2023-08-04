@@ -4,41 +4,47 @@ import {BookingService, UserService} from '../services/services.js';
 
 const BookingController = {
     async add_booking(req, res, next) {
-        try {
-            const {error, value} = create_booking_schema.validate(req.body);
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message))
-            }
-            // Validate driver
-            const driver = UserService.get_user_by_id(value.booking_driver_id);
-            if (!driver) {
-                return next(createError.BadRequest("Driver not exist"));
-            }
-            const user_info = {
-                id: req.headers['x-user-id'],
-                role: req.headers['x-user-role']
-            }
-            // console.log(user_info)
-            if (user_info.role === 'customer') {
-                value.booking_user_id = user_info.id;
-            } else if (user_info.role === 'consultant') {
-                value.booking_consultant_id = user_info.id;
-            }
-            // Create booking
-            const booking_re = await BookingService.create_booking(value);
-            res.status(201).json({
-                message: 'Create booking successfully',
-                status: 200,
-                data: booking_re,
-            })
-        } catch (err) {
-            next(createError.InternalServerError(err.message));
-        }
+        res.json({
+            message: 'Create booking successfully',
+        })
+        // try {
+        //     const {error, value} = create_booking_schema.validate(req.body);
+        //     if (error) {
+        //         return next(createError.BadRequest(error.details[0].message))
+        //     }
+        //     // Validate driver
+        //     const driver = await UserService.get_user_by_id(value.booking_driver_id);
+        //     if (!driver) {
+        //         return next(createError.BadRequest("Driver not exist"));
+        //     }
+        //     const user_info = {
+        //         id: req.headers['x-user-id'],
+        //         role: req.headers['x-user-role']
+        //     }
+        //     value.booking_user_id = user_info.id;
+        //     // Create booking
+        //     const booking_re = await BookingService.create_booking(value);
+        //     res.status(201).json({
+        //         message: 'Create booking successfully',
+        //         status: 200,
+        //         data: booking_re,
+        //     })
+        // } catch (err) {
+        //     next(createError.InternalServerError(err.message));
+        // }
     },
     async get_booking_details(req, res, next) {
         try {
             const booking_id = req.params.id
-            const booking = await BookingService.get_booking_details(booking_id);
+            const populateOptions = {
+                "booking_user_id": '-password -refreshToken',
+                "booking_driver_id": '-password -refreshToken',
+                "trip_promotion_id": '',
+                "booking_payment_method_id": '',
+                "booking_refund_id": '',
+                "booking_ratings.user_id": '_id firstname lastname email',
+            };
+            const booking = await BookingService.get_booking_details(booking_id, populateOptions);
             if (!booking) {
                 return next(createError.NotFound("Booking not found"));
             }
@@ -55,6 +61,9 @@ const BookingController = {
         try {
             let filter = req.body
             let projection = {
+                createdAt: 1,
+                trip_pickup_location: 1,
+                trip_destination_location: 1,
                 trip_type: 1,
                 trip_status: 1,
             }
@@ -62,7 +71,7 @@ const BookingController = {
             if (!list) {
                 return next(createError.BadRequest("Get list failed"));
             }
-            if (list.length == 0) {
+            if (list.length === 0) {
                 return next(createError.NotFound("No booking found"));
             }
             res.json({

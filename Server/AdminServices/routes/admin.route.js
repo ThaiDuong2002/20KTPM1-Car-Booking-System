@@ -1,9 +1,9 @@
 import express from 'express';
 import AdminController from '../controllers/admin.controller.js';
-import Authorization from '../middlewares/authorization.js';
+import {authorization} from '../middlewares/authorization.js';
 
 const router = express.Router();
 
-router.get('/getUsers', Authorization.isAdmin, AdminController.get_users);
+router.get('/getUsers', authorization(['admin']), AdminController.get_users);
 
 export default router;

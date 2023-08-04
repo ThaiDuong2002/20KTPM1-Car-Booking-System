@@ -1,13 +1,27 @@
 import Booking from '../models/Booking.js';
-import {User} from '../models/User.js';
+import User from '../models/User.js';
+import Promotion from '../models/Promotion.js';
+import PaymentMethod from '../models/PaymentMethod.js';
+import Refund from '../models/Refund.js';
 import axios from "axios";
 
 const BookingService = {
     async get_booking_list(filter, projection) {
         return await Booking.find(filter).select(projection);
     },
-    async get_booking_details(booking_id) {
-        return await Booking.findById(booking_id);
+    async get_booking_details(booking_id, populate_options) {
+        const query = Booking.findById(booking_id);
+
+        if (populate_options) {
+            for (const field in populate_options) {
+                query.populate({
+                    path: field,
+                    select: populate_options[field]
+                });
+            }
+        }
+
+        return await query.exec();
     },
     async create_booking(booking_data) {
         try {

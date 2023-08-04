@@ -8,14 +8,20 @@ const Booking = new Schema(
         booking_user_id: {
             type: ObjectId,
             required: false,
+            ref: 'User',
         },
         booking_driver_id: {
             type: ObjectId,
             required: true,
+            ref: 'User',
         },
-        booking_consultant_id: {
-            type: ObjectId,
-            required: false,
+        customer_name: {
+            type: String,
+            default: null,
+        },
+        customer_phone: {
+            type: String,
+            default: null,
         },
         trip_type: {
             type: String,
@@ -72,6 +78,7 @@ const Booking = new Schema(
         trip_promotion_id: {
             type: ObjectId,
             required: false,
+            ref: 'Promotion',
         },
         trip_status: {
             type: String,
@@ -91,51 +98,30 @@ const Booking = new Schema(
         booking_payment_method_id: {
             type: ObjectId,
             required: true,
-            ref: 'payment_methods',
+            ref: 'PaymentMethod',
         },
         booking_refund_id: {
             type: ObjectId,
             required: false,
-            ref: 'refunds',
+            ref: 'Refund',
         },
-        // booking_ratings: {
-        //     user_id: {
-        //         type: ObjectId,
-        //         required: false,
-        //         default: null,
-        //     },
-        //     comment: {
-        //         type: String,
-        //         required: false,
-        //         default: '',
-        //     },
-        //     time: {
-        //         type: Date,
-        //         required: false,
-        //         default: Date.now(),
-        //     },
-        //     star: {
-        //         type: Number,
-        //         required: false,
-        //         default: 5,
-        //     },
-        // },
         booking_ratings: {
             user_id: {
                 type: ObjectId,
                 required: false,
+                ref: 'User',
             },
             comment: {
                 type: String,
-                required: false,
+                default: '',
             },
             time: {
                 type: Date,
-                required: false,
+                default: Date.now(),
             },
             star: {
                 type: Number,
-                required: false,
+                default: 5,
             },
         },
     },

@@ -1,16 +1,16 @@
 import createError from "http-errors";
 
-const Authorization = {
-    async isConsultant(req, res, next) {
-        const role = req.headers['x-user-role'] || null;
-        if (role != null) {
-            if (role == "consultant") {
-                next();
-            } else {
-                next(createError.Unauthorized("You are not authorized to access this page"));
-            }
+const authorization = (allowedRoles) => {
+    return (req, res, next) => {
+        const userRole = req.headers['x-user-role'] || null;
+        if (userRole && allowedRoles.includes(userRole)) {
+            next();
+        } else {
+            next(createError.Unauthorized("You are not authorized to access this page"));
         }
-    }
-}
+    };
+};
 
-export default Authorization;
+export {
+    authorization,
+}

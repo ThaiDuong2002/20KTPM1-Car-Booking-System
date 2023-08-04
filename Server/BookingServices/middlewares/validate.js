@@ -2,6 +2,8 @@ import Joi from 'joi';
 
 const create_booking_schema = Joi.object({
     booking_driver_id: Joi.string().required(),
+    customer_name: Joi.string(),
+    customer_phone: Joi.string().pattern(/^[0-9]+$/),
     trip_type: Joi.string().valid('Bike', 'Car').required(),
     trip_pickup_location: Joi.object({
         address: Joi.string().required(),
