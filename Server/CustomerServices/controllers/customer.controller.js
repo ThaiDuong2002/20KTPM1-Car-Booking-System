@@ -3,7 +3,6 @@ import {
     UserService,
     CustomerService,
 } from "../services/database_services.js";
-import Customer from "../models/Customer.model.js";
 
 const CustomerController = {
     me: async (req, res, next) => {
@@ -21,7 +20,7 @@ const CustomerController = {
                 data: result
             })
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(createError.InternalServerError(error.message))
         }
     },
     edit_info: async (req, res, next) => {
@@ -43,7 +42,7 @@ const CustomerController = {
                 data: result
             })
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(createError.InternalServerError(error.message))
         }
     },
     logout: async (req, res, next) => {
@@ -66,7 +65,7 @@ const CustomerController = {
                 data: {}
             })
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(createError.InternalServerError(error.message))
         }
     },
     upgrade: async (req, res, next) => {
@@ -92,7 +91,7 @@ const CustomerController = {
                 data: updatedUser
             })
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(createError.InternalServerError(error.message))
         }
     },
 };

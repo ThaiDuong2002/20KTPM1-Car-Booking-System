@@ -7,7 +7,7 @@ const CustomerSchema = new Schema({
     address: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'addresses',
+            ref: 'Address',
         },
     ],
     userType: {
@@ -19,6 +19,6 @@ const CustomerSchema = new Schema({
         type: Boolean,
         default: false,
     },
-});
+})
 
 export default User.discriminator('Customer', CustomerSchema);

@@ -4,34 +4,31 @@ import {BookingService, UserService} from '../services/services.js';
 
 const BookingController = {
     async add_booking(req, res, next) {
-        res.json({
-            message: 'Create booking successfully',
-        })
-        // try {
-        //     const {error, value} = create_booking_schema.validate(req.body);
-        //     if (error) {
-        //         return next(createError.BadRequest(error.details[0].message))
-        //     }
-        //     // Validate driver
-        //     const driver = await UserService.get_user_by_id(value.booking_driver_id);
-        //     if (!driver) {
-        //         return next(createError.BadRequest("Driver not exist"));
-        //     }
-        //     const user_info = {
-        //         id: req.headers['x-user-id'],
-        //         role: req.headers['x-user-role']
-        //     }
-        //     value.booking_user_id = user_info.id;
-        //     // Create booking
-        //     const booking_re = await BookingService.create_booking(value);
-        //     res.status(201).json({
-        //         message: 'Create booking successfully',
-        //         status: 200,
-        //         data: booking_re,
-        //     })
-        // } catch (err) {
-        //     next(createError.InternalServerError(err.message));
-        // }
+        try {
+            const {error, value} = create_booking_schema.validate(req.body);
+            if (error) {
+                return next(createError.BadRequest(error.details[0].message))
+            }
+            // Validate driver
+            const driver = await UserService.get_user_by_id(value.booking_driver_id);
+            if (!driver) {
+                return next(createError.BadRequest("Driver not exist"));
+            }
+            const user_info = {
+                id: req.headers['x-user-id'],
+                role: req.headers['x-user-role']
+            }
+            value.booking_user_id = user_info.id;
+            // Create booking
+            const booking_re = await BookingService.create_booking(value);
+            res.status(201).json({
+                message: 'Create booking successfully',
+                status: 200,
+                data: booking_re,
+            })
+        } catch (err) {
+            next(createError.InternalServerError(err.message));
+        }
     },
     async get_booking_details(req, res, next) {
         try {
@@ -62,6 +59,8 @@ const BookingController = {
             let filter = req.body
             let projection = {
                 createdAt: 1,
+                customer_name: 1,
+                customer_phone: 1,
                 trip_pickup_location: 1,
                 trip_destination_location: 1,
                 trip_type: 1,
