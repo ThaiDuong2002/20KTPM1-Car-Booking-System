@@ -23,8 +23,8 @@ TimelineCard.propTypes = {
 export default function TimelineCard({ title, subheader, list, ...other }) {
   return (
     <Card {...other}>
+      {/* <Typography>Hello</Typography> */}
       <CardHeader title={title} subheader={subheader} />
-
       <CardContent
         sx={{
           "& .MuiTimelineItem-missingOppositeContent:before": {
