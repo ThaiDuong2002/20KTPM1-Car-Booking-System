@@ -4,6 +4,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "views/theme";
 import { mockDataContacts } from "data/mockData";
 import { useTheme } from "@mui/material";
+import MainCard from "ui-component/cards/MainCard";
 
 const Consultant = () => {
   const theme = useTheme();
@@ -51,10 +52,10 @@ const Consultant = () => {
     },
   ];
   return (
-    <Box m="20px">
+    <MainCard title="Consultan Management">
       <Box
-        m="40px 0 0 0"
-        height="75vh"
+        m="0 0 0 0"
+        height="70vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -90,7 +91,7 @@ const Consultant = () => {
           components={{ Toolbar: GridToolbar }}
         />
       </Box>
-    </Box>
+    </MainCard>
   );
 };
 

@@ -12,6 +12,10 @@ const UtilsDriver = Loadable(lazy(() => import("../views/utilities/Driver")));
 const UtilsConsultant = Loadable(
   lazy(() => import("../views/utilities/Consultant"))
 );
+const UtilsSalary = Loadable(lazy(() => import("../views/utilities/Salary")));
+const UtilsUnitPrice = Loadable(
+  lazy(() => import("../views/utilities/UnitPrice"))
+);
 
 const MainRoutes = {
   path: "/",
@@ -41,6 +45,24 @@ const MainRoutes = {
         {
           path: "consultant",
           element: <UtilsConsultant />,
+        },
+      ],
+    },
+    {
+      path: "utils",
+      children: [
+        {
+          path: "salary",
+          element: <UtilsSalary />,
+        },
+      ],
+    },
+    {
+      path: "utils",
+      children: [
+        {
+          path: "unit-price",
+          element: <UtilsUnitPrice />,
         },
       ],
     },

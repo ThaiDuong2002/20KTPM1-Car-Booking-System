@@ -51,7 +51,7 @@ const Customer = () => {
     },
   ];
   return (
-    <MainCard title="Customer">
+    <MainCard title="Customer Management">
       <Box
         m="0 0 0 0"
         height="70vh"

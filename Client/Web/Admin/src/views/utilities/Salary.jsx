@@ -1,12 +1,16 @@
 import React from "react";
-import { Box } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { tokens } from "views/theme";
-import { mockDataContacts } from "data/mockData";
-import { useTheme } from "@mui/material";
-import MainCard from "ui-component/cards/MainCard";
 
-const Driver = () => {
+// mui
+import { useTheme } from "@mui/material/styles";
+import { Grid, Box, Typography } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+
+// project component import
+import MainCard from "ui-component/cards/MainCard";
+import { tokens } from "../theme";
+import { mockDataContacts } from "data/mockData";
+
+const Salary = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const columns = [
@@ -52,7 +56,7 @@ const Driver = () => {
     },
   ];
   return (
-    <MainCard title="Driver Management">
+    <MainCard title="Salary Management">
       <Box
         m="0 0 0 0"
         height="70vh"
@@ -95,4 +99,4 @@ const Driver = () => {
   );
 };
 
-export default Driver;
+export default Salary;

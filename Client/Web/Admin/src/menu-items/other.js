@@ -11,21 +11,20 @@ const other = {
   type: "group",
   children: [
     {
-      id: "sample-page",
+      id: "salary",
       title: "Salary",
       type: "item",
-      url: "/sample-page",
+      url: "/utils/salary",
       icon: icons.IconBrandChrome,
       breadcrumbs: false,
     },
     {
-      id: "documentation",
-      title: "Price",
+      id: "unit-price",
+      title: "Unit Price",
       type: "item",
-      url: "https://codedthemes.gitbook.io/berry/",
+      url: "/utils/unit-price",
       icon: icons.IconHelp,
-      external: true,
-      target: true,
+      breadcrumbs: false,
     },
   ],
 };
