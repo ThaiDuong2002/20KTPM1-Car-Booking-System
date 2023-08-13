@@ -10,71 +10,82 @@ class UserInforView extends StatelessWidget {
     {
       "image": "assets/images/menu/1.png",
       "title": "Chuyến đi",
-      "route": "/initialBookingPage",
+      "route": "/orderPageMenu",
     },
     {
       "image": "assets/images/menu/2.png",
       "title": "Ưu đãi",
-      "route": "/initialBookingPage",
+      "route": "/promotionPageMenu",
     },
     {
       "image": "assets/images/menu/3.png",
       "title": "Phương thức thanh toán",
-      "route": "/initialBookingPage",
+      "route": "/methodPaymentPage",
     },
     {
       "image": "assets/images/menu/4.png",
       "title": "Địa điểm yêu thích",
-      "route": "/initialBookingPage",
+      "route": "/placeFavoritePage",
     },
     {
       "image": "assets/images/menu/5.png",
       "title": "Thay đổi ngôn ngữ",
-      "route": "/initialBookingPage",
+      "route": "/changeLanguagePage",
     },
     {
       "image": "assets/images/menu/6.png",
       "title": "Quản lý tài khoản",
-      "route": "/initialBookingPage",
+      "route": "/manageAccountPage",
     }
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: TextCustom(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                alignment: const Alignment(-0.2, 1), // move icon a bit to the left
+              );
+            },
+          ),
+          title: const TextCustom(
               text: "Thông tin tài khoản",
-              color: Colors.white,
+              color: Colors.black,
               fontSize: FONT_SIZE_LARGE,
               fontWeight: FontWeight.w700),
         ),
         body: Container(
           color: Colors.white,
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Row(
                 children: [
                   Container(
                       height: 60,
-                      padding: EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(5),
                       width: 60,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      child: Image.network(
-                          "https://cdn.icon-icons.com/icons2/1879/PNG/512/iconfinder-8-avatar-2754583_120515.png")),
-                  SizedBox(
+                      child:
+                          Image.asset("assets/images/icons/icon_avatar.png")),
+                  const SizedBox(
                     width: 5,
                   ),
                   Expanded(
                       flex: 3,
                       child: Container(
-                        child: Column(
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextCustom(
@@ -105,16 +116,18 @@ class UserInforView extends StatelessWidget {
                       child: Container(
                     alignment: Alignment.centerRight,
                     child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/editProfilePage");
+                      },
+                      icon: const Icon(Icons.edit),
                     ),
                   ))
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
-              TextCustom(
+              const TextCustom(
                   text: "Tài khoản",
                   color: COLOR_TEXT_BLACK,
                   fontSize: FONT_SIZE_NORMAL,
@@ -124,11 +137,11 @@ class UserInforView extends StatelessWidget {
                 itemCount: menuList.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    margin: EdgeInsets.only(top: 10),
+                    margin: const EdgeInsets.only(top: 10),
                     child: Column(
                       children: [
                         ListTile(
-                          contentPadding: EdgeInsets.all(0),
+                          contentPadding: const EdgeInsets.all(0),
                           minLeadingWidth: 0,
                           onTap: () {
                             Navigator.pushNamed(
@@ -144,7 +157,7 @@ class UserInforView extends StatelessWidget {
                               color: COLOR_TEXT_BLACK,
                               fontSize: FONT_SIZE_NORMAL,
                               fontWeight: FontWeight.w500),
-                          trailing: Icon(Icons.arrow_forward_ios),
+                          trailing: const Icon(Icons.arrow_forward_ios),
                         ),
                         Container(height: 1, color: Colors.grey.shade200)
                       ],

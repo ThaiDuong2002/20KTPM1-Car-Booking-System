@@ -10,7 +10,8 @@ class DetailOrderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextCustom(
+        backgroundColor: COLOR_BLUE_MAIN,
+        title: const TextCustom(
             text: 'Chi tiết chuyến đi',
             color: Colors.white,
             fontSize: FONT_SIZE_LARGE,
@@ -25,7 +26,7 @@ class DetailOrderView extends StatelessWidget {
               children: [
                 Container(
                   margin: const EdgeInsets.only(left: 15, top: 15),
-                  child: TextCustom(
+                  child: const TextCustom(
                       text: 'Mã chuyến đi: ',
                       color: Colors.black,
                       fontSize: FONT_SIZE_NORMAL,
@@ -33,7 +34,7 @@ class DetailOrderView extends StatelessWidget {
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 15),
-                  child: TextCustom(
+                  child: const TextCustom(
                       text: '123456',
                       color: Colors.black,
                       fontSize: FONT_SIZE_NORMAL,
@@ -54,7 +55,7 @@ class DetailOrderView extends StatelessWidget {
                       width: 50,
                       margin:
                           const EdgeInsets.only(left: 15, top: 10, bottom: 10),
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Colors.grey,
                           borderRadius: BorderRadius.circular(30)),
@@ -62,7 +63,7 @@ class DetailOrderView extends StatelessWidget {
                           "https://cdn-icons-png.flaticon.com/512/5556/5556468.png")),
                   Container(
                     margin: const EdgeInsets.only(left: 15),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextCustom(
@@ -86,11 +87,11 @@ class DetailOrderView extends StatelessWidget {
             ),
             Container(
               margin: const EdgeInsets.only(top: 5, bottom: 5),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
               ),
-              child: Column(
+              child: const Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -168,18 +169,18 @@ class DetailOrderView extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
               margin: const EdgeInsets.only(top: 5, bottom: 5),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
               ),
               child: Column(
                 children: [
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -204,7 +205,7 @@ class DetailOrderView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Column(
@@ -216,7 +217,7 @@ class DetailOrderView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.circle,
                                 color: COLOR_BLUE_MAIN,
                                 size: 20,
@@ -228,10 +229,10 @@ class DetailOrderView extends StatelessWidget {
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Column(
+                          const Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -261,17 +262,17 @@ class DetailOrderView extends StatelessWidget {
                                 width: 1,
                                 color: Colors.grey,
                               ),
-                              Icon(
+                              const Icon(
                                 Icons.location_on,
                                 color: Colors.red,
                                 size: 20,
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Column(
+                          const Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

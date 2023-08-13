@@ -6,7 +6,7 @@ class DetailNotificationPage extends StatelessWidget {
   const DetailNotificationPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return  const Scaffold(
       body: DetailNotificationView(),
     );
   }

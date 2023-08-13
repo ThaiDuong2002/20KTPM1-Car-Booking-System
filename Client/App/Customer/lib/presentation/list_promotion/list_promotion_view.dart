@@ -11,13 +11,24 @@ class ListPromotionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: TextCustom(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  alignment: const Alignment(-0.2, 1), // move icon a bit to the left
+                );
+              },
+            ),
+            title: const TextCustom(
                 text: "Danh sách ưu đãi",
-                color: Colors.white,
+                color: COLOR_TEXT_BLACK,
                 fontSize: FONT_SIZE_LARGE,
                 fontWeight: FontWeight.w600)),
         body: Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Column(
             children: [
               Row(
@@ -28,7 +39,7 @@ class ListPromotionView extends StatelessWidget {
                         maxHeight: 40,
                       ),
                       child: SearchBar(
-                        elevation: MaterialStatePropertyAll(1),
+                        elevation: const MaterialStatePropertyAll(1),
                         shadowColor:
                             MaterialStatePropertyAll(Colors.grey.shade100),
                         backgroundColor: const MaterialStatePropertyAll(
@@ -72,7 +83,7 @@ class ListPromotionView extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Expanded(
@@ -86,16 +97,16 @@ class ListPromotionView extends StatelessWidget {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                'https://lelogama.go-jek.com/post_featured_image/promo-oct_1456-818.png',
+                              child: Image.asset(
+                                'assets/images/promotion/3.png',
                                 height: 100,
                                 fit: BoxFit.cover,
                               ),
                             ),
                             Expanded(
                               child: Container(
-                                margin: EdgeInsets.only(left: 10),
-                                child: Column(
+                                margin: const EdgeInsets.only(left: 10),
+                                child: const Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TextCustom(

@@ -10,14 +10,14 @@ class VerifyPromotionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-        floatingActionButton: Container(
+        floatingActionButton: SizedBox(
             width: 40,
             height: 40,
             child: InkWell(
               onTap: () {
                 Navigator.pop(context);
               },
-              child: Icon(
+              child: const Icon(
                 Icons.close,
                 size: 30,
                 color: Colors.red,
@@ -35,13 +35,13 @@ class VerifyPromotionView extends StatelessWidget {
                   height: 65,
                 ),
                 const SizedBox(height: 20),
-                TextCustom(
+                const TextCustom(
                     text: "Bạn có khuyến mãi ? ",
                     color: COLOR_TEXT_BLACK,
                     fontSize: FONT_SIZE_LARGE,
                     fontWeight: FontWeight.w600),
                 const SizedBox(height: 20),
-                TextCustom(
+                const TextCustom(
                     text:
                         "Hãy nhập mã khuyến mãi của bạn vào ô bên dưới để đổi thưởng!",
                     color: COLOR_TEXT_MAIN,
@@ -56,7 +56,7 @@ class VerifyPromotionView extends StatelessWidget {
                         fontSize: FONT_SIZE_NORMAL,
                         color: COLOR_TEXT_MAIN),
                     hintText: 'Nhập mã',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 10),

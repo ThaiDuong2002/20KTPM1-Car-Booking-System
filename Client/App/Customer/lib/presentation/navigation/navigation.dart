@@ -5,22 +5,32 @@ import 'package:user/presentation/notification/views/notification_page.dart';
 import 'package:user/presentation/order/views/order_page.dart';
 import 'package:user/presentation/promotion/views/promotion_page.dart';
 
+import '../../app/constant/color.dart';
+
 class NavigationBottom extends StatefulWidget {
-  const NavigationBottom({super.key});
+  final int initialIndex;
+  const NavigationBottom({super.key, this.initialIndex = 0});
 
   @override
   State<NavigationBottom> createState() => _NavigationBottomState();
 }
 
 class _NavigationBottomState extends State<NavigationBottom> {
-  int _selectedIndex = 0;
+  static int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const HomePage(),
-    const PromotionPage(),
-    const OrderPage(),
-    const NotificationPage()
-  ];
+  static List<Widget> _widgetOptions = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+    _widgetOptions = <Widget>[
+      const HomePage(),
+      const PromotionPage(),
+      const OrderPage(),
+      const NotificationPage()
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,7 +50,7 @@ class _NavigationBottomState extends State<NavigationBottom> {
           fontSize: 10,
           fontWeight: FontWeight.w600,
         ),
-        selectedItemColor: Colors.blue,
+        selectedItemColor: COLOR_BLUE_MAIN,
         selectedLabelStyle: GoogleFonts.montserrat(
           fontSize: 10,
           fontWeight: FontWeight.w600,
@@ -57,7 +67,7 @@ class _NavigationBottomState extends State<NavigationBottom> {
             label: 'Ưu đãi',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trip_origin),
+            icon: Icon(Icons.drive_eta),
             label: 'Chuyến đi',
           ),
           BottomNavigationBarItem(

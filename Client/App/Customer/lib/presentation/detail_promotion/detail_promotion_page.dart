@@ -13,7 +13,7 @@ class DetailPromotionPage extends StatelessWidget {
         height: 50,
         width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(
-            color: COLOR_BLUE_LIGHT,
+            color: COLOR_BLUE_MAIN,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(15),
               topRight: Radius.circular(15),
@@ -28,106 +28,106 @@ class DetailPromotionPage extends StatelessWidget {
               fontWeight: FontWeight.w600),
         ),
       ),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(180),
-        child: AppBar(
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: Colors.white),
-                alignment: Alignment(-0.2, 1), // move icon a bit to the left
-              );
-            },
-          ),
-          backgroundColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15),
-            ),
-          ),
-          flexibleSpace: Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-                color: COLOR_BLUE_LIGHT,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
-                )),
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const TextCustom(
+          text: "Chi tiết khuyến mãi",
+          color: COLOR_TEXT_BLACK,
+          fontSize: FONT_SIZE_LARGE,
+          fontWeight: FontWeight.w600,
+        ),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              alignment:
+                  const Alignment(-0.2, 1), // move icon a bit to the left
+            );
+          },
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              children: [
-                const Center(
-                  child: TextCustom(
-                      text: "Giảm 15% tối đa 35k",
-                      color: COLOR_TEXT_BLACK,
-                      fontSize: FONT_SIZE_LARGE,
-                      fontWeight: FontWeight.w600),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  "assets/images/promotion/2.png",
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(
-                  height: 25,
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextCustom(
-                            text: "Ngày bắt đầu",
-                            color: COLOR_TEXT_BLACK,
-                            fontSize: FONT_SIZE_NORMAL,
-                            fontWeight: FontWeight.w500),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextCustom(
-                            text: "29/07/2023",
-                            color: COLOR_TEXT_BLACK,
-                            fontSize: FONT_SIZE_NORMAL,
-                            fontWeight: FontWeight.w500),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 30,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextCustom(
-                            text: "Ngày kết thúc",
-                            color: COLOR_TEXT_BLACK,
-                            fontSize: FONT_SIZE_NORMAL,
-                            fontWeight: FontWeight.w500),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextCustom(
-                            text: "29/08/2023",
-                            color: COLOR_TEXT_BLACK,
-                            fontSize: FONT_SIZE_NORMAL,
-                            fontWeight: FontWeight.w500),
-                      ],
-                    )
-                  ],
-                ),
-                const SizedBox(height: 15),
-                BulletList(
-                  text: 'Mô tả thứ 1.Mô tả thứ 2. Mô tả thứ 3',
-                )
-              ],
+              ),
             ),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: const Column(
+                children: [
+                  Center(
+                    child: TextCustom(
+                        text: "Giảm 15% tối đa 35k",
+                        color: COLOR_TEXT_BLACK,
+                        fontSize: FONT_SIZE_LARGE,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextCustom(
+                              text: "Ngày bắt đầu",
+                              color: COLOR_TEXT_BLACK,
+                              fontSize: FONT_SIZE_NORMAL,
+                              fontWeight: FontWeight.w500),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextCustom(
+                              text: "29/07/2023",
+                              color: COLOR_TEXT_BLACK,
+                              fontSize: FONT_SIZE_NORMAL,
+                              fontWeight: FontWeight.w500),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextCustom(
+                              text: "Ngày kết thúc",
+                              color: COLOR_TEXT_BLACK,
+                              fontSize: FONT_SIZE_NORMAL,
+                              fontWeight: FontWeight.w500),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextCustom(
+                              text: "29/08/2023",
+                              color: COLOR_TEXT_BLACK,
+                              fontSize: FONT_SIZE_NORMAL,
+                              fontWeight: FontWeight.w500),
+                        ],
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  BulletList(
+                    text: 'Mô tả thứ 1.Mô tả thứ 2. Mô tả thứ 3',
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -136,7 +136,7 @@ class DetailPromotionPage extends StatelessWidget {
 class BulletList extends StatelessWidget {
   final String text;
 
-  BulletList({Key? key, required this.text}) : super(key: key);
+  const BulletList({Key? key, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -9,6 +9,8 @@ class TextCustom extends StatelessWidget {
     required this.fontSize,
     required this.fontWeight,
     this.textAlign = TextAlign.start,
+    this.overflow = TextOverflow.ellipsis,
+    this.maxLines=1,
   }) : super(key: key);
 
   final String text;
@@ -16,12 +18,16 @@ class TextCustom extends StatelessWidget {
   final double fontSize;
   final Color color;
   final TextAlign textAlign;
+  final TextOverflow overflow;
+  final double maxLines;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
+      overflow: overflow,
       textAlign: textAlign,
+      maxLines: maxLines.toInt(),
       style: GoogleFonts.montserrat(
         fontWeight: fontWeight,
         fontSize: fontSize,

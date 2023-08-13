@@ -7,9 +7,9 @@ class DetailPromotionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DetailPromotion'),
+        title: const Text('DetailPromotion'),
       ),
-      body: DetailPromotionPage(),
+      body: const DetailPromotionPage(),
     );
   }
 }

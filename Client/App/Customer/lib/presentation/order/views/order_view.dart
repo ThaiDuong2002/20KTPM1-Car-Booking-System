@@ -97,7 +97,7 @@ class _OrderViewState extends State<OrderView> {
                 ),
                 Expanded(
                   child: TabBarView(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       children: [
                         ListView.builder(
                           itemCount: order_current.length,
@@ -125,9 +125,9 @@ class _OrderViewState extends State<OrderView> {
                                         Container(
                                           width: 40,
                                           height: 40,
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               left: 10, right: 5, top: 25),
-                                          padding: EdgeInsets.all(5),
+                                          padding: const EdgeInsets.all(5),
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
@@ -155,7 +155,7 @@ class _OrderViewState extends State<OrderView> {
                                                     fontWeight:
                                                         FontWeight.w600),
                                               ),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 10),
                                               Container(
                                                 child: TextCustom(
                                                     text: order_current[index]
@@ -171,7 +171,7 @@ class _OrderViewState extends State<OrderView> {
                                         Expanded(
                                             child: Container(
                                           alignment: Alignment.centerRight,
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               right: 10, top: 20),
                                           child: TextCustom(
                                               text:
@@ -212,9 +212,9 @@ class _OrderViewState extends State<OrderView> {
                                         Container(
                                           width: 40,
                                           height: 40,
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               left: 10, right: 5, top: 25),
-                                          padding: EdgeInsets.all(5),
+                                          padding: const EdgeInsets.all(5),
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
@@ -242,7 +242,7 @@ class _OrderViewState extends State<OrderView> {
                                                     fontWeight:
                                                         FontWeight.w600),
                                               ),
-                                              SizedBox(height: 10),
+                                              const SizedBox(height: 10),
                                               Container(
                                                 child: TextCustom(
                                                     text: order_history[index]
@@ -258,7 +258,7 @@ class _OrderViewState extends State<OrderView> {
                                         Expanded(
                                             child: Container(
                                           alignment: Alignment.centerRight,
-                                          margin: EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               right: 10, top: 20),
                                           child: TextCustom(
                                               text:
@@ -273,7 +273,7 @@ class _OrderViewState extends State<OrderView> {
                             );
                           },
                         ),
-                        Center(
+                        const Center(
                           child: Text('Đặt trước'),
                         ),
                       ]),

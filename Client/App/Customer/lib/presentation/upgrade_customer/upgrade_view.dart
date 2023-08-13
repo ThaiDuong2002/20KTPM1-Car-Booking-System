@@ -31,21 +31,33 @@ class UpgradeCustomerView extends StatelessWidget {
         ),
       ),
       appBar: AppBar(
-        title: TextCustom(
+        elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              alignment:
+                  const Alignment(-0.2, 1), // move icon a bit to the left
+            );
+          },
+        ),
+        backgroundColor: Colors.white,
+        title: const TextCustom(
           text: "Nâng cấp tài khoản",
-          color: Colors.white,
+          color: COLOR_TEXT_BLACK,
           fontSize: FONT_SIZE_LARGE,
           fontWeight: FontWeight.w600,
         ),
       ),
       body: Container(
-        margin: EdgeInsets.all(15),
+        margin: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: EdgeInsets.only(bottom: 15),
-              child: TextCustom(
+              margin: const EdgeInsets.only(bottom: 15),
+              child: const TextCustom(
                 text:
                     "Nâng cấp tài khoản cùng RideNow để sử dụng đầy đủ tính năng",
                 color: Colors.black,
@@ -54,8 +66,8 @@ class UpgradeCustomerView extends StatelessWidget {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(bottom: 15),
-              child: TextCustom(
+              margin: const EdgeInsets.only(bottom: 15),
+              child: const TextCustom(
                 text: "Gói nâng cấp này có gì ?",
                 color: Colors.black,
                 fontSize: FONT_SIZE_NORMAL,
@@ -65,13 +77,13 @@ class UpgradeCustomerView extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  margin: EdgeInsets.only(right: 15),
-                  child: Icon(
+                  margin: const EdgeInsets.only(right: 15),
+                  child: const Icon(
                     Icons.check_circle,
                     color: Colors.green,
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   child: TextCustom(
                     text: "Đặt xe nhanh chóng",
                     color: Colors.black,
@@ -81,19 +93,19 @@ class UpgradeCustomerView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
               children: [
                 Container(
-                  margin: EdgeInsets.only(right: 15),
-                  child: Icon(
+                  margin: const EdgeInsets.only(right: 15),
+                  child: const Icon(
                     Icons.check_circle,
                     color: Colors.green,
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   child: TextCustom(
                     text: "Chức năng đặt trước",
                     color: Colors.black,
@@ -103,22 +115,34 @@ class UpgradeCustomerView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                'https://lelogama.go-jek.com/cache/9a/8a/9a8a61993a034f3837579933107096ac.jpg',
-                fit: BoxFit.cover,
+            Container(
+              margin: const EdgeInsets.only(bottom: 15),
+              width: double.infinity,
+              height: 250,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                  width: 0.5,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  'assets/images/icons/vip.png',
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Expanded(
               child: ListView(
-                children: [
+                children: const [
                   ItemExpansionTile(
                     headerValue: 'Điều khoản',
                     expandedValues: [
@@ -148,7 +172,8 @@ class ItemExpansionTile extends StatelessWidget {
   final String headerValue;
   final List<String> expandedValues;
 
-  ItemExpansionTile({
+  const ItemExpansionTile({
+    super.key,
     required this.headerValue,
     required this.expandedValues,
   });
@@ -156,7 +181,7 @@ class ItemExpansionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      tilePadding: EdgeInsets.all(0),
+      tilePadding: const EdgeInsets.all(0),
       title: TextCustom(
           text: headerValue,
           color: COLOR_TEXT_MAIN,
