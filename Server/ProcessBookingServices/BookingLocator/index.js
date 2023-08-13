@@ -2,6 +2,10 @@ import amqp from 'amqplib';
 import dotenv from 'dotenv';
 import express from 'express';
 import process from 'process';
+import axios from 'axios';
+import twilio from 'twilio';
+
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 dotenv.config();
 const app = express();
