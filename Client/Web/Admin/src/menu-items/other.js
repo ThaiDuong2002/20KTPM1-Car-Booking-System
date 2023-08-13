@@ -1,5 +1,5 @@
 // assets
-import { IconBrandChrome, IconHelp } from '@tabler/icons';
+import { IconBrandChrome, IconHelp } from "@tabler/icons";
 
 // constant
 const icons = { IconBrandChrome, IconHelp };
@@ -7,27 +7,26 @@ const icons = { IconBrandChrome, IconHelp };
 // ==============================|| SAMPLE PAGE & DOCUMENTATION MENU ITEMS ||============================== //
 
 const other = {
-  id: 'sample-docs-roadmap',
-  type: 'group',
+  id: "sample-docs-roadmap",
+  type: "group",
   children: [
     {
-      id: 'sample-page',
-      title: 'Sample Page',
-      type: 'item',
-      url: '/sample-page',
+      id: "salary",
+      title: "Salary",
+      type: "item",
+      url: "/utils/salary",
       icon: icons.IconBrandChrome,
-      breadcrumbs: false
+      breadcrumbs: false,
     },
     {
-      id: 'documentation',
-      title: 'Documentation',
-      type: 'item',
-      url: 'https://codedthemes.gitbook.io/berry/',
+      id: "unit-price",
+      title: "Unit Price",
+      type: "item",
+      url: "/utils/unit-price",
       icon: icons.IconHelp,
-      external: true,
-      target: true
-    }
-  ]
+      breadcrumbs: false,
+    },
+  ],
 };
 
 export default other;
