@@ -1,5 +1,5 @@
 import 'package:driver/global/utils/constants/size.dart';
-import 'package:driver/global/utils/helpers/widgets/shape_clipper.dart';
+import 'package:driver/global/widgets/shape_clipper.dart';
 import 'package:flutter/material.dart';
 
 class HeaderWidget extends StatefulWidget {

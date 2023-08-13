@@ -1,19 +1,24 @@
-import 'package:driver/global/utils/constants/colors.dart';
-import 'package:driver/modules/welcome/welcome_view.dart';
+import 'package:driver/global/languages/base_language.dart';
+import 'package:driver/global/models/language/language_model.dart';
+import 'package:driver/global/themes/app_theme.dart';
+import 'package:driver/modules/home/home_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+List<LanguageModel> localeLanguageList = [];
+late SharedPreferences sharedPref;
+late BaseLanguage language;
+
+void main() async {
+  // sharedPref = await SharedPreferences.getInstance();
+  await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
       title: 'Navigation Basics',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primarySwatch: primarySwatch,
-          primaryColor: primaryColor,
-          colorScheme:
-              ColorScheme.fromSwatch().copyWith(secondary: accentColor),
-          scaffoldBackgroundColor: scaffoldBackgroundColor),
+      theme: AppTheme.lightTheme,
       home: const HomePage(),
     ),
   );
@@ -24,6 +29,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const WelcomeView();
+    return const HomeView();
   }
 }
