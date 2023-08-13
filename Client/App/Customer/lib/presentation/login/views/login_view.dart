@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:user/presentation/home/views/home_page.dart';
+import 'package:user/presentation/navigation/navigation.dart';
+import 'package:user/presentation/widget/custom_text.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -62,6 +63,7 @@ class _LoginViewState extends State<LoginView> {
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Mật khẩu',
+                          
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
@@ -79,6 +81,7 @@ class _LoginViewState extends State<LoginView> {
                           });
                         },
                       ),
+                      const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKeyLogin.currentState!.validate()) {
@@ -86,10 +89,15 @@ class _LoginViewState extends State<LoginView> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const HomePage()));
+                                    builder: (context) =>
+                                        const NavigationBottom()));
                           }
                         },
-                        child: const Text('Đăng nhập'),
+                        child: TextCustom(
+                            text: "Đăng nhập",
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -108,29 +116,29 @@ class _LoginViewState extends State<LoginView> {
                         endIndent: 20,
                       ),
                       ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.grey.shade300,
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.grey.shade300,
+                            ),
                           ),
-                        ),
-                        onPressed: () {},
-                        child: const Text(
-                          'Đăng nhập với Google',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
+                          onPressed: () {},
+                          child: TextCustom(
+                              text: "Đăng nhập với Google",
+                              color: Colors.black.withOpacity(0.5),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold)),
                       ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.grey.shade300,
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.grey.shade300,
+                            ),
                           ),
-                        ),
-                        onPressed: () {},
-                        child: const Text(
-                          'Đăng nhập với Facebook',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
+                          onPressed: () {},
+                          child: TextCustom(
+                              text: "Đăng nhập với Facebook",
+                              color: Colors.black.withOpacity(0.5),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -204,7 +212,7 @@ class _LoginViewState extends State<LoginView> {
         onTap: _handleTabTap,
         tabs: const [
           Tab(text: 'Đăng nhập'),
-          const Tab(text: 'Đăng kí'),
+          Tab(text: 'Đăng kí'),
         ],
       ),
     );
