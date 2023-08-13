@@ -6,7 +6,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-console.log("object;");
 let channel; // Declare the channel at a higher scope
 // Function to handle receiving customer info
 async function receiveBooking() {
@@ -17,7 +16,7 @@ async function receiveBooking() {
     channel = await connection.createChannel(); // Store the channel reference
     const exchangeName = process.env.EXCHANGE_NAME;
     const queueName = process.env.BOOKING_RECEPTION_QUEUE;
-    const routingKey = process.env.BOOKING_RECEPTION_ROUTING_KEY;
+    const routingKey = process.env.BOOKING_LOCATOR_ROUTING_KEY;
     await channel.assertExchange(exchangeName, "direct", { durable: false });
     const assertQueueResponse = await channel.assertQueue(queueName);
     const queue = assertQueueResponse.queue;
@@ -28,32 +27,8 @@ async function receiveBooking() {
       try {
         const bookingInfo = JSON.parse(msg.content.toString());
         console.log(`[x] Received customer info:`, bookingInfo);
-        console.log(`adasf`, bookingInfo.trip_pickup_location.coordinate);
-        console.log("aaaa", bookingInfo.trip_destination_location.coordinate);
         // Create channel
-        const channel = await connection.createChannel();
-        //Create exchange
-        await channel.assertExchange(exchangeName, "direct", {
-          durable: false,
-        });
-        if (
-          bookingInfo.trip_pickup_location.coordinate != null &&
-          bookingInfo.trip_destination_location.coordinate != null
-        ) {
-          channel.publish(
-            exchangeName,
-            process.env.BOOKING_DISPATCHER_ROUTING_KEY,
-            Buffer.from(JSON.stringify(bookingInfo))
-          );
-          console.log("Send to booking dispatcher");
-        } else {
-          channel.publish(
-            exchangeName,
-            process.env.BOOKING_LOCATOR_ROUTING_KEY,
-            Buffer.from(JSON.stringify(bookingInfo))
-          );
-          console.log("Send to booking locator");
-        }
+
         // channel.ack(msg); // Acknowledge the message
       } catch (error) {
         console.error("Error processing customer info:", error);
