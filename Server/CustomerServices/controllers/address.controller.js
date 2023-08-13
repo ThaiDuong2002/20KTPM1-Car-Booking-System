@@ -13,6 +13,7 @@ const AddressController = {
             const projection = {
                 name: 1,
                 formatted_address: 1,
+                type: 1,
             }
             const user = await UserService.getUserById(user_id)
             if (!user) {
@@ -64,14 +65,14 @@ const AddressController = {
             if (!add_address_re) {
                 return next(createError.BadRequest("Add address failed"))
             }
-            const update_address_re = await CustomerService.saveAddress(user_id, add_address_re._id)
-            if (!update_address_re) {
-                return next(createError.BadRequest("Save address of customer failed"))
-            }
+            // const update_address_re = await CustomerService.saveAddress(user_id, add_address_re._id)
+            // if (!update_address_re) {
+            //     return next(createError.BadRequest("Save address of customer failed"))
+            // }
             res.json({
                 message: "Save address successfully",
                 status: 200,
-                data: update_address_re
+                data: add_address_re
             })
         } catch (error) {
             next(createError.InternalServerError(error.message))

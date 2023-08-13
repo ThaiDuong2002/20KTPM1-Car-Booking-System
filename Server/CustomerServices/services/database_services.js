@@ -43,18 +43,18 @@ const CustomerService = {
         ).select(projection)
         return result
     },
-    async saveAddress(user_id, address_id) {
-        const result = await Customer.findByIdAndUpdate(
-            user_id,
-            {
-                $push: {
-                    address: address_id
-                }
-            },
-            {new: true}
-        )
-        return result
-    }
+    // async saveAddress(user_id, address_id) {
+    //     const result = await Customer.findByIdAndUpdate(
+    //         user_id,
+    //         {
+    //             $push: {
+    //                 address: address_id
+    //             }
+    //         },
+    //         {new: true}
+    //     )
+    //     return result
+    // }
 }
 
 const AddressService = {
