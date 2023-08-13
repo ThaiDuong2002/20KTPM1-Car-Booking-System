@@ -1,23 +1,27 @@
-const amqp = require("amqplib");
-const express = require("express");
-const process = require("process"); // Import the process module
-const dotenv = require("dotenv");
+import amqp from 'amqplib';
+import dotenv from 'dotenv';
+import express from 'express';
+import process from 'process';
+import axios from 'axios';
+import twilio from 'twilio';
+
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+let channel;
 
-let channel; // Declare the channel at a higher scope
-// Function to handle receiving customer info
-async function receiveBooking() {
+async function receiveBookingInfo() {
   try {
     const connection = await amqp.connect(
-      "amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq"
+      'amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq'
     );
     channel = await connection.createChannel(); // Store the channel reference
-    const exchangeName = process.env.EXCHANGE_NAME;
-    const queueName = process.env.BOOKING_RECEPTION_QUEUE;
-    const routingKey = process.env.BOOKING_LOCATOR_ROUTING_KEY;
-    await channel.assertExchange(exchangeName, "direct", { durable: false });
+    const exchangeName = 'booking_exchange';
+    const queueName = 'booking_queue';
+    const routingKey = 'booking.info';
+    await channel.assertExchange(exchangeName, 'direct', { durable: false });
     const assertQueueResponse = await channel.assertQueue(queueName);
     const queue = assertQueueResponse.queue;
     channel.bindQueue(queue, exchangeName, routingKey);
@@ -25,36 +29,107 @@ async function receiveBooking() {
     // Consume message
     await channel.consume(queue, async (msg) => {
       try {
-        const bookingInfo = JSON.parse(msg.content.toString());
-        console.log(`[x] Received customer info:`, bookingInfo);
-        // Create channel
+        const bookingData = JSON.parse(msg.content.toString());
+        const pickupCoordinate = bookingData.trip_pickup_location;
+        const destinationCoordinate = bookingData.trip_destination_location;
 
-        // channel.ack(msg); // Acknowledge the message
+        if (!pickupCoordinate.coordinate) {
+          const pickup = await axios.get(process.env.LOCATOR_URL, {
+            params: {
+              query: pickupCoordinate.address,
+              key: process.env.GOOGLE_MAPS_API_KEY,
+            },
+          });
+          if (pickup.data.results.length === 0) {
+            client.messages
+              .create({
+                body: 'Your pickup address is not found',
+                to: `+84${bookingData.customer_phone}`, // Text your number
+                from: '+13344906324', // From a valid Twilio number
+              })
+              .then(() => {
+                return;
+              });
+          } else {
+            bookingData.trip_pickup_location.coordinate = {
+              x: pickup.data.results[0].geometry.location.lat,
+              y: pickup.data.results[0].geometry.location.lng,
+            };
+          }
+        }
+        if (!destinationCoordinate.coordinate) {
+          const destination = await axios.get(process.env.LOCATOR_URL, {
+            params: {
+              query: destinationCoordinate.address,
+              key: process.env.GOOGLE_MAPS_API_KEY,
+            },
+          });
+          if (destination.data.results.length === 0) {
+            client.messages
+              .create({
+                body: 'Your destination address is not found',
+                to: `+84${bookingData.customer_phone}`, // Text your number
+                from: '+13344906324', // From a valid Twilio number
+              })
+              .then((_) => {
+                return;
+              });
+          } else {
+            bookingData.trip_destination_location.coordinate = {
+              x: destination.data.results[0].geometry.location.lat,
+              y: destination.data.results[0].geometry.location.lng,
+            };
+          }
+        }
+        channel.ack(msg); // Acknowledge the message
+        publishBookingInfo(bookingData);
       } catch (error) {
-        console.error("Error processing customer info:", error);
+        console.error('Error processing customer info:', error);
         // Handle the error (e.g., retry, log, etc.)
       }
     });
   } catch (error) {
-    console.error("Error receiving customer info:", error);
+    console.error('Error receiving customer info:', error);
   }
 }
+
+async function publishBookingInfo(bookingInfo) {
+  // Create connection
+  const connection = await amqp.connect(
+    'amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq'
+  );
+  // Create channel
+  const channel = await connection.createChannel();
+  // Declaration
+  const exchangeName = 'booking_locator';
+  const routingKey = 'booking.info';
+  // Create exchange
+  await channel.assertExchange(exchangeName, 'direct', { durable: false });
+  // Publish message
+  channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(bookingInfo)));
+  console.log(` [x] Sent customer info:`, bookingInfo);
+  setTimeout(() => {
+    connection.close();
+    process.exit(0);
+  }, 500);
+}
+
 // Start receiving customer info
-receiveBooking().then(() => console.log("Customer info reception started"));
+receiveBookingInfo().then(() => console.log('Customer info reception started'));
 // Health check
-app.get("/health_check", (req, res) => {
-  res.status(200).json({ status: "OK" });
+app.get('/health_check', (req, res) => {
+  res.status(200).json({ status: 'OK' });
 });
 // Graceful shutdown
-process.on("SIGINT", async () => {
+process.on('SIGINT', async () => {
   try {
-    console.log("Shutting down...");
+    console.log('Shutting down...');
     if (channel) {
       await channel.close(); // Close the channel
     }
     process.exit(0);
   } catch (error) {
-    console.error("Error during shutdown:", error);
+    console.error('Error during shutdown:', error);
     process.exit(1);
   }
 });
