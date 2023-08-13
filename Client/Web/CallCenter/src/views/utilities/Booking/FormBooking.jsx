@@ -184,23 +184,6 @@ const FormBooking = ({ ...others }) => {
                   {errors.dropoffLocation}
                 </FormHelperText>
               )}
-
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="female"
-                  control={<Radio />}
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label="Male"
-                />
-              </RadioGroup>
             </FormControl>
 
             {errors.submit && (
