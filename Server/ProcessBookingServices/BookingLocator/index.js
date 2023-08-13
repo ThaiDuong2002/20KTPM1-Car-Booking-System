@@ -4,10 +4,10 @@ import express from 'express';
 import process from 'process';
 import axios from 'axios';
 import twilio from 'twilio';
+dotenv.config();
 
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-dotenv.config();
 const app = express();
 const port = process.env.PORT;
 let channel;
@@ -18,9 +18,9 @@ async function receiveBookingInfo() {
       'amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq'
     );
     channel = await connection.createChannel(); // Store the channel reference
-    const exchangeName = 'booking_exchange';
+    const exchangeName = 'PROCESS_BOOKING_EXCHANGE';
     const queueName = 'booking_queue';
-    const routingKey = 'booking.info';
+    const routingKey = 'BOOKING.LOCATOR';
     await channel.assertExchange(exchangeName, 'direct', { durable: false });
     const assertQueueResponse = await channel.assertQueue(queueName);
     const queue = assertQueueResponse.queue;
@@ -42,14 +42,14 @@ async function receiveBookingInfo() {
           });
           if (pickup.data.results.length === 0) {
             client.messages
-              .create({
-                body: 'Your pickup address is not found',
-                to: `+84${bookingData.customer_phone}`, // Text your number
-                from: '+13344906324', // From a valid Twilio number
-              })
-              .then(() => {
-                return;
-              });
+                .create({
+                  body: 'Your pickup address is not found',
+                  to: `+84${bookingData.customer_phone}`, // Text your number
+                  from: '+13344906324', // From a valid Twilio number
+                })
+                .then(() => {
+                  return;
+                });
           } else {
             bookingData.trip_pickup_location.coordinate = {
               x: pickup.data.results[0].geometry.location.lat,
@@ -57,31 +57,8 @@ async function receiveBookingInfo() {
             };
           }
         }
-        if (!destinationCoordinate.coordinate) {
-          const destination = await axios.get(process.env.LOCATOR_URL, {
-            params: {
-              query: destinationCoordinate.address,
-              key: process.env.GOOGLE_MAPS_API_KEY,
-            },
-          });
-          if (destination.data.results.length === 0) {
-            client.messages
-              .create({
-                body: 'Your destination address is not found',
-                to: `+84${bookingData.customer_phone}`, // Text your number
-                from: '+13344906324', // From a valid Twilio number
-              })
-              .then((_) => {
-                return;
-              });
-          } else {
-            bookingData.trip_destination_location.coordinate = {
-              x: destination.data.results[0].geometry.location.lat,
-              y: destination.data.results[0].geometry.location.lng,
-            };
-          }
-        }
         channel.ack(msg); // Acknowledge the message
+        console.log(bookingData);
         publishBookingInfo(bookingData);
       } catch (error) {
         console.error('Error processing customer info:', error);
@@ -101,17 +78,13 @@ async function publishBookingInfo(bookingInfo) {
   // Create channel
   const channel = await connection.createChannel();
   // Declaration
-  const exchangeName = 'booking_locator';
-  const routingKey = 'booking.info';
+  const exchangeName = 'PROCESS_BOOKING_EXCHANGE';
+  const routingKey = 'BOOKING.DISPATCHER';
   // Create exchange
   await channel.assertExchange(exchangeName, 'direct', { durable: false });
   // Publish message
   channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(bookingInfo)));
   console.log(` [x] Sent customer info:`, bookingInfo);
-  setTimeout(() => {
-    connection.close();
-    process.exit(0);
-  }, 500);
 }
 
 // Start receiving customer info

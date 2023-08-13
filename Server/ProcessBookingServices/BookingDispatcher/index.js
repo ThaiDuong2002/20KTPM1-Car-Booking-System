@@ -44,12 +44,12 @@ let channel;
 
 async function dispatcher() {
     try {
-        const connection = await amqp.connect('amqp://localhost');
+        const connection = await amqp.connect('amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq');
         channel = await connection.createChannel();
 
-        const exchangeName = 'customer_exchange';
+        const exchangeName = 'PROCESS_BOOKING_EXCHANGE';
         const queueName = 'dispatcher_queue';
-        const routingKey = 'booking.info';
+        const routingKey = 'BOOKING.DISPATCHER';
 
         await channel.assertExchange(exchangeName, 'direct', {durable: false});
         const assertQueueResponse = await channel.assertQueue(queueName);
@@ -85,13 +85,14 @@ async function dispatcher() {
                 const drivers_distance_list = await getDrivingDistance(pickupLocationCoordination.x, pickupLocationCoordination.y, tripType, drivers_location)
                 console.log("drivers_distance_list", drivers_distance_list);
 
-                // Send booking info to the driver
-                const driverId = drivers_distance_list[0].id;
-                const driverExchangeName = 'driver_exchange';
-                const driverRoutingKey = `driver.${driverId}`;
-                await channel.assertExchange(driverExchangeName, 'direct', {durable: false});
-                await channel.publish(driverExchangeName, driverRoutingKey, Buffer.from(JSON.stringify(bookingInfo)));
+                // // Send booking info to the driver
+                // const driverId = drivers_distance_list[0].id;
+                // const driverExchangeName = 'driver_exchange';
+                // const driverRoutingKey = `driver.${driverId}`;
+                // await channel.assertExchange(driverExchangeName, 'direct', {durable: false});
+                // await channel.publish(driverExchangeName, driverRoutingKey, Buffer.from(JSON.stringify(bookingInfo)));
 
+                channel.ack(msg); // Acknowledge the message
             } catch (error) {
                 console.error('Error processing booking info:', error);
             }

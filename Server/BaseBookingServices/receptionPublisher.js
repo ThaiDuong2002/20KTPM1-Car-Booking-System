@@ -38,10 +38,6 @@ export async function sendToBookingReception(data) {
   channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(data)));
 
   console.log(` [x] Sent to booking reception service`, data);
-  setTimeout(() => {
-    connection.close();
-    process.exit(0);
-  }, 500);
 }
 
 // sendToBookingReception(data);
