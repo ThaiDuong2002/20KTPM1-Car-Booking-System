@@ -136,7 +136,7 @@ export const mockDataHistoryBooking = [
       location:
         "24 Vu Ngoc Phan Street, Ward 13, Binh Thanh District, Ho Chi Minh City",
     },
-    destionatiLocation: {
+    destinationLocation: {
       coordinates: "",
       location:
         "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",

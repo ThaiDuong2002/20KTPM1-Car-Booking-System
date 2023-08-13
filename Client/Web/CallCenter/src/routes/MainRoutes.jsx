@@ -13,6 +13,9 @@ const UtilsBooking = Loadable(
 const UtilsHistoryBooking = Loadable(
   lazy(() => import("views/utilities/HistoryBookingList/HistoryBooking"))
 );
+const DashboardHome = Loadable(
+  lazy(() => import("views/dashboard/DashboardHome"))
+);
 
 const MainRoutes = {
   path: "/",
@@ -21,6 +24,15 @@ const MainRoutes = {
     {
       path: "my-profile",
       element: <MyProfile />,
+    },
+    {
+      path: "dashboard",
+      children: [
+        {
+          path: "home",
+          element: <DashboardHome />,
+        },
+      ],
     },
     {
       path: "utils",

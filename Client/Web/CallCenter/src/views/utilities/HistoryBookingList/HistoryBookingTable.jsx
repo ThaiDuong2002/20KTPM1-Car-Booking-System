@@ -2,6 +2,7 @@ import React from "react";
 
 import { format } from "date-fns";
 import { useNavigate } from "react-router";
+import { useTheme } from "@mui/material/styles";
 import {
   Avatar,
   Box,
@@ -20,6 +21,7 @@ import {
 import ScrollBar from "react-perfect-scrollbar";
 
 const HistoryBookingTable = (props) => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { items = [] } = props;
 
@@ -32,11 +34,16 @@ const HistoryBookingTable = (props) => {
       <ScrollBar>
         <Box sx={{ minWidth: 800 }}>
           <Table>
-            <TableHead>
+            <TableHead
+              sx={{
+                backgroundColor: theme.palette.primary.light,
+                fontWeight: "bold",
+              }}
+            >
               <TableRow>
                 <TableCell>ID</TableCell>
+                <TableCell>Booking Date</TableCell>
                 <TableCell>Customer</TableCell>
-                <TableCell>Date</TableCell>
                 <TableCell>Vehicle Type</TableCell>
                 <TableCell>Pick Up Location</TableCell>
                 <TableCell>Destination Location</TableCell>
