@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:dio/dio.dart';
 
@@ -27,8 +26,4 @@ class RequestInterceptor extends Interceptor {
     return super.onError(err, handler);
   }
 
-  @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {
-    return super.onResponse(response, handler);
-  }
 }

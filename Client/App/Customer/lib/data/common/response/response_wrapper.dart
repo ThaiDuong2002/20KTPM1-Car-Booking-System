@@ -1,4 +1,3 @@
-
 import '../utils/serializable.dart';
 
 class WrappedResponse<T> {
@@ -12,17 +11,13 @@ class WrappedResponse<T> {
   factory WrappedResponse.fromJson(
       Map<String, dynamic> json, Function(Map<String, dynamic>) create) {
     return WrappedResponse<T>(
-        status: json["status"],
-        message: json["message"],
-        data: create(json["data"]));
+        status: json["status"] ,
+        message: json["message"] ,
+        data: create(json["data"])) ;
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      "status": this.status,
-      "message": this.message,
-      "data": this.data
-    };
+    return {"status": this.status, "message": this.message, "data": this.data};
   }
 }
 

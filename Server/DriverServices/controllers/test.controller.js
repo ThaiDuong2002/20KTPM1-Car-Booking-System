@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import Customer from '../models/Customer.js';
+
 
 const TestController = {
   test: (req, res) => {
