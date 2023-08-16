@@ -62,9 +62,9 @@ async function dispatcher() {
         const connection = await amqp.connect(process.env.KEY_MQ);
         channel = await connection.createChannel();
 
-        const exchangeName = 'customer_exchange';
+        const exchangeName = 'PROCESS_BOOKING_EXCHANGE';
         const queueName = 'dispatcher_queue';
-        const routingKey = 'booking.info';
+        const routingKey = 'BOOKING.DISPATCHER';
 
         await channel.assertExchange(exchangeName, 'direct', { durable: false });
         const assertQueueResponse = await channel.assertQueue(queueName);
@@ -105,8 +105,10 @@ async function dispatcher() {
                 // const driverExchangeName = 'driver_exchange';
                 // const driverRoutingKey = `driver.${driverId}`;
                 // await channel.assertExchange(driverExchangeName, 'direct', { durable: false });
+                // await channel.assertExchange(driverExchangeName, 'direct', {durable: false});
                 // await channel.publish(driverExchangeName, driverRoutingKey, Buffer.from(JSON.stringify(bookingInfo)));
 
+                channel.ack(msg); // Acknowledge the message
             } catch (error) {
                 console.error('Error processing booking info:', error);
             }

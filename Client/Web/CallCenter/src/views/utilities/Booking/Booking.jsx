@@ -8,6 +8,10 @@ import { useTheme } from "@mui/material/styles";
 import MainCard from "ui-component/cards/MainCard";
 import FormBooking from "./FormBooking";
 import { gridSpacing } from "store/constant";
+import CustomerHistoryBooking from "./CustomerHistoryBooking";
+
+//mock data
+import { mockDataHistoryBooking } from "data/mockData";
 
 const Booking = () => {
   const theme = useTheme();
@@ -27,13 +31,13 @@ const Booking = () => {
         </Typography>
       </Box>
       <Grid container spacing={gridSpacing} lg={12} mt={0.5}>
-        <Grid item lg={7}>
+        <Grid item lg={4}>
           <Box>
             <FormBooking />
           </Box>
         </Grid>
-        <Grid item lg={5}>
-          <Typography>Image</Typography>
+        <Grid item lg={8}>
+          <CustomerHistoryBooking items={mockDataHistoryBooking} />
         </Grid>
       </Grid>
     </MainCard>

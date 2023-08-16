@@ -1,13 +1,11 @@
 import React from "react";
-
-import { format } from "date-fns";
-import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
+import CheckIcon from "@mui/icons-material/Check";
+import PlaceIcon from "@mui/icons-material/Place";
 import {
   Avatar,
   Box,
   Card,
-  Checkbox,
   Stack,
   Table,
   TableBody,
@@ -16,18 +14,16 @@ import {
   TablePagination,
   TableRow,
   Typography,
+  Button,
+  IconButton,
+  Link,
 } from "@mui/material";
-
 import ScrollBar from "react-perfect-scrollbar";
+import { PlaceOutlined } from "@mui/icons-material";
 
-const HistoryBookingTable = (props) => {
+const CustomerHistoryBooking = (props) => {
   const theme = useTheme();
-  const navigate = useNavigate();
   const { items = [] } = props;
-
-  const handleTableRowClick = (bookingId) => {
-    navigate(`/utils/history-booking/${bookingId}`);
-  };
 
   return (
     <Card>
@@ -42,52 +38,45 @@ const HistoryBookingTable = (props) => {
               <TableRow>
                 <TableCell
                   sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
+                    fontWeight: "bold",
                   }}
                 >
                   ID
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
+                    fontWeight: "bold",
                   }}
                 >
                   Booking Date
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Customer
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Vehicle Type
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
+                    fontWeight: "bold",
                   }}
                 >
                   Pick Up Location
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
+                    fontWeight: "bold",
                   }}
                 >
                   Destination Location
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
+                    fontWeight: "bold",
                   }}
                 >
-                  Status
+                  Vehicle Type
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  Action
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -97,18 +86,39 @@ const HistoryBookingTable = (props) => {
                   <TableRow
                     hover
                     key={booking._id}
-                    onClick={() => handleTableRowClick(booking._id)}
+                    // onClick={() => handleTableRowClick(booking._id)}
                   >
                     <TableCell>{booking._id}</TableCell>
                     <TableCell>{booking?.bookingDate}</TableCell>
-                    <TableCell>{booking.bookingUser?.fullName}</TableCell>
-
-                    <TableCell>{booking.tripType}</TableCell>
-                    <TableCell>{booking.pickUpLocation?.location}</TableCell>
+                    <TableCell>
+                      <Typography>
+                        {booking.pickUpLocation?.location}
+                      </Typography>
+                      <IconButton
+                        component={Link}
+                        href="https://github.com/codedthemes/mantis-free-react-admin-template"
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Download Free Version"
+                        sx={{ color: "text.primary", bgcolor: "grey.100" }}
+                      >
+                        <PlaceOutlined />
+                      </IconButton>
+                    </TableCell>
                     <TableCell>
                       {booking.destinationLocation?.location}
                     </TableCell>
-                    <TableCell>{booking.status}</TableCell>
+                    <TableCell>{booking.tripType}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        startIcon={<CheckIcon />}
+                        size="small"
+                      >
+                        Choose Location
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -120,4 +130,4 @@ const HistoryBookingTable = (props) => {
   );
 };
 
-export default HistoryBookingTable;
+export default CustomerHistoryBooking;
