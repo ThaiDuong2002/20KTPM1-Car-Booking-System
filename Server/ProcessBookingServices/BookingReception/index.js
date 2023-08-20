@@ -15,6 +15,7 @@ async function receiveBooking() {
       "amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq"
     );
     channel = await connection.createChannel(); // Store the channel reference
+    console.log(process.env.BOOKING_RECEPTION_QUEUE)
     const exchangeName = process.env.EXCHANGE_NAME;
     const queueName = process.env.BOOKING_RECEPTION_QUEUE;
     const routingKey = process.env.BOOKING_RECEPTION_ROUTING_KEY;

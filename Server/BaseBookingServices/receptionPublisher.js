@@ -7,13 +7,13 @@ dotenv.config();
 const data = {
   consultant_id: "1",
   customer_name: "Nguyen Van A",
-  customer_phone: "123456789",
+  customer_phone: "0918048189",
   trip_pickup_location: {
-    address: "Ho Chi Minh University of Science",
+    address: "asdasdasddfgfdgdfgfdgfdg",
     coordinate: null,
   },
   trip_destination_location: {
-    address: "Ho Chi Minh University of Education",
+    address: "asdsadasdsadasdassdasdasdasdasdassgdfgfg",
     coordinate: null,
   },
   trip_type: "Bike",
