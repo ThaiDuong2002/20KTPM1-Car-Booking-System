@@ -9,7 +9,7 @@ class GoongService {
         console.log("Goong service used")
         try {
             const coordinates = await axios.get(
-                config.GOONG_GEO_CODE_URL, {
+                config.GOONG_GEO_CODE_API_URL, {
                     params: {
                         address: address,
                         api_key: config.GOONG_API_KEY,

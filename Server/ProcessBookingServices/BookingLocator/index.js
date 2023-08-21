@@ -35,11 +35,12 @@ async function publishBookingInfo(bookingData) {
     const routingKey = config.DISPATCHER_ROUTING_KEY;
     await channel.assertExchange(exchangeName, 'direct', {durable: false});
     channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(bookingData)));
-    console.log(` [x] Sent booking info:`, bookingData);
+    console.log(`[x] Booking info:`, bookingData);
+    console.log('[x] Sent to booking dispatcher');
 }
 
 // Run app
-async function receiveBookingInfo() {
+async function locator() {
     try {
         const connection = await amqp.connect(config.AMQP_URL);
         channel = await connection.createChannel(); // Store the channel reference
@@ -50,6 +51,7 @@ async function receiveBookingInfo() {
         const assertQueueResponse = await channel.assertQueue(queueName);
         const queue = assertQueueResponse.queue;
         await channel.bindQueue(queue, exchangeName, routingKey);
+        console.log(`[*] Booking locator.`);
         console.log(`[*] Waiting for booking info.`);
 
         // Consume message
@@ -86,6 +88,8 @@ async function receiveBookingInfo() {
     }
 }
 
+locator().then(() => console.log('Booking locator service started'));
+
 // Graceful shutdown
 process.on('SIGINT', async () => {
     try {
@@ -100,15 +104,12 @@ process.on('SIGINT', async () => {
     }
 });
 
-// Start receiving customer info
-receiveBookingInfo().then(() => console.log('Booking locator service started'));
-
 // Health check
-app.get('/health_check', (req, res) => {
-    res.status(200).send('OK');
+app.get("/health_check", (req, res) => {
+    res.status(200).json({status: "OK"});
 });
 
-// Start receiving customer info
+// Start server
 app.listen(config.PORT, () => {
     console.log(`Server is running on port ${config.PORT}`);
 });

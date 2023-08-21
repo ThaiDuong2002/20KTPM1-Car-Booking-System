@@ -19,10 +19,6 @@ class BookingLocator {
         }
         throw new Error(`Service or method not found: ${name}.${method}`);
     }
-
-    getServices() {
-        return this.locatorService
-    }
 }
 
 export default BookingLocator;
