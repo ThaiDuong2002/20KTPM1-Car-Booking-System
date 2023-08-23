@@ -16,8 +16,12 @@ async function receiveBooking() {
     );
     channel = await connection.createChannel(); // Store the channel reference
     const exchangeName = process.env.EXCHANGE_NAME;
-    const queueName = process.env.BOOKING_RECEPTION_QUEUE;
+    const queueName = process.env.BOOKING_RECEPTION_QUEUE_NAME;
     const routingKey = process.env.BOOKING_RECEPTION_ROUTING_KEY;
+    console.log(exchangeName);
+    console.log(queueName);
+    console.log(routingKey);
+
     await channel.assertExchange(exchangeName, "direct", { durable: false });
     const assertQueueResponse = await channel.assertQueue(queueName);
     const queue = assertQueueResponse.queue;
@@ -50,8 +54,9 @@ async function receiveBooking() {
           channel.publish(
             exchangeName,
             process.env.BOOKING_LOCATOR_ROUTING_KEY,
-            Buffer.from(JSON.stringify(bookingInfo))
+            Buffer.from(JSON.stringify(bookingInfo)),
           );
+
           console.log("Send to booking locator");
         }
         // channel.ack(msg); // Acknowledge the message
