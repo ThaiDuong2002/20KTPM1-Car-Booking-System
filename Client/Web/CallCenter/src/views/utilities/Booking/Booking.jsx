@@ -30,14 +30,11 @@ const Booking = () => {
           Create Booking
         </Typography>
       </Box>
-      <Grid container spacing={gridSpacing} lg={12} mt={0.5}>
-        <Grid item lg={4}>
+      <Grid container spacing={gridSpacing} mt={0.5}>
+        <Grid item lg={8}>
           <Box>
             <FormBooking />
           </Box>
-        </Grid>
-        <Grid item lg={8}>
-          <CustomerHistoryBooking items={mockDataHistoryBooking} />
         </Grid>
       </Grid>
     </MainCard>

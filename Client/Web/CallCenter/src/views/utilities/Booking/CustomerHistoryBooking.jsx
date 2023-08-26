@@ -19,11 +19,14 @@ import {
   Link,
 } from "@mui/material";
 import ScrollBar from "react-perfect-scrollbar";
-import { PlaceOutlined } from "@mui/icons-material";
+import { PlaceOutlined, TourOutlined } from "@mui/icons-material";
 
 const CustomerHistoryBooking = (props) => {
   const theme = useTheme();
   const { items = [] } = props;
+  const handlePickUpBtnClick = () => {};
+  const handleDestinationalBtnClick = () => {};
+  const handleChooseLocationBtnClick = () => {};
 
   return (
     <Card>
@@ -95,23 +98,63 @@ const CustomerHistoryBooking = (props) => {
                         {booking.pickUpLocation?.location}
                       </Typography>
                       <IconButton
-                        component={Link}
-                        href="https://github.com/codedthemes/mantis-free-react-admin-template"
+                        onClick={() => handlePickUpBtnClick()}
                         target="_blank"
                         disableRipple
                         color="primary"
-                        title="Download Free Version"
+                        title="Select Pick Up Location"
                         sx={{ color: "text.primary", bgcolor: "grey.100" }}
+                      >
+                        <TourOutlined />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDestinationalBtnClick()}
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Select Destinational Location"
+                        sx={{
+                          marginLeft: "5px",
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
                       >
                         <PlaceOutlined />
                       </IconButton>
                     </TableCell>
                     <TableCell>
-                      {booking.destinationLocation?.location}
+                      <Typography>
+                        {booking.destinationLocation?.location}
+                      </Typography>
+                      <IconButton
+                        onClick={() => handlePickUpBtnClick()}
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Select Pick Up Location"
+                        sx={{ color: "text.primary", bgcolor: "grey.100" }}
+                      >
+                        <TourOutlined />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDestinationalBtnClick()}
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Select Destinational Location"
+                        sx={{
+                          marginLeft: "5px",
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
+                      >
+                        <PlaceOutlined />
+                      </IconButton>
                     </TableCell>
                     <TableCell>{booking.tripType}</TableCell>
                     <TableCell>
                       <Button
+                        onClick={() => handleChooseLocationBtnClick()}
                         variant="contained"
                         startIcon={<CheckIcon />}
                         size="small"

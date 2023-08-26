@@ -183,6 +183,97 @@ export const mockDataHistoryBooking = [
     refund: "",
     rating: {},
   },
+
+  {
+    _id: 2,
+    bookingDate: "11-07-2023",
+    bookingUser: {
+      fullName: "Nguyen Van B",
+    },
+    bookingDriver: {},
+    tripType: "GoBike",
+    pickUpLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    destinationLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    distance: 10,
+    duration: "",
+    preTotal: "",
+    total: "",
+    promotion: {},
+    status: "",
+    pickUpTime: "",
+    dropOffTime: "",
+    paymentMethod: "",
+    refund: "",
+    rating: {},
+  },
+  {
+    _id: 2,
+    bookingDate: "11-07-2023",
+    bookingUser: {
+      fullName: "Nguyen Van B",
+    },
+    bookingDriver: {},
+    tripType: "GoBike",
+    pickUpLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    destinationLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    distance: 10,
+    duration: "",
+    preTotal: "",
+    total: "",
+    promotion: {},
+    status: "",
+    pickUpTime: "",
+    dropOffTime: "",
+    paymentMethod: "",
+    refund: "",
+    rating: {},
+  },
+  {
+    _id: 2,
+    bookingDate: "11-07-2023",
+    bookingUser: {
+      fullName: "Nguyen Van B",
+    },
+    bookingDriver: {},
+    tripType: "GoBike",
+    pickUpLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    destinationLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    distance: 10,
+    duration: "",
+    preTotal: "",
+    total: "",
+    promotion: {},
+    status: "",
+    pickUpTime: "",
+    dropOffTime: "",
+    paymentMethod: "",
+    refund: "",
+    rating: {},
+  },
 ];
 
 export const mockDataHistoryBookingDetail = {
