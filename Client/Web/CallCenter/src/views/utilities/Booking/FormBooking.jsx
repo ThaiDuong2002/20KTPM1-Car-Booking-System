@@ -49,7 +49,7 @@ const FormBooking = () => {
         customerName: "Tri",
         phoneNumber: "0123123123",
         pickUpLocation: "aba",
-        dropoffLocation: "ccc",
+        dropoffLocation: "cccd",
       }}
       validationSchema={Yup.object().shape({
         phone: Yup.string().max(20).required("Phone Number is required"),
