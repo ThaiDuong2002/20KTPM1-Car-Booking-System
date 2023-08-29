@@ -2,6 +2,8 @@ import React from "react";
 import { useTheme } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import PlaceIcon from "@mui/icons-material/Place";
+
+import { mockDataHistoryBooking } from "data/mockData";
 import {
   Avatar,
   Box,
@@ -17,13 +19,16 @@ import {
   Button,
   IconButton,
   Link,
+  Grid,
 } from "@mui/material";
 import ScrollBar from "react-perfect-scrollbar";
 import { PlaceOutlined, TourOutlined } from "@mui/icons-material";
 
 const CustomerHistoryBooking = (props) => {
   const theme = useTheme();
-  const { items = [] } = props;
+  // const { items = [] } = props;
+  const items = mockDataHistoryBooking;
+
   const handlePickUpBtnClick = () => {};
   const handleDestinationalBtnClick = () => {};
   const handleChooseLocationBtnClick = () => {};
@@ -31,7 +36,7 @@ const CustomerHistoryBooking = (props) => {
   return (
     <Card>
       <ScrollBar>
-        <Box sx={{ minWidth: 800 }}>
+        <Box sx={{ minWidth: 600 }}>
           <Table>
             <TableHead
               sx={{
@@ -103,7 +108,10 @@ const CustomerHistoryBooking = (props) => {
                         disableRipple
                         color="primary"
                         title="Select Pick Up Location"
-                        sx={{ color: "text.primary", bgcolor: "grey.100" }}
+                        sx={{
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
                       >
                         <TourOutlined />
                       </IconButton>
@@ -132,7 +140,10 @@ const CustomerHistoryBooking = (props) => {
                         disableRipple
                         color="primary"
                         title="Select Pick Up Location"
-                        sx={{ color: "text.primary", bgcolor: "grey.100" }}
+                        sx={{
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
                       >
                         <TourOutlined />
                       </IconButton>
