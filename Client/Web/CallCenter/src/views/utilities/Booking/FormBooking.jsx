@@ -2,74 +2,61 @@ import React from "react";
 
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 //MUI
 import { useTheme } from "@mui/material/styles";
 import {
   Box,
   Button,
-  // Checkbox,
-  // Divider,
   FormControl,
-  // FormControlLabel,
   FormHelperText,
-  // Grid,
-  // IconButton,
-  // InputAdornment,
   InputLabel,
   OutlinedInput,
-  // Stack,
-  // Typography,
-  // Radio,
-  // RadioGroup,
-  // Autocomplete,
-  // TextField,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 
 // third party
-import * as Yup from "yup";
+import * as yup from "yup";
 import { Formik } from "formik";
 
 // project imports
-import useScriptRef from "hooks/useScriptRef";
+// import useScriptRef from "hooks/useScriptRef";
 import AnimateButton from "ui-component/extended/AnimateButton";
+
+const vehicleType = [
+  { label: "Motor" },
+  { label: "Car - 5 Capacity" },
+  { label: "Car - 7 Capacity" },
+  { label: "Car - 9 Capacity" },
+];
+
+const initialValues = {
+  customerName: "",
+  phoneNumber: "",
+  pickUpLocation: "",
+  dropOffLocation: "",
+  vehicleType: "",
+};
+
+const bookingSchema = yup.object().shape({
+  phoneNumber: yup.string().max(20).required("Phone Number is required"),
+});
 
 const FormBooking = () => {
   const theme = useTheme();
-  const scriptedRef = useScriptRef();
+  // const scriptedRef = useScriptRef();
 
   const handleFormSubmit = (values) => {
-    console.log("Booking value: " + values.customerName + values.phoneNumber);
+    console.log("Form values: ", values);
   };
 
   return (
     <Formik
       onSubmit={handleFormSubmit}
-      initialValues={{
-        customerName: "Tri",
-        phoneNumber: "0123123123",
-        pickUpLocation: "aba",
-        dropoffLocation: "cccd",
-      }}
-      validationSchema={Yup.object().shape({
-        phone: Yup.string().max(20).required("Phone Number is required"),
-      })}
-
-      // onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-      //   try {
-      //     if (scriptedRef.current) {
-      //       setStatus({ success: true });
-      //       setSubmitting(false);
-      //     }
-      //   } catch (err) {
-      //     console.error(err);
-      //     if (scriptedRef.current) {
-      //       setStatus({ success: false });
-      //       setErrors({ submit: err.message });
-      //       setSubmitting(false);
-      //     }
-      //   }
-      // }}
+      initialValues={initialValues}
+      validationSchema={bookingSchema}
     >
       {({
         touched,
@@ -80,58 +67,103 @@ const FormBooking = () => {
         handleSubmit,
         isSubmitting,
       }) => (
-        // <form noValidate onSubmit={handleSubmit} {...others}>
         <form onSubmit={handleSubmit}>
-          <FormControl
-            fullWidth
-            error={Boolean(touched.customerName && errors.customerName)}
-            sx={{ ...theme.typography.customInput }}
+          <Box
+            display="grid"
+            gap="30px"
+            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+            sx={{
+              "& > div": { gridColumn: "span 4" },
+            }}
           >
-            <InputLabel htmlFor="outlined-adornment-customer-name-booking">
-              Customer Name
-            </InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-customer-name-booking"
-              type="text"
-              value={values.customerName}
-              name="customerName"
+            <TextField
+              label="Customer Name"
               onBlur={handleBlur}
               onChange={handleChange}
-              label="Customer Name"
-              inputProps={{}}
+              values={values.customerName}
+              name="customerName"
+              error={
+                Boolean(touched.customerName) && Boolean(errors.customerName)
+              }
+              helperText={touched.customerName && errors.customerName}
+              sx={{ gridColumn: "span 6" }}
             />
-            {touched.customerName && errors.customerName && (
-              <FormHelperText
-                error
-                id="standard-weight-helper-text-customer-name-booking"
-              >
-                {errors.customerName}
-              </FormHelperText>
-            )}
-          </FormControl>
+            <TextField
+              label="Phone Number"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              values={values.phoneNumber}
+              name="phoneNumber"
+              error={
+                Boolean(touched.phoneNumber) && Boolean(errors.phoneNumber)
+              }
+              helperText={touched.phoneNumber && errors.phoneNumber}
+              sx={{ gridColumn: "span 6" }}
+            />
+            <TextField
+              label="Pick Up Location"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              values={values.pickUpLocation}
+              name="pickUpLocation"
+              error={
+                Boolean(touched.pickUpLocation) &&
+                Boolean(errors.pickUpLocation)
+              }
+              helperText={touched.pickUpLocation && errors.pickUpLocation}
+              sx={{ gridColumn: "span 6" }}
+            />
+            <TextField
+              label="Drop Off Location"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              values={values.dropOffLocation}
+              name="dropOffLocation"
+              error={
+                Boolean(touched.dropOffLocation) &&
+                Boolean(errors.dropOffLocation)
+              }
+              helperText={touched.dropOffLocation && errors.dropOffLocation}
+              sx={{ gridColumn: "span 6" }}
+            />
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={vehicleType}
+              value={values.vehicleType}
+              onChange={(event, newValue) => {
+                handleChange(event);
+                values.vehicleType = newValue; // Update Formik value for vehicleType
+              }}
+              // getOptionLabel={(option) => option.label}
+              sx={{ gridColumn: "span 4" }}
+              renderInput={(params) => (
+                <TextField {...params} label="Vehicle Type" />
+              )}
+            />
+          </Box>
 
-          <FormControl
+          {/* <FormControl
             fullWidth
-            error={Boolean(touched.password && errors.password)}
+            error={Boolean(touched.phoneNumber && errors.phoneNumber)}
             sx={{ ...theme.typography.customInput }}
           >
-            <InputLabel htmlFor="outlined-adornment-pickup-location-booking">
+            <InputLabel htmlFor="outlined-adornment-phone_number-booking">
               Phone Number
             </InputLabel>
             <OutlinedInput
-              id="outlined-adornment-pickup-location-booking"
+              id="outlined-adornment-phone_number-booking"
               type="text"
               value={values.phoneNumber}
               name="phoneNumber"
               onBlur={handleBlur}
               onChange={handleChange}
               label="Phone Number"
-              inputProps={{}}
             />
             {touched.phoneNumber && errors.phoneNumber && (
               <FormHelperText
                 error
-                id="standard-weight-helper-text-pickup-location-booking"
+                id="standard-weight-helper-text-phone-number-booking"
               >
                 {errors.phoneNumber}
               </FormHelperText>
@@ -140,7 +172,7 @@ const FormBooking = () => {
 
           <FormControl
             fullWidth
-            error={Boolean(touched.password && errors.password)}
+            error={Boolean(touched.pickUpLocation && errors.pickUpLocation)}
             sx={{ ...theme.typography.customInput }}
           >
             <InputLabel htmlFor="outlined-adornment-pickup-location-booking">
@@ -154,7 +186,6 @@ const FormBooking = () => {
               onBlur={handleBlur}
               onChange={handleChange}
               label="Pick Up Location "
-              inputProps={{}}
             />
             {touched.pickUpLocation && errors.pickUpLocation && (
               <FormHelperText
@@ -168,7 +199,7 @@ const FormBooking = () => {
 
           <FormControl
             fullWidth
-            error={Boolean(touched.password && errors.password)}
+            error={Boolean(touched.dropOffLocation && errors.dropOffLocation)}
             sx={{ ...theme.typography.customInput }}
           >
             <InputLabel htmlFor="outlined-adornment-dropoff-location-booking">
@@ -182,7 +213,6 @@ const FormBooking = () => {
               onBlur={handleBlur}
               onChange={handleChange}
               label="Drop Off Location "
-              inputProps={{}}
             />
             {touched.dropoffLocation && errors.dropoffLocation && (
               <FormHelperText
@@ -198,19 +228,17 @@ const FormBooking = () => {
             <Box sx={{ mt: 3 }}>
               <FormHelperText error>{errors.submit}</FormHelperText>
             </Box>
-          )}
+          )} */}
 
           <Box sx={{ mt: 2 }}>
             <AnimateButton>
               <Button
                 disableElevation
-                // disabled={isSubmitting}
                 fullWidth
                 size="large"
                 type="submit"
                 variant="contained"
                 color="secondary"
-                // onClick={handleFormSubmit}
               >
                 Submit Booking
               </Button>
