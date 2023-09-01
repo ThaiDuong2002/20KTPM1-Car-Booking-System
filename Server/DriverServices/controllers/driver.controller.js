@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import UserService from "../services/database_services.js";
+import UserService from "../services/services.js";
 
 const DriverController = {
     me: async (req, res, next) => {
@@ -49,7 +49,6 @@ const DriverController = {
                 _id: user_id,
                 refreshToken: ""
             })
-            console.log(user)
             if (user) {
                 return next(createError.BadRequest("User already logged out"))
             }

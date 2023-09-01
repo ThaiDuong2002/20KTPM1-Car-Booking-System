@@ -2,7 +2,7 @@ import createError from "http-errors";
 import {
     UserService,
     CustomerService,
-} from "../services/database_services.js";
+} from "../services/services.js";
 
 const CustomerController = {
     me: async (req, res, next) => {
@@ -27,7 +27,8 @@ const CustomerController = {
         try {
             const customer_id = req.headers['x-user-id']
             const update_info = req.body
-            if (update_info.password || update_info.__t || update_info.email || update_info.phone || update_info.role) {
+
+            if (update_info.password || update_info.__t || update_info.email || update_info.phone || update_info.userRole || update_info.userType) {
                 return next(createError.BadRequest("Invalid update fields"))
             }
 
@@ -75,12 +76,12 @@ const CustomerController = {
             if (!user) {
                 return next(createError.BadRequest("User not found"))
             }
-            if (user.userType === "premium") {
+            if (user.userType === "Premium") {
                 return next(createError.Conflict("User already upgraded"))
             }
             const updatedUser = await CustomerService.updateCustomer(
                 user_id,
-                {userType: "premium"},
+                {userType: "Premium"},
                 '-_id -password -refreshToken')
             if (!updatedUser) {
                 return next(createError.BadRequest("Upgrade failed"))

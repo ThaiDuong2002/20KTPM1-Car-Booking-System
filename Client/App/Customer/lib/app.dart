@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: const MaterialApp(
-        title: "Booking App",
+        title: "BookingModel App",
         // home: SplashPage(),
         debugShowCheckedModeBanner: false,
         initialRoute: '/navigationPage',

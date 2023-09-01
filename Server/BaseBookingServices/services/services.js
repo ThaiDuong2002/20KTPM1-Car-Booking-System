@@ -1,8 +1,8 @@
-import Booking from "../models/Booking.js";
-import User from "../models/User.js";
-// import Promotion from "../models/Promotion.js";
-// import PaymentMethod from "../models/PaymentMethod.js";
-// import Refund from "../models/Refund.js";
+import {Booking} from "../models/BookingModel.js";
+import {User} from "../models/UserModel.js";
+import {Promotion} from "../models/PromotionModel.js";
+import {PaymentMethod} from "../models/PaymentMethodModel.js";
+import {Refund} from "../models/RefundModel.js";
 
 import axios from "axios";
 import amqp from "amqplib";
@@ -18,7 +18,7 @@ const BookingService = {
     },
     async get_history_booking(customerPhone) {
         return Booking.find({
-            customer_phone: customerPhone,
+            customerPhone: customerPhone,
         });
     },
     async get_booking_details(booking_id, populate_options) {
