@@ -187,22 +187,30 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                             border: Border.all(
                                 color: Colors.grey.shade300, width: 1),
                             borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.map,
-                              size: 16,
-                              color: Color.fromARGB(255, 22, 20, 20),
-                            ),
-                            Text(
-                              "Chọn bằng bản đồ",
-                              style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                color: Colors.black,
+                        child: InkWell(
+                          onTap: () {
+                            print("Về trang Search page");
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.map,
+                                size: 16,
+                                color: Color.fromARGB(255, 22, 20, 20),
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                "Chọn bằng bản đồ",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -236,10 +244,10 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                               var updateLocation =
                                   Provider.of<PickUpAndDestication>(context,
                                       listen: false);
-                          
+
                               updateLocation.pickUpLocation =
                                   state.searchEntities[index];
-                                  
+
                               Navigator.pushNamed(context, '/checkAddressPage',
                                   arguments: currentLocation);
                             },
