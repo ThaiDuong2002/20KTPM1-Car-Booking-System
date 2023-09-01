@@ -7,7 +7,7 @@ import { mockDataHistoryBooking } from "data/mockData";
 const HistoryBooking = () => {
   return (
     <>
-      <MainCard title="History Booking">
+      <MainCard title="History BookingModel">
         <CustomerSearch />
         <HistoryBookingTable items={mockDataHistoryBooking} />
       </MainCard>

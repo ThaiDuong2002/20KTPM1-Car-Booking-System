@@ -16,7 +16,7 @@ const TokenService = {
             const bearToken = authorization.split(' ');
             const token = bearToken[1];
             console.log(token);
-            jwt.verify(token, secret, { ignoreExpiration: true }, (err, payload) => {
+            jwt.verify(token, secret, { ignoreExpiration: true }, (err, payload) => { // Remember to turn off ignoreExpiration in production
                 if (err) {
                     if (err.name === "JsonWebTokenError") {
                         return next(createError.Unauthorized("You are not authorized to access this page"));

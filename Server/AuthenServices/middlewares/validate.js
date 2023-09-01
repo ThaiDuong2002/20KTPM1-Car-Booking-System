@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const registration_schema = Joi.object({
+const registrationSchema = Joi.object({
   firstname: Joi.string().required(),
   lastname: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -12,7 +12,7 @@ const registration_schema = Joi.object({
     .required(),
 });
 
-const change_password_schema = Joi.object({
+const changePasswordSchema = Joi.object({
   old_password: Joi.string()
       .min(6)
       .max(20)
@@ -26,6 +26,6 @@ const change_password_schema = Joi.object({
 });
 
 export default {
-    registration_schema,
-    change_password_schema
+    registrationSchema,
+    changePasswordSchema
 }

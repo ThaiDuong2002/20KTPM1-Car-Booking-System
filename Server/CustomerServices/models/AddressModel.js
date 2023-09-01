@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
-import User from './User.model.js';
+import {User} from './UserModel.js';
 
 const Schema = mongoose.Schema;
 
 const AddressSchema = new Schema({
-    user_id: {
+    userId: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'User',
@@ -16,19 +16,19 @@ const AddressSchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum: ['personal', 'work'],
+        enum: ['Personal', 'Work'],
     },
     coordinate: {
-        x: {
+        lat: {
             type: Number,
             required: true,
         },
-        y: {
+        lng: {
             type: Number,
             required: true,
         },
     },
-    formatted_address: {
+    formattedAddress: {
         type: String,
         required: true,
     },

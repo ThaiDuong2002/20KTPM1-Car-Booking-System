@@ -7,36 +7,26 @@ const PromotionSchema = new Schema(
         name: {
             type: String,
             required: true,
-            default: '',
-        },
-        strategy: {
-            type: String,
-            required: true,
-            default: '',
         },
         description: {
             type: String,
             required: true,
-            default: '',
         },
         discount: {
             type: Number,
-            required: true,
             default: 0,
         },
         startDate: {
             type: Date,
-            required: true,
+
             default: Date.now(),
         },
         endDate: {
             type: Date,
-            required: true,
             default: Date.now(),
         },
-        usage_limit: {
+        usageLimit: {
             type: Number,
-            required: true,
             default: 0,
         },
     },
@@ -45,4 +35,4 @@ const PromotionSchema = new Schema(
     }
 );
 
-export default mongoose.model('Promotion', PromotionSchema);
+export const Promotion = mongoose.model('Promotion', PromotionSchema, 'promotions');

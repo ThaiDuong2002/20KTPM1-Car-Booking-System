@@ -1,6 +1,5 @@
-import User from '../models/User.model.js'
-import Customer from '../models/Customer.model.js'
-import Address from '../models/Address.model.js'
+import {User, Customer} from '../models/UserModel.js'
+import Address from '../models/AddressModel.js'
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
@@ -43,27 +42,28 @@ const CustomerService = {
         ).select(projection)
         return result
     },
-    // async saveAddress(user_id, address_id) {
-    //     const result = await Customer.findByIdAndUpdate(
-    //         user_id,
-    //         {
-    //             $push: {
-    //                 address: address_id
-    //             }
-    //         },
-    //         {new: true}
-    //     )
-    //     return result
-    // }
+    async saveAddress(user_id, address_id) {
+        const result = await Customer.findByIdAndUpdate(
+            user_id,
+            {
+                $push: {
+                    address: address_id
+                }
+            },
+            {new: true}
+        )
+        return result
+    }
 }
 
 const AddressService = {
     async getAddressById(address_id) {
-        return await Address.findById(address_id);
+        const address = await Address.findById(address_id);
+        return address
     },
     async get_user_addresses(user_id, filter, projection) {
         const result = await Address.find({
-            user_id: user_id,
+            userId: user_id,
             ...filter
         }).select(projection)
         return result
@@ -73,11 +73,12 @@ const AddressService = {
         return await address.save()
     },
     async updateAddress(address_id, data) {
-        return await Address.findByIdAndUpdate(
+        const result = await Address.findByIdAndUpdate(
             address_id,
             data,
             {new: true}
         );
+        return result
     },
     async deleteAddress(address_id) {
         return await Address.findByIdAndDelete(address_id);

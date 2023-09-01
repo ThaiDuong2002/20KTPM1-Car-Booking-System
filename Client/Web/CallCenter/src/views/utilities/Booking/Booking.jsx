@@ -13,10 +13,10 @@ import CustomerHistoryBooking from "./CustomerHistoryBooking";
 //mock data
 import { mockDataHistoryBooking } from "data/mockData";
 
-const Booking = () => {
+const BookingModel = () => {
   const theme = useTheme();
   return (
-    <MainCard title="Booking">
+    <MainCard title="BookingModel">
       <Box>
         <Typography
           variant="h3"
@@ -27,7 +27,7 @@ const Booking = () => {
             fontWeight: "bold",
           }}
         >
-          Create Booking
+          Create BookingModel
         </Typography>
       </Box>
       <Grid container spacing={gridSpacing} lg={12} mt={0.5}>
@@ -44,4 +44,4 @@ const Booking = () => {
   );
 };
 
-export default Booking;
+export default BookingModel;

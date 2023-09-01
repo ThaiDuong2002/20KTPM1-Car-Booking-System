@@ -1,7 +1,7 @@
 import createError from 'http-errors'
 import {
     UserService,
-} from '../services/database_services.js';
+} from '../services/userServices.js';
 
 const CallcenterController = {
     me: async (req, res, next) => {
@@ -26,7 +26,7 @@ const CallcenterController = {
         try {
             const consultant_id = req.headers['x-user-id']
             const update_info = req.body
-            if (update_info.password || update_info.__t || update_info.email || update_info.phone || update_info.role) {
+            if (update_info.password || update_info.__t || update_info.email || update_info.phone || update_info.userRole) {
                 return next(createError.BadRequest("Invalid update fields"))
             }
 

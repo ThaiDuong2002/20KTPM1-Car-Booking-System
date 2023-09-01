@@ -35,6 +35,7 @@
 //   console.log('http://localhost:' + process.env.PORT);
 // });
 // Server side implementation
+
 // Server side implementation
 import express from 'express';
 import db from './configs/db.js';
@@ -63,4 +64,4 @@ app.use(errorHandler);
 app.listen(process.env.PORT, () => {
   console.log('Driver Services is running on port:' + process.env.PORT);
   console.log('http://localhost:' + process.env.PORT);
-});
+})

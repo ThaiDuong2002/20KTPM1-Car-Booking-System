@@ -6,6 +6,7 @@ const AuthenRoute = express.Router();
 
 AuthenRoute.post('/login', AuthenticationController.login);
 AuthenRoute.post('/register/:role', AuthenticationController.register);
+
 AuthenRoute.post('/renewAccessToken', AuthenticationController.renewAccessToken);
 AuthenRoute.put('/changePassword', TokenService.verifyAccessToken, AuthenticationController.change_password);
 

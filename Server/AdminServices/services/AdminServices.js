@@ -1,4 +1,4 @@
-import User from '../models/User.js'
+import {User} from '../models/UserModel.js'
 
 const AdminServices = {
     async getAllUsers(filter, projection) {

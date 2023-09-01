@@ -30,7 +30,7 @@ const UserSchema = new Schema({
         dob: {
             type: Date,
         },
-        role: {
+        userRole: {
             type: String,
             required: true,
             enum: ['admin', 'customer', 'consultant', 'driver'],
@@ -65,13 +65,13 @@ CustomerSchema.add({
     address: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'addresses',
+            ref: 'Address',
         },
     ],
     userType: {
         type: String,
-        default: "standard",
-        enum: ['standard', 'premium'],
+        default: "Standard",
+        enum: ['Standard', 'Premium'],
     },
     isDisabled: {
         type: Boolean,
@@ -81,23 +81,30 @@ CustomerSchema.add({
 
 const DriverSchema = new Schema(UserSchema);
 DriverSchema.add({
-    driverLicense: {
-        type: String,
-    },
+    driverLicense: [
+        {
+            type: String,
+            required: true,
+        },
+    ],
     vehicleId: {
         type: Schema.Types.ObjectId,
+        required: true,
     },
     isActive: {
         type: Boolean,
+        default: true,
+    },
+    isDisabled: {
+        type: Boolean,
         default: false,
     },
-    isDisable: {
+    isValid: {
         type: Boolean,
         default: false,
     },
     rating: {
-        type: Number,
-        default: 10,
+        type: Schema.Types.ObjectId,
     },
 });
 

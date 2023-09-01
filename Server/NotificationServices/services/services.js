@@ -1,21 +1,22 @@
-import Notification from '../models/Notification.js'
+import Notification from '../models/NotificationModel.js'
+import {User} from '../models/UserModel.js'
 import dotenv from 'dotenv';
-import axios from "axios";
 
 dotenv.config();
 
 const NotificationService = {
     async get_notification_list(filter, projection) {
-        return await Notification.find(filter).select(projection);
+        const result = await Notification.find(filter).select(projection);
+        return result;
     },
     async get_notification_details(notification_id) {
-        return await Notification.findById(notification_id);
+        const result = await Notification.findById(notification_id);
+        return result
     },
     async create_notification (notification_data) {
         try {
-            const notification = new Notification(notification_data);
-            await notification.save();
-            return notification;
+            const newNotification = new Notification(notification_data);
+            return await newNotification.save();
         } catch (err) {
             throw new Error(err.message);
         }
@@ -40,11 +41,14 @@ const NotificationService = {
 }
 
 const UserService = {
-    async valid_user(user_id){
-        const service_uri = `${process.env.AUTHEN_SERVICE_URI}/info/${user_id}`
-        const response = await axios.get(service_uri)
-        return response.data.data
-    }
+    async getUserById(user_id, filter, projection) {
+        const result = await User.findOne({
+                _id: user_id,
+                ...filter
+            }
+        ).select(projection)
+        return result
+    },
 }
 
 export {

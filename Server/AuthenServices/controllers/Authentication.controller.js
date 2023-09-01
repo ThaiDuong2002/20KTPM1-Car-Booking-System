@@ -1,10 +1,7 @@
 import createError from 'http-errors';
-import UserService from '../services/database_services.js';
+import UserService from '../services/userServices.js';
 import TokenService from '../middlewares/jwt_services.js';
 import bcryptjs from 'bcryptjs';
-import validateSchemas from '../middlewares/validate.js';
-
-const {registration_schema, change_password_schema} = validateSchemas;
 
 const AuthenController = {
     async login(req, res, next) {
@@ -23,86 +20,80 @@ const AuthenController = {
                 if (!checkAuthen) {
                     return next(createError.BadRequest("Wrong password"))
                 } else {
-                    const access_token = await TokenService.signAccessToken(user._id, user.role)
+                    const access_token = await TokenService.signAccessToken(user._id, user.userRole)
                     const refresh_token = await TokenService.signRefreshToken(user._id, "30d")
                     const updatedUser = await UserService.updateUser(user._id, {refreshToken: refresh_token})
                     if (!updatedUser) {
                         return next(createError.BadRequest("Update refresh token failed"))
                     }
+
                     const response = {
-                        user: {
-                            _id: updatedUser._id,
-                            role: updatedUser.role,
-                            firstname: updatedUser.firstname,
-                            lastname: updatedUser.lastname,
-                            email: updatedUser.email,
-                            phone: updatedUser.phone,
-                            dob: updatedUser.dob,
-                            gender: updatedUser.gender,
-                            avatar: updatedUser.avatar,
-                        },
-                        accessToken: access_token,
-                        refreshToken: refresh_token,
+                        _id: updatedUser._id,
+                        userRole: updatedUser.userRole,
+                        firstname: updatedUser.firstname,
+                        lastname: updatedUser.lastname,
+                        email: updatedUser.email,
+                        phone: updatedUser.phone,
+                        dob: updatedUser.dob,
+                        gender: updatedUser.gender,
+                        avatar: updatedUser.avatar,
                     };
-                    req.user = updatedUser
+
                     res.json({
                         message: "Login successfully",
                         status: 200,
-                        data: response
+                        data: {
+                            user: response,
+                            accessToken: access_token,
+                            refreshToken: refresh_token,
+                        }
                     })
                 }
             }
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(createError.InternalServerError(error.message))
         }
     },
     async register(req, res, next) {
         try {
-            // Validate registration form
-            const {error, value} = registration_schema.validate(req.body)
+            // Register info
+            const registerInfo = req.body
 
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message))
-            }
-
-            const user_role = req.params.role
-            if (user_role !== "consultant" && user_role !== "driver" && user_role !== "customer") {
+            // Validate role
+            const userRole = req.params.role
+            if (userRole !== "consultant" && userRole !== "driver" && userRole !== "customer") {
                 return next(createError.BadRequest("Invalid role"))
             }
 
             // Check if user is already exists
-            const user = await UserService.getUserByIdentifier(value.email, value.phone)
+            const user = await UserService.getUserByIdentifier(registerInfo.email, registerInfo.phone)
             if (user) {
                 return next(createError.BadRequest("User is already exists"))
             }
 
             // Create new user
-            const newUser = await UserService.createUser(user_role, value)
-
-            // Send response
-            const response = {
-                user: {
-                    _id: newUser._id,
-                    role: newUser.role,
-                    firstname: newUser.firstname,
-                    lastname: newUser.lastname,
-                    email: newUser.email,
-                    phone: newUser.phone,
-                    avatar: newUser.avatar,
-                }
-            };
-
-            // Save new User to req.user
-            req.user = newUser
+            const newUser = await UserService.createUser(userRole, registerInfo)
 
             // Response
-            res.status(200).json({
+            const response = {
+                _id: newUser._id,
+                userRole: newUser.userRole,
+                firstname: newUser.firstname,
+                lastname: newUser.lastname,
+                email: newUser.email,
+                phone: newUser.phone,
+                avatar: newUser.avatar,
+            }
+
+            res.status(201).json({
                 message: "Register successfully",
-                status: 200,
-                data: response
+                status: 201,
+                data: {
+                    user: newUser
+                }
             })
         } catch (error) {
-            next(error.message)
+            next(createError.InternalServerError(error.message))
         }
     },
     async renewAccessToken(req, res, next) {
@@ -123,11 +114,11 @@ const AuthenController = {
 
             // Issue new access token and refresh token
             const refreshTokenExpiration = decoded.exp - Math.floor(Date.now() / 1000)
-            const access_token = await TokenService.signAccessToken(auth_user._id, auth_user.role)
-            const refresh_token = await TokenService.signRefreshToken(auth_user._id, refreshTokenExpiration)
+            const new_access_token = await TokenService.signAccessToken(auth_user._id, auth_user.userRole)
+            const new_refresh_token = await TokenService.signRefreshToken(auth_user._id, refreshTokenExpiration)
 
             // Save new refresh token to database
-            const updatedUser = await UserService.updateUser(auth_user._id, {refreshToken: refresh_token})
+            const updatedUser = await UserService.updateUser(auth_user._id, {refreshToken: new_refresh_token})
             if (!updatedUser) {
                 return next(createError.BadRequest("Failed to save refresh token to database"))
             }
@@ -137,8 +128,8 @@ const AuthenController = {
                 message: "Renew access token successfully",
                 status: 201,
                 data: {
-                    accessToken: access_token,
-                    refreshToken: refresh_token
+                    accessToken: new_access_token,
+                    refreshToken: new_refresh_token
                 }
             })
 
@@ -151,21 +142,18 @@ const AuthenController = {
     },
     async change_password(req, res, next) {
         try {
-            const {error, value} = change_password_schema.validate(req.body)
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message))
-            }
+            const changePasswordInfo = req.body
             const user_id = req.payload.userId
             let user = await UserService.getUserById(user_id)
             if (!user) {
                 return next(createError.NotFound("User is not exists"))
             }
-            const check_password = bcryptjs.compareSync(value.old_password, user.password)
+            const check_password = bcryptjs.compareSync(changePasswordInfo.old_password, user.password)
             if (!check_password) {
                 return next(createError.BadRequest("Wrong password"))
             }
             const salt = bcryptjs.genSaltSync(10)
-            const hash_password = bcryptjs.hashSync(value.new_password, salt)
+            const hash_password = bcryptjs.hashSync(changePasswordInfo.new_password, salt)
 
             await UserService.updateUser(user_id, {password: hash_password})
 
@@ -175,7 +163,7 @@ const AuthenController = {
                 data: "ok"
             })
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(createError.InternalServerError(error.message))
         }
     },
 }

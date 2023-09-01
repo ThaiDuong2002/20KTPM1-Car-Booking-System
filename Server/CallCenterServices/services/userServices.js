@@ -1,4 +1,7 @@
-import User from '../models/User.js'
+import {User} from '../models/UserModel.js'
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
@@ -7,7 +10,7 @@ const UserService = {
                 {email: email},
                 {phone: phone}
             ]
-        });
+        })
         return result
     },
     async getUserById(user_id, filter, projection) {
@@ -30,6 +33,8 @@ const UserService = {
         )
         return result
     },
-};
+}
 
-export default UserService
+export {
+    UserService,
+}

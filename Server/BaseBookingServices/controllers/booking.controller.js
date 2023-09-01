@@ -1,9 +1,5 @@
 import createError from "http-errors";
 import {
-    create_booking_schema,
-    update_booking_schema,
-} from "../middlewares/validate.js";
-import {
     BookingService,
     UserService
 } from "../services/services.js";
@@ -42,26 +38,27 @@ const BookingController = {
     },
     async add_booking(req, res, next) {
         try {
-            const {error, value} = create_booking_schema.validate(req.body);
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message));
-            }
+            const bookingInfo = req.body;
             // Validate driver
-            const driver = await UserService.get_user_by_id(value.booking_driver_id);
-            if (!driver) {
+            const driver = await UserService.get_user_by_id(bookingInfo.driverId);
+            if (!driver || driver.userRole !== "driver") {
                 return next(createError.BadRequest("Driver not exist"));
             }
-            const user_info = {
+            if (!driver.isActive) {
+                return next(createError.BadRequest("Driver is not active"));
+            }
+
+            const userInfo = {
                 id: req.headers["x-user-id"],
                 role: req.headers["x-user-role"],
             };
-            value.booking_user_id = user_info.id;
+            bookingInfo.userId = userInfo.id;
             // Create booking
-            const booking_re = await BookingService.create_booking(value);
+            const newBooking = await BookingService.create_booking(bookingInfo);
             res.status(201).json({
                 message: "Create booking successfully",
-                status: 200,
-                data: booking_re,
+                status: 201,
+                data: newBooking,
             });
         } catch (err) {
             next(createError.InternalServerError(err.message));
@@ -71,12 +68,11 @@ const BookingController = {
         try {
             const booking_id = req.params.id;
             const populateOptions = {
-                booking_user_id: "-password -refreshToken",
-                booking_driver_id: "-password -refreshToken",
-                trip_promotion_id: "",
-                booking_payment_method_id: "",
-                booking_refund_id: "",
-                "booking_ratings.user_id": "_id firstname lastname email",
+                userId: "-password -refreshToken",
+                driverId: "-password -refreshToken",
+                promotionId: "",
+                paymentMethodId: "",
+                refundId: "",
             };
             const booking = await BookingService.get_booking_details(
                 booking_id,
@@ -99,12 +95,12 @@ const BookingController = {
             let filter = req.body;
             let projection = {
                 createdAt: 1,
-                customer_name: 1,
-                customer_phone: 1,
-                trip_pickup_location: 1,
-                trip_destination_location: 1,
-                trip_type: 1,
-                trip_status: 1,
+                customerName: 1,
+                customerPhone: 1,
+                pickupLocation: 1,
+                destinationLocation: 1,
+                type: 1,
+                status: 1,
             };
             const list = await BookingService.get_booking_list(filter, projection);
             if (!list) {
@@ -125,14 +121,11 @@ const BookingController = {
     async update_booking(req, res, next) {
         try {
             const booking_id = req.params.id;
-            const {error, value} = update_booking_schema.validate(req.body);
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message));
-            }
+            const updateInfo = req.body;
             // Update booking
             const update_result = await BookingService.update_booking(
                 booking_id,
-                value
+                updateInfo
             );
             if (!update_result) {
                 return res.status(404).json({

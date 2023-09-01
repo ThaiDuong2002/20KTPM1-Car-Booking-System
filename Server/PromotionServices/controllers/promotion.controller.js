@@ -7,12 +7,13 @@ import {
 const PromotionController = {
     async add_promotion(req, res, next) {
         try {
-            const {error, value} = create_promotion_schema.validate(req.body);
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message))
-            }
+            const promotionInfo = req.body;
+            // const {error, value} = create_promotion_schema.validate(req.body);
+            // if (error) {
+            //     return next(createError.BadRequest(error.details[0].message))
+            // }
             // Create promotion
-            const promotion_re = await PromotionService.create_promotion(value);
+            const promotion_re = await PromotionService.create_promotion(promotionInfo);
             res.status(201).json({
                 message: 'Add promotion successfully',
                 status: 200,
@@ -68,12 +69,13 @@ const PromotionController = {
     async update_promotion(req, res, next) {
         try {
             const promotion_id = req.params.id
-            const { error, value } = update_promotion_schema.validate(req.body);
-            if (error) {
-                return next(createError.BadRequest(error.details[0].message));
-            }
+            const promotionInfo = req.body;
+            // const { error, value } = update_promotion_schema.validate(req.body);
+            // if (error) {
+            //     return next(createError.BadRequest(error.details[0].message));
+            // }
             // Update promotion
-            const update_result = await PromotionService.update_promotion(promotion_id, value);
+            const update_result = await PromotionService.update_promotion(promotion_id, promotionInfo);
             if (!update_result) {
                 return res.status(404).json({
                     message: 'Promotion not found',
