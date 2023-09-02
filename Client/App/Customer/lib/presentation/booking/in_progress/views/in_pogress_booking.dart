@@ -1,54 +1,65 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:user/presentation/booking/in_progress/bloc/in_progress_bloc.dart';
 
 import '../../../../app/constant/color.dart';
 import '../../../../app/constant/size.dart';
 import '../../../../model_gobal/pick_des.dart';
 import '../../../widget/custom_text.dart';
+import '../bloc/in_progress_event.dart';
+import '../bloc/in_progress_state.dart';
 
-class ConfirmBookingPage extends StatefulWidget {
+class InProgressBooking extends StatefulWidget {
   final PickUpAndDestication data;
-  const ConfirmBookingPage({super.key, required this.data});
+  const InProgressBooking({super.key, required this.data});
 
   @override
-  State<ConfirmBookingPage> createState() => _ConfirmBookingPageState();
+  State<InProgressBooking> createState() => _InProgressBookingState();
 }
 
-class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
+class _InProgressBookingState extends State<InProgressBooking> {
   List<Marker> _markers = <Marker>[];
   late LatLng currentPosition;
   late LatLng desPosition;
   late LatLng currentPositionCamera;
   Set<Polyline> polylines = {};
+  late BitmapDescriptor customIcon;
+  GoogleMapController? mapController;
 
-  static const vihicles = [
-    {
-      "image": "123",
-      "name": "Xe máy",
-      "capacity": "1 chỗ ",
-      "time_estimate": "1-7 phút",
-      "price": "10.000đ",
-    },
-    {
-      "image": "123",
-      "name": "Ô tô",
-      "capacity": "4 chỗ ",
-      "time_estimate": "5-9 phút",
-      "price": "20.000đ",
-    },
-    {
-      "image": "123",
-      "name": "Ô tô",
-      "capacity": "7 chỗ ",
-      "time_estimate": "10-12 phút",
-      "price": "25.000đ",
+  Future<void> _getCustomIcon() async {
+    try {
+      String imgurl = "https://www.fluttercampus.com/img/car.png";
+      bytes = (await NetworkAssetBundle(Uri.parse(imgurl)).load(imgurl))
+          .buffer
+          .asUint8List();
+    } catch (e) {
+      print('Error loading asset: $e');
     }
-  ];
+  }
 
+  void _updateDriverMarker(LatLng position) {
+    if (mapController != null) {
+      mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: position,
+            zoom: 15,
+          ),
+        ),
+      );
+    }
+  }
+  bool _showDialog = false;
+  late Uint8List bytes;
   Future<List<LatLng>> fetchRoutePoints(
       LatLng start, LatLng end, String apiKey) async {
     Dio dio = Dio();
+    
     final String url = 'https://rsapi.goong.io/Direction'
         '?origin=${start.latitude},${start.longitude}'
         '&destination=${end.latitude},${end.longitude}'
@@ -80,6 +91,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
     currentPosition = LatLng(widget.data.currentPosition!.latitude!,
         widget.data.currentPosition!.longitude!);
@@ -89,9 +101,10 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
       widget.data.currentPosition!.latitude! - 0.001,
       widget.data.currentPosition!.longitude!,
     );
+
     _markers = <Marker>[
       Marker(
-        markerId: const MarkerId('1'),
+        markerId: const MarkerId('0'),
         draggable: true,
         position: currentPosition,
         infoWindow: const InfoWindow(title: 'Ví trị hiện tại'),
@@ -105,7 +118,25 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
     ];
 
     drawPolylines();
+    _getCustomIcon();
   }
+  Future<void> _showDriverArrivedDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text("Tài xế đã đến điểm đón"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Đóng"))
+            ],
+          );
+        });
+  }
+
 
   drawPolylines() async {
     List<LatLng> routePoints = await fetchRoutePoints(currentPosition,
@@ -149,7 +180,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const TextCustom(
-                        text: "Phương tiện di chuyển",
+                        text: "Thông tin tài xế",
                         color: COLOR_TEXT_BLACK,
                         fontSize: FONT_SIZE_LARGE,
                         fontWeight: FontWeight.w600),
@@ -157,24 +188,32 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                 ),
                 const Divider(),
                 Expanded(
-                    child: ListView.builder(
-                  itemCount: vihicles.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: TextCustom(
-                          text: vihicles[index]["name"]!,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Center(
+                        child: Image.network(
+                          "https://media.istockphoto.com/id/1297328248/vector/circular-worker-avatar-icon-illustration-police-man-bus-driver.jpg?s=612x612&w=0&k=20&c=rqa0kzR7oAnPotA1chDBKjgquB71aWzhmUHszyGbgsw=",
+                          width: 50,
+                          height: 50,
+                        ),
+                      ),
+                      TextCustom(
+                          text: "Bui Quang Thanh",
                           color: COLOR_TEXT_BLACK,
                           fontSize: FONT_SIZE_NORMAL,
                           fontWeight: FontWeight.w500),
-                      subtitle: TextCustom(
-                          text: vihicles[index]["capacity"]!,
+                      TextCustom(
+                          text: "4.7 sao",
                           color: COLOR_TEXT_BLACK,
                           fontSize: FONT_SIZE_NORMAL,
                           fontWeight: FontWeight.w500),
-                      trailing: const Icon(Icons.arrow_forward_ios),
-                    );
-                  },
-                ))
+                      TextCustom(
+                          text: "Xe Blade",
+                          color: COLOR_TEXT_BLACK,
+                          fontSize: FONT_SIZE_NORMAL,
+                          fontWeight: FontWeight.w500)
+                    ])),
               ],
             ),
             Positioned(
@@ -186,8 +225,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                   color: Colors.white,
                   child: InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/inProgressPage',
-                          arguments: widget.data);
+                      print("Đã ấn");
                     },
                     child: Container(
                       margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -218,31 +256,64 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
         },
         child: const Icon(
           Icons.arrow_back_ios,
-          size: 18,
           color: COLOR_TEXT_MAIN,
         ),
       ),
       body: Stack(
         children: <Widget>[
-          GoogleMap(
-            zoomGesturesEnabled: true,
-            tiltGesturesEnabled: false,
-            trafficEnabled: true,
-            myLocationButtonEnabled: true,
-            minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
-            markers: Set<Marker>.of(_markers),
-            onCameraIdle: () {},
-            polylines: polylines,
-            onCameraMove: (CameraPosition cameraPosition) {
-              print(cameraPosition.target.latitude);
+          BlocListener<InProgressBloc, InProgressState>(
+            listener: (context, state) {
+              if (state is InProgressDriverArrivedLocation && !_showDialog) {
+                setState(() {
+                  _showDialog = true;
+                });
+                 _showDriverArrivedDialog(context).then((_) {
+                  setState(() {
+                    _showDialog = false;
+                  });
+                });
+              }
             },
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            initialCameraPosition:
-                CameraPosition(target: currentPositionCamera, zoom: 16),
+            child: BlocBuilder<InProgressBloc, InProgressState>(
+              builder: (context, state) {
+                if (state is InProgresssStateWaiting) {
+                  _markers.add(
+                    Marker(
+                      markerId: const MarkerId('3'),
+                      icon: BitmapDescriptor.fromBytes(bytes),
+                      position: state.markersLatLong,
+                      infoWindow: const InfoWindow(title: 'Vị trí tài xế'),
+                    ),
+                  );
+
+                  _updateDriverMarker(state.markersLatLong);
+                  return GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      mapController = controller;
+                    },
+                    zoomGesturesEnabled: true,
+                    tiltGesturesEnabled: false,
+                    trafficEnabled: true,
+                    myLocationButtonEnabled: true,
+                    minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
+                    markers: _markers.toSet(),
+                    onCameraIdle: () {},
+                    polylines: polylines,
+                    onCameraMove: (CameraPosition cameraPosition) {
+                      print(cameraPosition.target.latitude);
+                    },
+                    mapType: MapType.normal,
+                    myLocationEnabled: true,
+                    initialCameraPosition:
+                        CameraPosition(target: currentPositionCamera, zoom: 16),
+                  );
+                }
+                return Container();
+              },
+            ),
           ),
           Positioned(
-            top: 470,
+            top: 455,
             right: 10,
             left: 10,
             child: Container(
@@ -266,6 +337,12 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                           size: 20,
                         ),
                         SizedBox(width: 10),
+                        TextCustom(
+                            text: "Điểm đón",
+                            color: COLOR_TEXT_BLACK,
+                            fontSize: FONT_SIZE_NORMAL,
+                            fontWeight: FontWeight.w500),
+                        SizedBox(width: 10),
                         Expanded(
                           child: TextCustom(
                               text: "Vị trí của tôi",
@@ -287,6 +364,12 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                           color: COLOR_TEXT_BLACK,
                           size: 20,
                         ),
+                        SizedBox(width: 10),
+                        TextCustom(
+                            text: "Điểm đi    ",
+                            color: COLOR_TEXT_BLACK,
+                            fontSize: FONT_SIZE_NORMAL,
+                            fontWeight: FontWeight.w500),
                         SizedBox(width: 10),
                         Expanded(
                           child: TextCustom(

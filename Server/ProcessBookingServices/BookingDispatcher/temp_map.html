@@ -1,0 +1,60 @@
+
+<html>
+  <head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDegGs0gQhRVn5osHdt_hOmjwiXpjpJL9Q"></script>
+    <script>
+      function loadMap() {
+        var mapOptions = {
+            center: new google.maps.LatLng(10.75779143094024, 106.67629204160652),
+            zoom: 12,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        var polygonCoords = [{'lat': 10.75779143094024, 'lng': 106.67629204160652}, {'lat': 10.757143435410768, 'lng': 106.68808405552554}, {'lat': 10.768032562404773, 'lng': 106.68808405552554}, {'lat': 10.768681182708217, 'lng': 106.6762920416065}];
+        var s2Polygon = new google.maps.Polygon({
+          paths: polygonCoords,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#FF0000",
+          fillOpacity: 0.35
+        });
+        s2Polygon.setMap(map);
+
+        var customer = {'name': 'Customer', 'lat': 10.762975750529066, 'lng': 106.68248073637325};
+        var customerMarker = new google.maps.Marker({
+            position: new google.maps.LatLng(customer.lat, customer.lng),
+            map: map,
+            title: customer.name,
+            icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' // biểu tượng màu xanh
+        });
+
+        var drivers = [{'name': 'Driver 1', 'lat': 10.760705456873508, 'lng': 106.68172029261463}, {'name': 'Driver 2', 'lat': 10.766427594910402, 'lng': 106.68242978340015}, {'name': 'Driver 10', 'lat': 10.7637209239373, 'lng': 106.67653650968981}];
+        for (var i = 0; i < drivers.length; i++) {
+            var driver = drivers[i];
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(driver.lat, driver.lng),
+                map: map,
+                title: driver.name
+            });
+        }
+    
+
+       var drivers_outside = [{'name': 'Driver 3', 'lat': 10.762827795411908, 'lng': 106.67605254000351}, {'name': 'Driver 4', 'lat': 10.755743736320355, 'lng': 106.68186962178058}, {'name': 'Driver 5', 'lat': 10.74810197291771, 'lng': 106.68501111433203}, {'name': 'Driver 6', 'lat': 10.771509652320656, 'lng': 106.66712941496161}, {'name': 'Driver 7', 'lat': 10.749469533323435, 'lng': 106.6787023487461}, {'name': 'Driver 8', 'lat': 10.754997212085748, 'lng': 106.67681587926809}, {'name': 'Driver 9', 'lat': 10.763156776892332, 'lng': 106.66488454031358}, {'name': 'Driver 11', 'lat': 10.757767817322357, 'lng': 106.67522265805916}, {'name': 'Driver 12', 'lat': 10.7539154590141, 'lng': 106.67304782082425}, {'name': 'Driver 13', 'lat': 10.743520869950112, 'lng': 106.67125799474029}, {'name': 'Driver 14', 'lat': 10.75690739020548, 'lng': 106.67965405480352}, {'name': 'Driver 15', 'lat': 10.761055015679464, 'lng': 106.66771388983457}, {'name': 'Driver 16', 'lat': 10.759477139520886, 'lng': 106.66552793882776}, {'name': 'Driver 17', 'lat': 10.755299718087537, 'lng': 106.6683313286394}, {'name': 'Driver 18', 'lat': 10.75989385293287, 'lng': 106.66563575605767}, {'name': 'Driver 19', 'lat': 10.760201505632786, 'lng': 106.66849472469592}];
+        for (var i = 0; i < drivers_outside.length; i++) {
+            var driver = drivers_outside[i];
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(driver.lat, driver.lng),
+                map: map,
+                title: driver.name
+            });
+        }
+        }
+      
+
+    </script>
+  </head>
+  <body onload="loadMap()">
+    <div id="map" style="width:100%;height:800px;"></div>
+  </body>
+</html>

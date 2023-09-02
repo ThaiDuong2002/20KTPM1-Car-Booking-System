@@ -3,7 +3,7 @@ import process from "process";
 import dotenv from 'dotenv';
 import amqp from "amqplib";
 import http from "http";
-import {Server} from "socket.io";
+import { Server } from "socket.io";
 
 import db from './configs/db.js';
 import SocketListener from './utils/socket.js';
@@ -33,13 +33,15 @@ async function dispatcher() {
         const exchangeName = config.EXCHANGE_NAME;
         const queueName = config.QUEUE_NAME;
         const routingKey = config.DISPATCHER_ROUTING_KEY;
-        await channel.assertExchange(exchangeName, 'direct', {durable: false});
+        await channel.assertExchange(exchangeName, 'direct', { durable: false });
         const assertQueueResponse = await channel.assertQueue(queueName);
         const queue = assertQueueResponse.queue;
         await channel.bindQueue(queue, exchangeName, routingKey);
         console.log(`[*] Booking reception.`);
         console.log(`[*] Waiting for booking info.`);
 
+
+        
         // Consume message
         await channel.consume(queue, async (msg) => {
             try {
@@ -112,7 +114,7 @@ process.on('SIGINT', async () => {
         // Health check
         app.get('/health_check', (req, res) => {
             req.io.emit('newMessage', 'A message from /send route 123');
-            res.status(200).json({status: 'OK'});
+            res.status(200).json({ status: 'OK' });
         });
 
         // Start server

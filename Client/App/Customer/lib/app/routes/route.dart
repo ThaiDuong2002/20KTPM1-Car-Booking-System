@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:user/model_gobal/mylocation.dart';
 import 'package:user/presentation/booking/check_address/views/check_address_page.dart';
 import 'package:user/presentation/booking/confirm_booking/views/confirm_booking_page.dart';
+import 'package:user/presentation/booking/in_progress/views/in_progress_booking_view.dart';
 import 'package:user/presentation/callcenter/callcenter_page.dart';
 import 'package:user/presentation/detail_notification/views/detail_notification_page.dart';
 import 'package:user/presentation/detail_promotion/detail_promotion_page.dart';
@@ -12,6 +13,8 @@ import 'package:user/presentation/order/views/order_page.dart';
 import 'package:user/presentation/detail_order/detail_booking_page.dart';
 import 'package:user/presentation/promotion/views/promotion_page.dart';
 import 'package:user/presentation/upgrade_customer/upgrade_page.dart';
+import '../../model_gobal/pick_des.dart';
+import '../../presentation/booking/in_progress/views/in_pogress_booking.dart';
 import '../../presentation/menu_option/changeLanguagePage/views/changeLanguage_page.dart';
 import '../../presentation/menu_option/manageAccount/views/manegement_page.dart';
 import '../../presentation/menu_option/methodPaymentPage/views/methodPayment_page.dart';
@@ -20,7 +23,6 @@ import '../../presentation/navigation/navigation.dart';
 import '../../presentation/presentation.dart';
 import '../../presentation/search_location_page/views/search_location_page.dart';
 import '../../presentation/user/views/user_infor_page.dart';
-import '../../presentation/booking/check_address/views/check_address_page.dart';
 import '../../presentation/editProfile/views/editProfile_page.dart';
 import 'route_name.dart';
 
@@ -322,12 +324,33 @@ class AppRoute {
             );
           },
         );
-        case AppRouterName.confirmBookingPage:
-        final MyLocation data = args as MyLocation;
+      case AppRouterName.confirmBookingPage:
+        final PickUpAndDestication data = args as PickUpAndDestication;
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               ConfirmBookingPage(
-            currentLocation: data,
+            data: data,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+      case AppRouterName.inProgressPage:
+        final PickUpAndDestication data = args as PickUpAndDestication;
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              InProgressBookingView(
+            data: data,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
@@ -361,6 +384,7 @@ class AppRoute {
             );
           },
         );
+
       default:
         _errPage();
     }

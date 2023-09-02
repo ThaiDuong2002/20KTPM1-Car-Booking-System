@@ -73,13 +73,13 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                               text: "Kiểm tra kĩ điểm đón của bạn",
                               color: COLOR_TEXT_BLACK,
                               fontSize: FONT_SIZE_LARGE,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w600),
                           Container(
                             margin: const EdgeInsets.only(left: 10),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: COLOR_BLUE_MAIN,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(color: Colors.grey.shade300),
                             ),
@@ -89,7 +89,7 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                               },
                               child: const TextCustom(
                                   text: "Thay đổi",
-                                  color: COLOR_TEXT_BLACK,
+                                  color: Colors.white,
                                   fontSize: FONT_SIZE_LARGE,
                                   fontWeight: FontWeight.w500),
                             ),
@@ -101,7 +101,7 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                           text: "Chọn điểm đón thuận tiện nhất từ danh sách",
                           color: COLOR_TEXT_BLACK,
                           fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.w500),
+                          fontWeight: FontWeight.w600),
                       const Divider(),
                       Expanded(
                           child: ListView.builder(
@@ -134,7 +134,7 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                         child: InkWell(
                           onTap: () {
                             Navigator.pushNamed(context, '/confirmBookingPage',
-                                arguments: widget.currentLocation);
+                                arguments: postion);
                           },
                           child: Container(
                             margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -175,7 +175,7 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                           text: "Đang chọn điểm đón",
                           color: COLOR_TEXT_BLACK,
                           fontSize: FONT_SIZE_LARGE,
-                          fontWeight: FontWeight.w500),
+                          fontWeight: FontWeight.w600),
                     ]),
               ),
             ),
@@ -187,7 +187,8 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
         },
         child: const Icon(
           Icons.arrow_back_ios,
-          color: COLOR_TEXT_MAIN,
+          size: 18,
+          color: COLOR_TEXT_BLACK,
         ),
       ),
       body: GoogleMap(
