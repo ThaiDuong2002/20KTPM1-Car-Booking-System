@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import UserService from "../services/services.js";
+import {UserService, DriverService} from "../services/services.js";
 
 const DriverController = {
     me: async (req, res, next) => {
@@ -65,6 +65,35 @@ const DriverController = {
             next(createError.BadRequest(error.message))
         }
     },
+    update_location: async (req, res, next) => {
+        try {
+            const driverId = req.headers['x-user-id']
+            const {lat, lng, tripType} = req.body
+            await DriverService.updateDriverLocationToRedis(driverId, lat, lng, tripType)
+            res.json({
+                message: "Update driver's location successfully",
+                status: 200,
+                data: []
+            })
+        } catch (error) {
+            next(createError.BadRequest(error.message))
+        }
+    },
+    get_driver_locations: async (req, res, next) => {
+        try {
+            const driverLocations = await DriverService.getDriverLocations();
+            if(!driverLocations) {
+                return next(createError.BadRequest("No drivers found"))
+            }
+            res.status(200).json({
+                message: "Get driver's locations successfully",
+                status: 200,
+                data: driverLocations
+            });
+        } catch (error) {
+            next(createError.BadRequest(error.message))
+        }
+    }
 };
 
 export default DriverController;

@@ -10,6 +10,7 @@ load_dotenv()
 
 API_KEY = os.getenv("GOONG_API_KEY")
 REDIS_URI = os.getenv("REDIS_URI")
+DISPATCHER_PORT = os.getenv("DISPATCHER_PORT")
 
 redis_client = redis.from_url(REDIS_URI)
 # redis_client.flushdb()
@@ -89,7 +90,7 @@ def get_distance_and_duration(api_key, origins, destinations, vehicle="car"):
         return None
 
 
-@app.route('/find-drivers', methods=['POST'])
+@app.route('/find_drivers', methods=['POST'])
 def find_drivers():
     # Nhận dữ liệu từ request
     drivers = retrieve_drivers_location()
@@ -162,7 +163,7 @@ def find_drivers():
     })
 
 
-@app.route('/redis-health-check', methods=['GET'])
+@app.route('/redis_health_check', methods=['GET'])
 def check_redis():
     try:
         result = redis_client.ping()
@@ -197,4 +198,4 @@ def get_driver_locations():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    app.run(host='0.0.0.0', port=DISPATCHER_PORT, debug=True)
