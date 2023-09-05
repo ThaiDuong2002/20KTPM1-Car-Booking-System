@@ -21,6 +21,7 @@ const VehicleSchema = new Schema(
             required: true,
             default: '',
         },
+
     },
     {
         timestamps: true,

@@ -3,7 +3,7 @@ import {
     UserService,
     CustomerService,
     AddressService,
-} from "../services/database_services.js";
+} from "../services/services.js";
 
 const AddressController = {
     get_addresses: async (req, res, next) => {
@@ -58,17 +58,17 @@ const AddressController = {
                 return next(createError.BadRequest("User not found"))
             }
             const address_data = {
-                user_id: user_id,
+                userId: user_id,
                 ...address
             }
             const add_address_re = await AddressService.addAddress(address_data)
             if (!add_address_re) {
                 return next(createError.BadRequest("Add address failed"))
             }
-            // const update_address_re = await CustomerService.saveAddress(user_id, add_address_re._id)
-            // if (!update_address_re) {
-            //     return next(createError.BadRequest("Save address of customer failed"))
-            // }
+            const update_address_re = await CustomerService.saveAddress(user_id, add_address_re._id)
+            if (!update_address_re) {
+                return next(createError.BadRequest("Save address of customer failed"))
+            }
             res.json({
                 message: "Save address successfully",
                 status: 200,

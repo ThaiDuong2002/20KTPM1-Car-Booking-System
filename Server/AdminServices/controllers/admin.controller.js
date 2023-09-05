@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import AdminServices from "../services/database_services.js";
+import AdminServices from "../services/AdminServices.js";
 
 const AdminController = {
     get_users: async (req, res, next) => {

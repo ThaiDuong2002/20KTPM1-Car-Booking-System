@@ -3,10 +3,12 @@ import mongoose from 'mongoose';
 
 dotenv.config();
 
+const config = process.env;
+
 export default async () => {
     try {
         mongoose.set('strictQuery', true);
-        const conn = await mongoose.connect(process.env.MONGO, {
+        const conn = await mongoose.connect(config.MONGO_DB, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

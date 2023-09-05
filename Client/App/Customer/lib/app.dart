@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:user/model_gobal/mylocation.dart';
 import 'package:user/model_gobal/pick_des.dart';
+import 'package:user/model_gobal/socket_client.dart';
 import 'app/routes/route.dart';
 
 class MyApp extends StatefulWidget {
@@ -74,9 +75,13 @@ class _MyAppState extends State<MyApp> {
         Provider(
           create: (context) => PickUpAndDestication(),
         ),
+         Provider(
+          create: (context) => SocketService(),
+        ),
+        
       ],
       child: const MaterialApp(
-        title: "Booking App",
+        title: "BookingModel App",
         // home: SplashPage(),
         debugShowCheckedModeBanner: false,
         initialRoute: '/navigationPage',

@@ -6,9 +6,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const placeController = {
-    async test(req, res, next) {
-        res.send('Test Place Controller');
-    },
     async get_query_place_list(req, res, next) {
         const {input, location} = req.query
         try {

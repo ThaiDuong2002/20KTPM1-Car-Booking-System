@@ -1,8 +1,10 @@
 import amqp from 'amqplib';
+import dotenv from 'dotenv';
 
+dotenv.config();
 async function sendBookingInfo() {
     // Create connection
-    const connection = await amqp.connect('amqp://localhost');
+    const connection = await amqp.connect(process.env.KEY_MQ);
 
     // Create channel
     const channel = await connection.createChannel();
@@ -34,7 +36,7 @@ async function sendBookingInfo() {
     };
 
     // Create exchange
-    await channel.assertExchange(exchangeName, 'direct', {durable: false});
+    await channel.assertExchange(exchangeName, 'direct', { durable: false });
 
     // Publish message
     channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(bookingInfo)));

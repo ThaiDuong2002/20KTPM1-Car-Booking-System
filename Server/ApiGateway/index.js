@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -22,6 +21,7 @@ const routes = {
     '/api/ratings': `http://localhost:${process.env.PORT_RATING}`,
     '/api/promotions': `http://localhost:${process.env.PORT_PROMOTION}`,
     '/api/notifications': `http://localhost:${process.env.PORT_NOTIFICATION}`,
+    '/api/prices': `http://localhost:${process.env.PORT_PRICE}`,
 };
 const unless = (path, middleware) => {
     return function (req, res, next) {
