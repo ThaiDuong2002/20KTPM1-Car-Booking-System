@@ -28,7 +28,8 @@ import { PlaceOutlined, TourOutlined } from "@mui/icons-material";
 const CustomerHistoryBooking = (props) => {
   const theme = useTheme();
   // const { items = [] } = props;
-  const items = mockDataHistoryBooking;
+  // const items = mockDataHistoryBooking;
+  const items = props.historyList;
 
   const handlePickUpBtnClick = () => {};
   const handleDestinationalBtnClick = () => {};
@@ -102,19 +103,17 @@ const CustomerHistoryBooking = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((booking) => {
+              {items.map((booking, index) => {
                 return (
                   <TableRow
                     hover
                     key={booking._id}
                     // onClick={() => handleTableRowClick(booking._id)}
                   >
-                    <TableCell>{booking._id}</TableCell>
-                    <TableCell>{booking?.bookingDate}</TableCell>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{booking?.createdAt}</TableCell>
                     <TableCell>
-                      <Typography>
-                        {booking.pickUpLocation?.location}
-                      </Typography>
+                      <Typography>{booking.pickUpLocation?.address}</Typography>
                       <IconButton
                         onClick={() => handlePickUpBtnClick()}
                         target="_blank"
@@ -145,7 +144,7 @@ const CustomerHistoryBooking = (props) => {
                     </TableCell>
                     <TableCell>
                       <Typography>
-                        {booking.destinationLocation?.location}
+                        {booking.destinationLocation?.address}
                       </Typography>
                       <IconButton
                         hover
@@ -177,7 +176,7 @@ const CustomerHistoryBooking = (props) => {
                         <PlaceOutlined />
                       </IconButton>
                     </TableCell>
-                    <TableCell>{booking.tripType}</TableCell>
+                    <TableCell>{booking.type}</TableCell>
                     <TableCell>
                       <Button
                         onClick={() => handleChooseLocationBtnClick()}

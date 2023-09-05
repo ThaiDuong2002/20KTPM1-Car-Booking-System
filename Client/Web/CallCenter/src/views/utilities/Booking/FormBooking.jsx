@@ -55,32 +55,35 @@ const FormBooking = () => {
 
   const handleFormSubmit = async (values) => {
     console.log("Form values: ", values);
-    try {
-      const response = await axiosClient.post(
-        "/bookings",
-        JSON.stringify(values)
-      );
-      // Xử lý phản hồi từ API nếu cần
-      console.log("Booking successful:", response.data);
-    } catch (error) {
-      // Xử lý lỗi nếu gửi yêu cầu không thành công
-      console.error("Error creating booking:", error);
-    }
+    // try {
+    //   const response = await axiosClient.post(
+    //     "/bookings",
+    //     JSON.stringify(values)
+    //   );
+    //   // Xử lý phản hồi từ API nếu cần
+    //   console.log("Booking successful:", response.data);
+    // } catch (error) {
+    //   // Xử lý lỗi nếu gửi yêu cầu không thành công
+    //   console.error("Error creating booking:", error);
+    // }
   };
 
   const handlePhoneNumberChange = async (event) => {
-    // try {
-    //   const historyListResponse = await axiosClient.get(
-    //     "book/history/0795907075"
-    //   );
-    //   const mostlyLocationlistResponse = await axiosClient.get(
-    //     "book/mostly-location/0795907075"
-    //   );
-    //   setHistoryList(historyListResponse.data.data);
-    //   setMostlyLocationList(mostlyLocationlistResponse.data.data);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const phoneNumber = event.target.value;
+      const historyListResponse = await axiosClient.get(
+        `booking/history/${phoneNumber}`
+      );
+      // const mostlyLocationlistResponse = await axiosClient.get(
+      //   "booking/mostly-location/0795907075"
+      // );
+      setHistoryList(historyListResponse.data.data);
+      // setMostlyLocationList(mostlyLocationlistResponse.data.data);
+      console.log("History List: ", historyList);
+      // console.log("Mosyly List: " + mostlyLocationList);
+    } catch (error) {
+      console.log(error);
+    }
     const newPhoneNumber = event.target.value;
     console.log("New Phone Number:", newPhoneNumber);
   };
@@ -126,7 +129,7 @@ const FormBooking = () => {
                     helperText={touched.customerName && errors.customerName}
                     fullWidth
                     sx={{
-                      mb: "5px",
+                      mb: "20px",
                     }}
                   />
                   <TextField
@@ -164,7 +167,7 @@ const FormBooking = () => {
                     helperText={touched.pickUpLocation && errors.pickUpLocation}
                     fullWidth
                     sx={{
-                      mb: "5px",
+                      mb: "20px",
                     }}
                   />
                   <TextField
@@ -229,10 +232,10 @@ const FormBooking = () => {
       </Box>
       <Grid container spacing={gridSpacing}>
         <Grid item lg={7}>
-          <CustomerHistoryBooking />
+          <CustomerHistoryBooking historyList={historyList} />
         </Grid>
         <Grid item lg={5}>
-          <MostlyVistedLocation />
+          <MostlyVistedLocation mostlyLocationList={mostlyLocationList} />
         </Grid>
       </Grid>
     </>
