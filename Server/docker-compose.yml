@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  # API Gateway services
+  api-gateway:
+    build: ./ApiGateway
+    ports:
+      - 3000:3000
+    environment:
+      PORT: 3000
+      PORT_ADMIN: 3001
+      PORT_CALLCENTER: 3002
+      PORT_CUSTOMER: 3003
+      PORT_DRIVER: 3004
+      PORT_BOOKING: 3005
+      PORT_PROMOTION: 3006
+      PORT_RATING: 3007
+      PORT_AUTHEN: 3008
+      PORT_NOTIFICATION: 3009
+      PORT_PRICE: 3012
+      ACCESS_TOKEN_SECRET: KEY
+
+  # Admin services
+  admin-services:
+    build: ./AdminServices
+    ports:
+      - 3001:3001
+    environment:
+      PORT: 3001
+      MONGO: mongodb+srv://thaiduong032002:345486@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+  
+  # Authen services
+  authen-services:
+    build: ./AuthenServices
+    ports:
+      - 3008:3008
+    environment:
+      PORT: 3008
+      MONGO: mongodb+srv://thaiduong032002:345486@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+      ACCESS_TOKEN_SECRET: KEY

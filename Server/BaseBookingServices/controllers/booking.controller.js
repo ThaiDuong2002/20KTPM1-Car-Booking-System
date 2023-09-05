@@ -162,6 +162,25 @@ const BookingController = {
             next(createError.InternalServerError(err.message));
         }
     },
+    async get_most_location(req, res, next) {
+        try {
+            const phone = req.params.phone;
+            const result = await BookingService.get_most_location(phone);
+            if (!result) {
+                return res.status(404).json({
+                    message: "Booking not found",
+                    status: 404,
+                });
+            }
+            res.status(200).json({
+                message: "Get most location successfully",
+                status: 200,
+                data: result,
+            });
+        } catch (err) {
+            next(createError.InternalServerError(err.message));
+        }
+    },
 };
 
 export default BookingController;

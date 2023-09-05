@@ -22,7 +22,7 @@ import {
 
 import { mockDataMostlyVisitedLocation } from "data/mockData";
 
-const MostlyVistedLocation = () => {
+const MostlyVistedLocation = (props) => {
   const theme = useTheme();
   const items = mockDataMostlyVisitedLocation;
   const handlePickUpBtnClick = () => {};

@@ -7,8 +7,6 @@ const secret = process.env.ACCESS_TOKEN_SECRET;
 
 const TokenService = {
     async verifyAccessToken(req, res, next) {
-        console.log("secret", secret)
-        console.log("Verify token");
         if (!req.headers['authorization']) {
             next(createError.Unauthorized("You are not authorized to access this page"));
         } else {
