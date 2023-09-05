@@ -373,7 +373,7 @@ class _InProgressBookingState extends State<InProgressBooking> {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextCustom(
-                              text: widget.data.pickUpLocation!.name.toString(),
+                              text: widget.data.pickUpLocation!.label.toString(),
                               color: COLOR_TEXT_BLACK,
                               fontSize: FONT_SIZE_NORMAL,
                               fontWeight: FontWeight.w500),

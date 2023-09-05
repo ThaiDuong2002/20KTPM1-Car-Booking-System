@@ -1,7 +1,7 @@
 class MyLocation {
-  final double? latitude;
-  final double? longitude;
-  final String? name;
+   double? latitude;
+   double? longitude;
+   String? name;
   final String? format_address;
   MyLocation({
     this.latitude,

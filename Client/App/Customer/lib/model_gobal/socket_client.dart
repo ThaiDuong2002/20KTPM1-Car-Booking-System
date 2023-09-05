@@ -12,8 +12,9 @@ class SocketService with ChangeNotifier {
   }
 
   _connect() {
-    socket = IO.io('http://192.168.2.74:3009', <String, dynamic>{
-      'transports': ['websocket'],  
+    socket =
+        IO.io('https://75e6-14-161-23-204.ngrok-free.app/', <String, dynamic>{
+      'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -33,7 +34,7 @@ class SocketService with ChangeNotifier {
     socket?.disconnect();
   }
 
-  void sendMessage(String message,dynamic data) {
+  void sendMessage(String message, dynamic data) {
     socket?.emit(message, {
       'data': data,
     }); // This sends a signal named 'accept' to the server

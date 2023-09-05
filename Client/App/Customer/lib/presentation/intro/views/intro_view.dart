@@ -1,5 +1,6 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:user/app/constant/color.dart';
 import 'package:user/app/constant/size.dart';
 import 'package:user/presentation/presentation.dart';
 import 'package:user/presentation/widget/custom_text.dart';
@@ -44,19 +45,36 @@ class _IntroViewState extends State<IntroView> {
                           ),
                           child: const Image(
                             image: AssetImage("assets/images/login/1.png"),
-                            fit: BoxFit.fitWidth,
+                         
                           ),
                         ),
                       ),
                       Expanded(
                         flex: 2,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: const TextCustom(
-                                text: "An toàn là sự ưu tiên của chúng tôi",
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const TextCustom(
+                                  text: 'An toàn là sự ưu tiên của chúng tôi ',
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  maxLines: 2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              const TextCustom(
+                                  textAlign: TextAlign.center,
+                                  text:
+                                      ' Mỗi chuyến đi của bạn, chúng tôi luôn đặt sự an toàn lên hàng đầu',
+                                  color: Colors.black,
+                                  fontSize: FONT_SIZE_NORMAL,
+                                  maxLines: 2,
+                                  fontWeight: FontWeight.normal),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -72,19 +90,36 @@ class _IntroViewState extends State<IntroView> {
                           ),
                           child: const Image(
                             image: AssetImage("assets/images/login/2.png"),
-                            fit: BoxFit.fitWidth,
+                          
                           ),
                         ),
                       ),
                       Expanded(
                         flex: 2,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: const TextCustom(
-                                text: "Đánh giá và phản hồi dịch vụ",
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const TextCustom(
+                                  text: 'Chia sẻ cảm nhận, nâng tầm dịch vụ ',
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  maxLines: 2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              const TextCustom(
+                                  textAlign: TextAlign.center,
+                                  text:
+                                      ' Mọi ý kiến của bạn giúp chúng tôi hoàn thiện hơn mỗi ngày.',
+                                  color: Colors.black,
+                                  fontSize: FONT_SIZE_NORMAL,
+                                  maxLines: 2,
+                                  fontWeight: FontWeight.normal),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -100,19 +135,35 @@ class _IntroViewState extends State<IntroView> {
                           ),
                           child: const Image(
                             image: AssetImage("assets/images/login/3.png"),
-                            fit: BoxFit.fitWidth,
                           ),
                         ),
                       ),
                       Expanded(
                         flex: 2,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: const TextCustom(
-                                text: "Đặt xe nhanh chóng và tiện lợi",
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              const TextCustom(
+                                  text: 'Đặt xe nhanh chóng và tiện lợi',
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  maxLines: 2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              const TextCustom(
+                                  textAlign: TextAlign.center,
+                                  text:
+                                      ' Lựa chọn hoàn hảo cho mỗi chuyến đi của bạn! ',
+                                  color: Colors.black,
+                                  fontSize: FONT_SIZE_NORMAL,
+                                  maxLines: 2,
+                                  fontWeight: FontWeight.normal),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -125,7 +176,8 @@ class _IntroViewState extends State<IntroView> {
                     dotsCount: 3, // Number of pages
                     position: _currentIndex,
                     decorator: const DotsDecorator(
-                      activeColor: Colors.blue, // Current page indicator color
+                      activeColor:
+                          COLOR_BLUE_MAIN, // Current page indicator color
                     ))),
             Expanded(
               flex: 2,

@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+import 'package:user/app/constant/color.dart';
+import 'package:user/app/constant/size.dart';
+import 'package:user/presentation/login/bloc/authen_bloc.dart';
+import 'package:user/presentation/login/bloc/authen_event.dart';
+import 'package:user/presentation/login/bloc/authen_state.dart';
 import 'package:user/presentation/navigation/navigation.dart';
 import 'package:user/presentation/widget/custom_text.dart';
+
+import '../../../data/common/module/shared_pref_module.dart';
+import '../../widget/loading.dart';
+import '../dto/signup/signup_request.dart';
+import '../dto/login/login_request.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -16,6 +29,14 @@ class _LoginViewState extends State<LoginView> {
   int _currentIndex = 0;
   int expandedFlex = 3;
   String? identify, password;
+
+  TextEditingController _controller_firstname = TextEditingController();
+  TextEditingController _controller_lastname = TextEditingController();
+  TextEditingController _controller_phone = TextEditingController();
+  TextEditingController _controller_email = TextEditingController();
+  TextEditingController _controller_password = TextEditingController();
+  TextEditingController _controller_indentifier = TextEditingController();
+  TextEditingController _controller_password_login = TextEditingController();
 
   void _handleTabTap(int index) {
     setState(() {
@@ -41,6 +62,7 @@ class _LoginViewState extends State<LoginView> {
                   child: Column(
                     children: <Widget>[
                       TextFormField(
+                        controller: _controller_indentifier,
                         decoration: InputDecoration(
                           labelText: 'Số điện thoại hoặc email',
                           border: OutlineInputBorder(
@@ -61,9 +83,9 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
+                        controller: _controller_password_login,
                         decoration: InputDecoration(
                           labelText: 'Mật khẩu',
-                          
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
@@ -86,11 +108,15 @@ class _LoginViewState extends State<LoginView> {
                         onPressed: () {
                           if (_formKeyLogin.currentState!.validate()) {
                             // If the form is valid, display a Snackbar.
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NavigationBottom()));
+                            print("Đăng nhập");
+                            Navigator.pushNamed(context, '/navigationPage');
+                            // LoginRequest request = LoginRequest(
+                            //   identifier: _controller_indentifier.text,
+                            //   password: _controller_password_login.text,
+                            // );
+                            // print(request);
+                            // BlocProvider.of<AuthenBloc>(context, listen: false)
+                            //     .add(AuthenEventLogin(request: request));
                           }
                         },
                         child: TextCustom(
@@ -154,14 +180,118 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
-        child: Column(
-          children: <Widget>[
-            _buildHeaderImage(),
-            _buildBody(),
-          ],
+      body: BlocListener<AuthenBloc, AuthenState>(
+        listener: (context, state) {
+          // Navigator.of(context).pop();
+          print("hahahâ");
+
+          if (state is AuthenStateSuccess) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop(); // close existing dialog
+            }
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(
+                    child: TextCustom(
+                        text: "Đăng kí thành công",
+                        color: COLOR_TEXT_BLACK,
+                        fontSize: FONT_SIZE_LARGE,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  content: Lottie.asset('assets/register_success.json'),
+                  actions: <Widget>[
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        textStyle: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      child: TextCustom(
+                          text: "Đăng nhập ngay",
+                          color: Colors.black.withOpacity(0.5),
+                          fontSize: FONT_SIZE_NORMAL,
+                          fontWeight: FontWeight.bold),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+          if (state is AuthenStateLoginSucess) {
+            try {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NavigationBottom()));
+            } catch (e) {
+              print(e.toString());
+            }
+          }
+          if (state is AuthenStateFailure) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop(); // close existing dialog
+            }
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(
+                    child: TextCustom(
+                        text: "Đăng kí thất bại",
+                        color: COLOR_TEXT_BLACK,
+                        fontSize: FONT_SIZE_LARGE,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  content: TextCustom(
+                      text: state.message ?? "Vui lòng kiểm tra lại thông tin",
+                      color: COLOR_TEXT_BLACK,
+                      fontSize: FONT_SIZE_NORMAL,
+                      fontWeight: FontWeight.normal),
+                  actions: <Widget>[
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        textStyle: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      child: TextCustom(
+                          text: "Tiếp tục",
+                          color: Colors.black.withOpacity(0.5),
+                          fontSize: FONT_SIZE_NORMAL,
+                          fontWeight: FontWeight.bold),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+          if (state is AuthenStateLoading) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return LoadingDialog();
+                });
+          }
+        },
+        child: BlocBuilder<AuthenBloc, AuthenState>(
+          builder: (context, state) {
+            return Container(
+              color: Colors.white,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15.0),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+                  _buildHeaderImage(),
+                  _buildBody(),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -230,6 +360,8 @@ class _LoginViewState extends State<LoginView> {
                 children: <Widget>[
                   Expanded(
                     child: TextFormField(
+                      controller: _controller_firstname,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Họ',
                         border: OutlineInputBorder(
@@ -247,6 +379,8 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(width: 30),
                   Expanded(
                     child: TextFormField(
+                      controller: _controller_lastname,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'Tên',
                         border: OutlineInputBorder(
@@ -265,6 +399,8 @@ class _LoginViewState extends State<LoginView> {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                controller: _controller_phone,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
                   labelText: 'Số điện thoại',
                   border: OutlineInputBorder(
@@ -280,6 +416,8 @@ class _LoginViewState extends State<LoginView> {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: _controller_email,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(
@@ -295,6 +433,8 @@ class _LoginViewState extends State<LoginView> {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: _controller_password,
                 decoration: InputDecoration(
                   labelText: 'Mật khẩu',
                   border: OutlineInputBorder(
@@ -313,7 +453,17 @@ class _LoginViewState extends State<LoginView> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKeySignup.currentState!.validate()) {
+                    SignUpRequest request = SignUpRequest(
+                      firstname: _controller_firstname.text,
+                      lastname: _controller_lastname.text,
+                      phone: _controller_phone.text,
+                      email: _controller_email.text,
+                      password: _controller_password.text,
+                    );
                     // Xử lý submit form đăng kí
+                    print(request);
+                    BlocProvider.of<AuthenBloc>(context, listen: false)
+                        .add(AuthenEventSignUp(request: request));
                   }
                 },
                 child: const Text('Đăng kí'),

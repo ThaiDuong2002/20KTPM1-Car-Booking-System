@@ -30,4 +30,5 @@ class AppRouterName {
   static const checkAddressPage = '/checkAddressPage';
    static const confirmBookingPage = '/confirmBookingPage';
   static const inProgressPage = '/inProgressPage';
+   static const ratingPage = '/ratingPage';
 }

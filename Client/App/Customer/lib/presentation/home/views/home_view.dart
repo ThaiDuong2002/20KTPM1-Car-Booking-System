@@ -6,6 +6,20 @@ import 'package:user/app/constant/size.dart';
 import 'package:user/presentation/widget/custom_text.dart';
 
 class HomeView extends StatelessWidget {
+  static final List itemPromotions = [
+    {
+      "name": "Nhà riêng",
+      "item": "Giảm 30% tối đa 60k cho 1 đơn hàng đầu tiên",
+    },
+    {
+      "name": "Địa điểm đã ghé thămn",
+      "item": "Giảm 50% tối đa 20k cho 2 đơn hàng đầu tiên",
+    },
+    {
+      "name": "Công ty",
+      "item": "Giảm 30% tối đa 60k cho 1 đơn hàng đầu tiên",
+    }
+  ];
   static final List promotion = [
     {
       "image": "assets/images/promotion/2.png",
@@ -409,6 +423,78 @@ class HomeView extends StatelessWidget {
                             ),
                           ));
                     },
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Image(
+                      width: 20,
+                      height: 20,
+                      image: AssetImage("assets/images/icons/icon.png"),
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    RichText(
+                        text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Địa điểm",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: " | ",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "RideNow bên cạnh bạn mỗi chuyến đi",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Row(
+                    children: [
+                      ...itemPromotions.map((promotionItem) => Container(
+                            margin: const EdgeInsets.only(right: 10, top: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 1,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(promotionItem['name'],
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                      color: Colors.black)),
+                            ),
+                          ))
+                    ],
                   ),
                 ),
               ],

@@ -1,18 +1,23 @@
-
 import 'package:dio/dio.dart';
-
 import '../module/shared_pref_module.dart';
 
 class RequestInterceptor extends Interceptor {
-  final SharedPreferenceModule pref;
+  static SharedPreferenceModule? _pref;
+  static final RequestInterceptor _singleton = RequestInterceptor._internal();
 
-  RequestInterceptor({required this.pref});
+  factory RequestInterceptor() {
+    return _singleton;
+  }
+
+  RequestInterceptor._internal();
+
+  static set pref(SharedPreferenceModule value) => _pref = value;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    pref.getUserInfo().then((value) => {
+    _pref?.getUserInfo().then((value) => {
           if (value.isNotEmpty)
-            {options.headers["Authorization"] = value['token'].toString()}
+            {options.headers["Authorization"] = value['accessToken'].toString()}
         });
 
     return super.onRequest(options, handler);
@@ -22,8 +27,6 @@ class RequestInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     print("=== Dio Error Occured ===");
     print(err.message);
-    // consider to remap this error to generic error.
     return super.onError(err, handler);
   }
-
 }

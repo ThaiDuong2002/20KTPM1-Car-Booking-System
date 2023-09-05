@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 class ItemSearchEntity {
-  String name;
-  String formatted_address;
+  String label;
+  String title;
   double lat;
   double lng;
   double distance;
   ItemSearchEntity({
-    required this.name,
-    required this.formatted_address,
+    required this.label,
+    required this.title,
     required this.lat,
     required this.lng,
     required this.distance,
@@ -17,8 +17,8 @@ class ItemSearchEntity {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
 
-    result.addAll({'name': name});
-    result.addAll({'formatted_address': formatted_address});
+    result.addAll({'label': label});
+    result.addAll({'title': title});
     result.addAll({'lat': lat});
     result.addAll({'lng': lng});
     result.addAll({'distance': distance});
@@ -28,10 +28,10 @@ class ItemSearchEntity {
 
   factory ItemSearchEntity.fromMap(Map<String, dynamic> map) {
     return ItemSearchEntity(
-      name: map['name'] ?? '',
-      formatted_address: map['formatted_address'] ?? '',
-      lat: map['geometry']['location']['lat']?.toDouble() ?? 0.0,
-      lng: map['geometry']['location']['lng']?.toDouble() ?? 0.0,
+      label: map['address']['label'] ?? '',
+      title: map['title'] ?? '',
+      lat: map['position']['lat']?.toDouble() ?? 0.0,
+      lng: map['position']['lng']?.toDouble() ?? 0.0,
       distance: map['distance']?.toDouble() ?? 0.0,
     );
   }
@@ -43,6 +43,6 @@ class ItemSearchEntity {
 
   @override
   String toString() {
-    return 'ItemSearchEntity(name: $name, formatted_address: $formatted_address, lat: $lat, lng: $lng, distance: $distance)';
+    return 'ItemSearchEntity(label: $label, title: $title, lat: $lat, lng: $lng, distance: $distance)';
   }
 }

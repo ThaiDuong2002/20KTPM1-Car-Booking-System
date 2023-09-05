@@ -1,11 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'dart:ui' as ui;
 import '../../../../app/constant/color.dart';
 import '../../../../app/constant/size.dart';
 import '../../../../model_gobal/pick_des.dart';
 import '../../../widget/custom_text.dart';
+import '../blocs/confirm_booking_bloc.dart';
+import '../blocs/confirm_booking_state.dart';
 
 class ConfirmBookingPage extends StatefulWidget {
   final PickUpAndDestication data;
@@ -20,6 +26,45 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
   late LatLng currentPosition;
   late LatLng desPosition;
   late LatLng currentPositionCamera;
+  BitmapDescriptor? customIcon;
+  BitmapDescriptor? customIcon2;
+
+  // Cargar imagen del Marker
+  Future<void> getIcons() async {
+    var custom = await getImages("assets/images/icon_marker.png", 150);
+    var custom02 =
+        await getImages("assets/images/icon_marker_destination.png", 150);
+    customIcon = BitmapDescriptor.fromBytes(custom);
+    customIcon2 = BitmapDescriptor.fromBytes(custom02);
+    _markers = <Marker>[
+      Marker(
+        markerId: const MarkerId('1'),
+        draggable: true,
+        icon: customIcon!,
+        position: currentPosition,
+        infoWindow: const InfoWindow(title: 'Ví trị hiện tại'),
+      ),
+      Marker(
+        markerId: const MarkerId('2'),
+        draggable: true,
+        position: desPosition,
+        icon: customIcon2!,
+        infoWindow: const InfoWindow(title: 'Vị trí điểm đến'),
+      ),
+    ];
+    setState(() {});
+  }
+
+  Future<Uint8List> getImages(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetHeight: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
   Set<Polyline> polylines = {};
 
   static const vihicles = [
@@ -89,20 +134,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
       widget.data.currentPosition!.latitude! - 0.001,
       widget.data.currentPosition!.longitude!,
     );
-    _markers = <Marker>[
-      Marker(
-        markerId: const MarkerId('1'),
-        draggable: true,
-        position: currentPosition,
-        infoWindow: const InfoWindow(title: 'Ví trị hiện tại'),
-      ),
-      Marker(
-        markerId: const MarkerId('1'),
-        draggable: true,
-        position: desPosition,
-        infoWindow: const InfoWindow(title: 'Vị trí điểm đến'),
-      ),
-    ];
+    getIcons();
 
     drawPolylines();
   }
@@ -114,7 +146,12 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
     polylines.add(Polyline(
       polylineId: PolylineId(currentPosition.toString()),
       visible: true,
-      width: 5, //width of polyline
+
+      patterns: [PatternItem.dash(10), PatternItem.gap(10)],
+      endCap: Cap.roundCap,
+      startCap: Cap.roundCap,
+      jointType: JointType.round,
+      width: 8, //width of polyline
       points: routePoints,
       color: Colors.deepOrangeAccent, //color of polyline
     ));
@@ -145,6 +182,16 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -156,22 +203,51 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                   ],
                 ),
                 const Divider(),
-                Expanded(
-                    child: ListView.builder(
-                  itemCount: vihicles.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: TextCustom(
-                          text: vihicles[index]["name"]!,
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.w500),
-                      subtitle: TextCustom(
-                          text: vihicles[index]["capacity"]!,
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.w500),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                Expanded(child: BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
+                  builder: (context, state) {
+                    return ListView.separated(
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: vihicles.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/home/car.png",
+                                    width: 60,
+                                    height: 60,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextCustom(
+                                          text: "Xe 1",
+                                          color: COLOR_TEXT_BLACK,
+                                          fontSize: FONT_SIZE_LARGE,
+                                          fontWeight: FontWeight.w500),
+                                      TextCustom(
+                                          text: "Xe 1",
+                                          color: COLOR_TEXT_BLACK,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  TextCustom(
+                                      text: "39.0000 VND",
+                                      color: COLOR_TEXT_BLACK,
+                                      fontSize: FONT_SIZE_LARGE,
+                                      fontWeight: FontWeight.w500)
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
                 ))
@@ -242,7 +318,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                 CameraPosition(target: currentPositionCamera, zoom: 16),
           ),
           Positioned(
-            top: 470,
+            top: 460,
             right: 10,
             left: 10,
             child: Container(
@@ -254,16 +330,18 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
                     margin: const EdgeInsets.only(left: 10),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Icon(
-                          Icons.location_on,
-                          color: COLOR_TEXT_BLACK,
-                          size: 20,
+                        Image.asset(
+                          "assets/images/icon_marker.png",
+                          width: 25,
+                          height: 25,
                         ),
                         SizedBox(width: 10),
                         Expanded(
@@ -282,15 +360,16 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Icon(
-                          Icons.location_on,
-                          color: COLOR_TEXT_BLACK,
-                          size: 20,
+                        Image.asset(
+                          "assets/images/icon_marker_destination.png",
+                          width: 25,
+                          height: 25,
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: TextCustom(
-                              text: widget.data.pickUpLocation!.name.toString(),
+                              text:
+                                  widget.data.pickUpLocation!.label.toString(),
                               color: COLOR_TEXT_BLACK,
                               fontSize: FONT_SIZE_NORMAL,
                               fontWeight: FontWeight.w500),

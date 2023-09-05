@@ -257,7 +257,7 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                     MediaQuery.of(context).size.height * 0.12,
                                 padding: const EdgeInsets.all(15),
                                 decoration: BoxDecoration(
-                                    color: Colors.red,
+                                    color: Colors.white,
                                     border: Border.all(
                                         color: Colors.grey.shade300, width: 1),
                                     borderRadius: BorderRadius.circular(10)),
@@ -265,6 +265,7 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Expanded(
+                                      flex: 2,
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -277,10 +278,14 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                             height: 5,
                                           ),
                                           TextCustom(
-                                              text: state.searchEntities[index]
+                                              text:  state.searchEntities[index]
+                                                      .distance > 100 ? state.searchEntities[index]
                                                       .distance
                                                       .toString() +
-                                                  " km",
+                                                  " m" : state.searchEntities[index]
+                                                          .distance
+                                                          .toString() +
+                                                      " km",
                                               color: COLOR_TEXT_MAIN,
                                               fontSize: FONT_SIZE_SMALL,
                                               fontWeight: FontWeight.w500)
@@ -291,14 +296,14 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                       width: 5,
                                     ),
                                     Expanded(
-                                      flex: 5,
+                                      flex: 10,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           TextCustom(
                                               text: state
-                                                  .searchEntities[index].name
+                                                  .searchEntities[index].title
                                                   .toString(),
                                               color: COLOR_TEXT_BLACK,
                                               fontSize: 13,
@@ -307,8 +312,8 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                             height: 5,
                                           ),
                                           TextCustom(
-                                              text: state.searchEntities[index]
-                                                  .formatted_address
+                                              text: state
+                                                  .searchEntities[index].label
                                                   .toString(),
                                               overflow: TextOverflow.ellipsis,
                                               color: COLOR_TEXT_MAIN,
@@ -319,11 +324,12 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                       ),
                                     ),
                                     Expanded(
+                                        flex: 2,
                                         child: Center(
                                             child: Icon(
-                                      Icons.bookmark,
-                                      color: Colors.grey.shade400,
-                                    )))
+                                          Icons.bookmark,
+                                          color: Colors.grey.shade400,
+                                        )))
                                   ],
                                 )),
                           );
