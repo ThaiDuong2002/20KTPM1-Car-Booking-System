@@ -29,6 +29,18 @@ const MostlyVistedLocation = () => {
   const handleDropOffBtnClick = () => {};
   return (
     <Card>
+      <Typography
+        variant="h3"
+        ml="5"
+        mt="5"
+        mb="5"
+        color={theme.palette.secondary.main}
+        sx={{
+          fontWeight: "bold",
+        }}
+      >
+        Mostly Visted Location
+      </Typography>
       <ScrollBar>
         <Box sx={{ minWidth: 400 }}>
           <Table>

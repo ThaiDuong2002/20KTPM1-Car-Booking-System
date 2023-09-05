@@ -2,6 +2,7 @@ const amqp = require("amqplib");
 const express = require("express");
 const process = require("process"); // Import the process module
 const dotenv = require("dotenv");
+import axios from "axios";
 dotenv.config();
 const app = express();
 const port = process.env.PORT;

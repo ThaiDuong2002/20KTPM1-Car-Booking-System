@@ -20,6 +20,7 @@ import {
   IconButton,
   Link,
   Grid,
+  CardContent,
 } from "@mui/material";
 import ScrollBar from "react-perfect-scrollbar";
 import { PlaceOutlined, TourOutlined } from "@mui/icons-material";
@@ -35,6 +36,18 @@ const CustomerHistoryBooking = (props) => {
 
   return (
     <Card>
+      <Typography
+        variant="h3"
+        ml="5"
+        mt="5"
+        mb="1"
+        color={theme.palette.secondary.main}
+        sx={{
+          fontWeight: "bold",
+        }}
+      >
+        History Booking
+      </Typography>
       <ScrollBar>
         <Box sx={{ minWidth: 600 }}>
           <Table>
@@ -135,6 +148,7 @@ const CustomerHistoryBooking = (props) => {
                         {booking.destinationLocation?.location}
                       </Typography>
                       <IconButton
+                        hover
                         onClick={() => handlePickUpBtnClick()}
                         target="_blank"
                         disableRipple
@@ -148,6 +162,7 @@ const CustomerHistoryBooking = (props) => {
                         <TourOutlined />
                       </IconButton>
                       <IconButton
+                        hover
                         onClick={() => handleDestinationalBtnClick()}
                         target="_blank"
                         disableRipple

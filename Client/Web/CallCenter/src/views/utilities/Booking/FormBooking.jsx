@@ -50,6 +50,8 @@ const bookingSchema = yup.object().shape({
 const FormBooking = () => {
   const theme = useTheme();
   // const scriptedRef = useScriptRef();
+  const [historyList, setHistoryList] = useState([]);
+  const [mostlyLocationList, setMostlyLocationList] = useState([]);
 
   const handleFormSubmit = async (values) => {
     console.log("Form values: ", values);
@@ -64,6 +66,23 @@ const FormBooking = () => {
       // Xử lý lỗi nếu gửi yêu cầu không thành công
       console.error("Error creating booking:", error);
     }
+  };
+
+  const handlePhoneNumberChange = async (event) => {
+    // try {
+    //   const historyListResponse = await axiosClient.get(
+    //     "book/history/0795907075"
+    //   );
+    //   const mostlyLocationlistResponse = await axiosClient.get(
+    //     "book/mostly-location/0795907075"
+    //   );
+    //   setHistoryList(historyListResponse.data.data);
+    //   setMostlyLocationList(mostlyLocationlistResponse.data.data);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    const newPhoneNumber = event.target.value;
+    console.log("New Phone Number:", newPhoneNumber);
   };
 
   return (
@@ -113,7 +132,11 @@ const FormBooking = () => {
                   <TextField
                     label="Phone Number"
                     onBlur={handleBlur}
-                    onChange={handleChange}
+                    // onChange={handleChange}
+                    onChange={(event) => {
+                      handleChange(event);
+                      handlePhoneNumberChange(event); // Gọi hàm handlePhoneNumberChange
+                    }}
                     values={values.phoneNumber}
                     name="phoneNumber"
                     error={
