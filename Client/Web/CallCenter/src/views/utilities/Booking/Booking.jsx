@@ -16,8 +16,8 @@ import { mockDataHistoryBooking } from "data/mockData";
 const BookingModel = () => {
   const theme = useTheme();
   return (
-    <MainCard title="BookingModel">
-      <Box>
+    <MainCard title="Create Booking">
+      {/* <Box>
         <Typography
           variant="h3"
           ml="3"
@@ -29,14 +29,11 @@ const BookingModel = () => {
         >
           Create BookingModel
         </Typography>
+      </Box> */}
+
+      <Box mt={2}>
+        <FormBooking />
       </Box>
-      <Grid container spacing={gridSpacing} mt={0.5}>
-        <Grid item lg={8}>
-          <Box>
-            <FormBooking />
-          </Box>
-        </Grid>
-      </Grid>
     </MainCard>
   );
 };

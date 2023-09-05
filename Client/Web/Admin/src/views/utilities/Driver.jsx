@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "views/theme";
-import { mockDataContacts } from "data/mockData";
+import { mockDataDrivers } from "data/mockData";
 import { useTheme } from "@mui/material";
 import MainCard from "ui-component/cards/MainCard";
 
@@ -36,18 +36,18 @@ const Driver = () => {
       flex: 1,
     },
     {
-      field: "address",
-      headerName: "Address",
+      field: "typeOfRide",
+      headerName: "Ride Type",
       flex: 1,
     },
     {
-      field: "city",
-      headerName: "City",
+      field: "autoMaker",
+      headerName: "Automarker",
       flex: 1,
     },
     {
-      field: "zipCode",
-      headerName: "Zip Code",
+      field: "licenseId",
+      headerName: "License ID",
       flex: 1,
     },
   ];
@@ -86,7 +86,7 @@ const Driver = () => {
         }}
       >
         <DataGrid
-          rows={mockDataContacts}
+          rows={mockDataDrivers}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
         />

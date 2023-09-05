@@ -332,3 +332,46 @@ export const mockDataHistoryBookingDetail = {
   updatedAt: "2023-08-03T08:11:46.753Z",
   __v: 0,
 };
+
+export const mockDataMostlyVisitedLocation = [
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+];

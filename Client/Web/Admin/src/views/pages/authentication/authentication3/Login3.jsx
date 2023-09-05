@@ -42,9 +42,20 @@ const Login = () => {
                   justifyContent="center"
                 >
                   <Grid item sx={{ mb: 3 }}>
-                    <Link to="#">
-                      <Logo />
-                    </Link>
+                    <Typography
+                      fontWeight="bold"
+                      fontSize="clamp(1rem, 2rem, 2.25rem)"
+                      color={theme.palette.secondary.dark}
+                      // onClick={() => navigate("/home")}
+                      // sx={{
+                      //   "&:hover": {
+                      //     color: primaryLight,
+                      //     cursor: "pointer",
+                      //   },
+                      // }}
+                    >
+                      RideNow
+                    </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Grid

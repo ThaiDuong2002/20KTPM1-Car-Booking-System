@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
+import axiosClient from "axiosConfig/axiosClient";
 import { format } from "date-fns";
 import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
@@ -24,6 +25,21 @@ const HistoryBookingTable = (props) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { items = [] } = props;
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axiosClient.get("book/history/0795907075");
+        setData(response.data.data);
+        console.log("Repponse: ", response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   const handleTableRowClick = (bookingId) => {
     navigate(`/utils/history-booking/${bookingId}`);
