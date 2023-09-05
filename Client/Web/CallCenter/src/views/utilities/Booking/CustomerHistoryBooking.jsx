@@ -2,6 +2,8 @@ import React from "react";
 import { useTheme } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import PlaceIcon from "@mui/icons-material/Place";
+
+import { mockDataHistoryBooking } from "data/mockData";
 import {
   Avatar,
   Box,
@@ -17,18 +19,37 @@ import {
   Button,
   IconButton,
   Link,
+  Grid,
+  CardContent,
 } from "@mui/material";
 import ScrollBar from "react-perfect-scrollbar";
-import { PlaceOutlined } from "@mui/icons-material";
+import { PlaceOutlined, TourOutlined } from "@mui/icons-material";
 
 const CustomerHistoryBooking = (props) => {
   const theme = useTheme();
-  const { items = [] } = props;
+  // const { items = [] } = props;
+  const items = mockDataHistoryBooking;
+
+  const handlePickUpBtnClick = () => {};
+  const handleDestinationalBtnClick = () => {};
+  const handleChooseLocationBtnClick = () => {};
 
   return (
     <Card>
+      <Typography
+        variant="h3"
+        ml="5"
+        mt="5"
+        mb="1"
+        color={theme.palette.secondary.main}
+        sx={{
+          fontWeight: "bold",
+        }}
+      >
+        History Booking
+      </Typography>
       <ScrollBar>
-        <Box sx={{ minWidth: 800 }}>
+        <Box sx={{ minWidth: 600 }}>
           <Table>
             <TableHead
               sx={{
@@ -95,23 +116,71 @@ const CustomerHistoryBooking = (props) => {
                         {booking.pickUpLocation?.location}
                       </Typography>
                       <IconButton
-                        component={Link}
-                        href="https://github.com/codedthemes/mantis-free-react-admin-template"
+                        onClick={() => handlePickUpBtnClick()}
                         target="_blank"
                         disableRipple
                         color="primary"
-                        title="Download Free Version"
-                        sx={{ color: "text.primary", bgcolor: "grey.100" }}
+                        title="Select Pick Up Location"
+                        sx={{
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
+                      >
+                        <TourOutlined />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDestinationalBtnClick()}
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Select Destinational Location"
+                        sx={{
+                          marginLeft: "5px",
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
                       >
                         <PlaceOutlined />
                       </IconButton>
                     </TableCell>
                     <TableCell>
-                      {booking.destinationLocation?.location}
+                      <Typography>
+                        {booking.destinationLocation?.location}
+                      </Typography>
+                      <IconButton
+                        hover
+                        onClick={() => handlePickUpBtnClick()}
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Select Pick Up Location"
+                        sx={{
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
+                      >
+                        <TourOutlined />
+                      </IconButton>
+                      <IconButton
+                        hover
+                        onClick={() => handleDestinationalBtnClick()}
+                        target="_blank"
+                        disableRipple
+                        color="primary"
+                        title="Select Destinational Location"
+                        sx={{
+                          marginLeft: "5px",
+                          color: "text.primary",
+                          bgcolor: "grey.100",
+                        }}
+                      >
+                        <PlaceOutlined />
+                      </IconButton>
                     </TableCell>
                     <TableCell>{booking.tripType}</TableCell>
                     <TableCell>
                       <Button
+                        onClick={() => handleChooseLocationBtnClick()}
                         variant="contained"
                         startIcon={<CheckIcon />}
                         size="small"

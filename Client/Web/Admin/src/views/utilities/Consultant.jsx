@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "views/theme";
-import { mockDataContacts } from "data/mockData";
+import { mockDataConsultants } from "data/mockData";
 import { useTheme } from "@mui/material";
 import MainCard from "ui-component/cards/MainCard";
 
@@ -36,18 +36,13 @@ const Consultant = () => {
       flex: 1,
     },
     {
-      field: "address",
-      headerName: "Address",
+      field: "registryDate",
+      headerName: "Registry Date",
       flex: 1,
     },
     {
-      field: "city",
-      headerName: "City",
-      flex: 1,
-    },
-    {
-      field: "zipCode",
-      headerName: "Zip Code",
+      field: "salary",
+      headerName: "Salary",
       flex: 1,
     },
   ];
@@ -86,7 +81,7 @@ const Consultant = () => {
         }}
       >
         <DataGrid
-          rows={mockDataContacts}
+          rows={mockDataConsultants}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
         />

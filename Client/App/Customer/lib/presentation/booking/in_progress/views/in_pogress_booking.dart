@@ -54,12 +54,13 @@ class _InProgressBookingState extends State<InProgressBooking> {
       );
     }
   }
+
   bool _showDialog = false;
   late Uint8List bytes;
   Future<List<LatLng>> fetchRoutePoints(
       LatLng start, LatLng end, String apiKey) async {
     Dio dio = Dio();
-    
+
     final String url = 'https://rsapi.goong.io/Direction'
         '?origin=${start.latitude},${start.longitude}'
         '&destination=${end.latitude},${end.longitude}'
@@ -120,6 +121,7 @@ class _InProgressBookingState extends State<InProgressBooking> {
     drawPolylines();
     _getCustomIcon();
   }
+
   Future<void> _showDriverArrivedDialog(BuildContext context) {
     return showDialog(
         context: context,
@@ -136,7 +138,6 @@ class _InProgressBookingState extends State<InProgressBooking> {
           );
         });
   }
-
 
   drawPolylines() async {
     List<LatLng> routePoints = await fetchRoutePoints(currentPosition,
@@ -267,7 +268,7 @@ class _InProgressBookingState extends State<InProgressBooking> {
                 setState(() {
                   _showDialog = true;
                 });
-                 _showDriverArrivedDialog(context).then((_) {
+                _showDriverArrivedDialog(context).then((_) {
                   setState(() {
                     _showDialog = false;
                   });

@@ -1,7 +1,8 @@
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../theme";
-import { mockDataContacts } from "../../data/mockData";
+import { mockDataCustomers } from "../../data/mockData";
+
 import { useTheme } from "@mui/material";
 import MainCard from "ui-component/cards/MainCard";
 
@@ -35,18 +36,8 @@ const Customer = () => {
       flex: 1,
     },
     {
-      field: "address",
-      headerName: "Address",
-      flex: 1,
-    },
-    {
-      field: "city",
-      headerName: "City",
-      flex: 1,
-    },
-    {
-      field: "zipCode",
-      headerName: "Zip Code",
+      field: "registryDate",
+      headerName: "Registry Date",
       flex: 1,
     },
   ];
@@ -85,7 +76,7 @@ const Customer = () => {
         }}
       >
         <DataGrid
-          rows={mockDataContacts}
+          rows={mockDataCustomers}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
         />

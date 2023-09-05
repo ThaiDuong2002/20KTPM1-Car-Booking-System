@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker";
+import axiosClient from "axiosConfig/axiosClient";
 
 // material ui import
 import { Grid } from "@mui/material";
@@ -13,6 +14,23 @@ import DriverCard from "./DriverCard";
 import CustomerCard from "./CustomerCard";
 import TimelineCard from "./TimelineCard";
 const DetailBooking = () => {
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axiosClient.post("book/history/detail", {
+          params: {
+            bookingId: 12345,
+          },
+        });
+        setData(response.data.data);
+        console.log("Repponse: ", response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  });
   return (
     <Grid container spacing={gridSpacing}>
       {/* Cột thứ nhất */}
@@ -21,17 +39,17 @@ const DetailBooking = () => {
 
         <Grid container spacing={gridSpacing}>
           <Grid item lg={12}>
-            <TripCard />
+            <TripCard bookingInfo={data} />
           </Grid>
 
           {/* Dòng thứ hai */}
           <Grid item lg={12}>
             <Grid container spacing={gridSpacing}>
               <Grid item lg={6}>
-                <DriverCard />
+                <DriverCard bookingInfo={data} />
               </Grid>
               <Grid item lg={6}>
-                <CustomerCard />
+                <CustomerCard bookingInfo={data} />
               </Grid>
             </Grid>
           </Grid>
@@ -42,7 +60,7 @@ const DetailBooking = () => {
       <Grid item lg={4}>
         <Grid container spacing={gridSpacing}>
           <Grid item lg={12}>
-            <PaymentCard />
+            <PaymentCard bookingInfo={data} />
           </Grid>
           <Grid item lg={12}>
             <TimelineCard

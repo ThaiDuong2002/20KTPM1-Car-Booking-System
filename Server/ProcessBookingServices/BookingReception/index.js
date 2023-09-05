@@ -1,12 +1,12 @@
-import express from 'express';
+import express from "express";
 import process from "process";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import amqp from "amqplib";
 
 dotenv.config();
 
 const app = express();
-const config = process.env
+const config = process.env;
 
 let channel = null;
 
@@ -32,8 +32,13 @@ async function reception() {
         console.log(bookingInfo.trip_pickup_location.coordinate);
         console.log(bookingInfo.trip_destination_location.coordinate);
         const channel = await connection.createChannel();
-        await channel.assertExchange(exchangeName, "direct", { durable: false, });
-        if (bookingInfo.trip_pickup_location.coordinate != null && bookingInfo.trip_destination_location.coordinate != null) {
+        await channel.assertExchange(exchangeName, "direct", {
+          durable: false,
+        });
+        if (
+          bookingInfo.trip_pickup_location.coordinate != null &&
+          bookingInfo.trip_destination_location.coordinate != null
+        ) {
           channel.publish(
             exchangeName,
             config.DISPATCHER_ROUTING_KEY,

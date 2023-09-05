@@ -48,15 +48,15 @@ const MainRoutes = {
         },
       ],
     },
-    {
-      path: "utils",
-      children: [
-        {
-          path: "salary",
-          element: <UtilsSalary />,
-        },
-      ],
-    },
+    // {
+    //   path: "utils",
+    //   children: [
+    //     {
+    //       path: "salary",
+    //       element: <UtilsSalary />,
+    //     },
+    //   ],
+    // },
     {
       path: "utils",
       children: [

@@ -183,6 +183,97 @@ export const mockDataHistoryBooking = [
     refund: "",
     rating: {},
   },
+
+  {
+    _id: 2,
+    bookingDate: "11-07-2023",
+    bookingUser: {
+      fullName: "Nguyen Van B",
+    },
+    bookingDriver: {},
+    tripType: "GoBike",
+    pickUpLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    destinationLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    distance: 10,
+    duration: "",
+    preTotal: "",
+    total: "",
+    promotion: {},
+    status: "",
+    pickUpTime: "",
+    dropOffTime: "",
+    paymentMethod: "",
+    refund: "",
+    rating: {},
+  },
+  {
+    _id: 2,
+    bookingDate: "11-07-2023",
+    bookingUser: {
+      fullName: "Nguyen Van B",
+    },
+    bookingDriver: {},
+    tripType: "GoBike",
+    pickUpLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    destinationLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    distance: 10,
+    duration: "",
+    preTotal: "",
+    total: "",
+    promotion: {},
+    status: "",
+    pickUpTime: "",
+    dropOffTime: "",
+    paymentMethod: "",
+    refund: "",
+    rating: {},
+  },
+  {
+    _id: 2,
+    bookingDate: "11-07-2023",
+    bookingUser: {
+      fullName: "Nguyen Van B",
+    },
+    bookingDriver: {},
+    tripType: "GoBike",
+    pickUpLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    destinationLocation: {
+      coordinates: "",
+      location:
+        "55 Nguyen Gia Tri Street, Binh Thanh District, Ho Chi Minh City",
+    },
+    distance: 10,
+    duration: "",
+    preTotal: "",
+    total: "",
+    promotion: {},
+    status: "",
+    pickUpTime: "",
+    dropOffTime: "",
+    paymentMethod: "",
+    refund: "",
+    rating: {},
+  },
 ];
 
 export const mockDataHistoryBookingDetail = {
@@ -241,3 +332,46 @@ export const mockDataHistoryBookingDetail = {
   updatedAt: "2023-08-03T08:11:46.753Z",
   __v: 0,
 };
+
+export const mockDataMostlyVisitedLocation = [
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+  {
+    _id: 1,
+    mostlyVisitedLocation: {
+      coordinates: "",
+      location:
+        "227 Nguyen Van Cu Street, Ward 4, District 5, Ho Chi Minh City",
+    },
+  },
+];
