@@ -12,18 +12,18 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class RideDetailVIew extends StatefulWidget {
+class RideDetailView extends StatefulWidget {
   final int orderId;
-  const RideDetailVIew({
+  const RideDetailView({
     super.key,
     required this.orderId,
   });
 
   @override
-  State<RideDetailVIew> createState() => _RideDetailVIewState();
+  State<RideDetailView> createState() => _RideDetailViewState();
 }
 
-class _RideDetailVIewState extends State<RideDetailVIew> {
+class _RideDetailViewState extends State<RideDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

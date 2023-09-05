@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:driver/global/utils/constants/colors.dart';
-import 'package:driver/global/utils/constants/shared_preference.dart';
 import 'package:driver/global/utils/constants/size.dart';
 import 'package:driver/global/utils/helpers/navigation/launch_screen.dart';
 import 'package:driver/global/utils/style/common_style.dart';
@@ -8,7 +7,6 @@ import 'package:driver/global/widgets/app_button.dart';
 import 'package:driver/global/widgets/app_textfield.dart';
 import 'package:driver/global/widgets/common_widget.dart';
 import 'package:driver/global/widgets/header_widget.dart';
-import 'package:driver/main.dart';
 import 'package:driver/modules/authentication/register/register_view.dart';
 import 'package:driver/modules/home/home_view.dart';
 import 'package:flutter/material.dart';
@@ -98,13 +96,7 @@ class _LoginViewState extends State<LoginView> {
                               activeColor: primaryColor,
                               value: mIsCheck,
                               shape: RoundedRectangleBorder(borderRadius: radius(2)),
-                              onChanged: (v) async {
-                                mIsCheck = v!;
-                                if (!mIsCheck) {
-                                  sharedPref.remove(REMEMBER_ME);
-                                }
-                                setState(() {});
-                              },
+                              onChanged: (v) async {},
                             ),
                           ),
                           const SizedBox(width: 8),
