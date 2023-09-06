@@ -5,6 +5,7 @@ import {authorization} from '../middlewares/authorization.js';
 const router = express.Router();
 
 router.get('/me', authorization(['driver']), DriverController.me);
+router.get('/me/vehicle', authorization(['driver']), DriverController.get_my_vehicle);
 router.post('/me/edit', authorization(['driver']), DriverController.edit_info);
 router.post('/logout', authorization(['driver']), DriverController.logout);
 

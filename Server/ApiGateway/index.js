@@ -12,23 +12,23 @@ const corsOptions = {
     origin: 'http://localhost:' + process.env.PORT,
 };
 
-// const routes = {
-//     '/api/authen': `http://localhost:${process.env.PORT_AUTHEN}`,
-//     '/api/admin': `http://localhost:${process.env.PORT_ADMIN}`,
-//     '/api/callcenter': `http://localhost:${process.env.PORT_CALLCENTER}`,
-//     '/api/customer': `http://localhost:${process.env.PORT_CUSTOMER}`,
-//     '/api/driver': `http://localhost:${process.env.PORT_DRIVER}`,
-//     '/api/bookings': `http://localhost:${process.env.PORT_BOOKING}`,
-//     '/api/ratings': `http://localhost:${process.env.PORT_RATING}`,
-//     '/api/promotions': `http://localhost:${process.env.PORT_PROMOTION}`,
-//     '/api/notifications': `http://localhost:${process.env.PORT_NOTIFICATION}`,
-//     '/api/prices': `http://localhost:${process.env.PORT_PRICE}`,
-// };
-
 const routes = {
-    '/api/authen': `http://authen-services:${process.env.PORT_AUTHEN}`,
-    '/api/admin': `http://admin-services:${process.env.PORT_ADMIN}`,
+    '/api/authen': `http://localhost:${process.env.PORT_AUTHEN}`,
+    '/api/admin': `http://localhost:${process.env.PORT_ADMIN}`,
+    '/api/callcenter': `http://localhost:${process.env.PORT_CALLCENTER}`,
+    '/api/customer': `http://localhost:${process.env.PORT_CUSTOMER}`,
+    '/api/driver': `http://localhost:${process.env.PORT_DRIVER}`,
+    '/api/bookings': `http://localhost:${process.env.PORT_BOOKING}`,
+    '/api/ratings': `http://localhost:${process.env.PORT_RATING}`,
+    '/api/promotions': `http://localhost:${process.env.PORT_PROMOTION}`,
+    '/api/notifications': `http://localhost:${process.env.PORT_NOTIFICATION}`,
+    '/api/prices': `http://localhost:${process.env.PORT_PRICE}`,
 };
+
+// const routes = {
+//     '/api/authen': `http://authen-services:${process.env.PORT_AUTHEN}`,
+//     '/api/admin': `http://admin-services:${process.env.PORT_ADMIN}`,
+// };
 
 const unless = (path, middleware) => {
     return function (req, res, next) {

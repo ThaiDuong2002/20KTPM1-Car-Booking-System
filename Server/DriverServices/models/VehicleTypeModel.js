@@ -7,6 +7,10 @@ const VehicleTypeSchema = new Schema({
             type: String,
             required: true,
         },
+        capacity: {
+            type: Number,
+            required: true,
+        }
     },
     {
         timestamps: true,

@@ -20,6 +20,25 @@ const DriverController = {
             next(createError.BadRequest(error.message))
         }
     },
+    get_my_vehicle: async (req, res, next) => {
+        try {
+            const driver_id = req.headers['x-user-id']
+
+            const result = await DriverService.getDriverVehicle(driver_id)
+
+            if (!result) {
+                return next(createError.BadRequest("driver not found"))
+            }
+
+            res.json({
+                message: "Get driver's vehicle successfully",
+                status: 200,
+                data: result
+            })
+        } catch (error) {
+            next(createError.BadRequest(error.message))
+        }
+    },
     edit_info: async (req, res, next) => {
         try {
             const driver_id = req.headers['x-user-id']
