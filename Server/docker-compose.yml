@@ -38,3 +38,89 @@ services:
       PORT: 3008
       MONGO: mongodb+srv://thaiduong032002:345486@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
       ACCESS_TOKEN_SECRET: KEY
+  
+  # Booking services
+  booking-services:
+    build: ./BaseBookingServices
+    ports:
+      - 3005:3005
+    environment:
+      PORT: 3005
+      # DB
+      MONGO_DB: mongodb+srv://quangthanh:quangthanh123456789@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+      # Service
+      # Google
+      GOOGLE_MAP_QUERY_AUTO_COMPLETE_URL: https://maps.googleapis.com/maps/api/place/queryautocomplete/json
+      GOOGLE_MAP_TEXT_SEARCH_URL: https://maps.googleapis.com/maps/api/place/textsearch/json
+      GOOGLE_MAP_PLACE_URL: https://maps.googleapis.com/maps/api/place/queryautocomplete/json
+      GOOGLE_API_KEY: AIzaSyDegGs0gQhRVn5osHdt_hOmjwiXpjpJL9Q
+      GOOGLE_MAP_RADIUS: 500
+      GOOGLE_MAP_COMPONENTS: country:vi
+      # CloudAMQP
+      AMQP_URL: amqps://vngvsmvq:7HyyAKl8WOvm_sAVtUDyj1KgWhe0Hqqe@gerbil.rmq.cloudamqp.com/vngvsmvq
+      EXCHANGE_NAME: BOOKING_EXCHANGE
+      RECEPTION_ROUTING_KEY: BOOKING.RECEPTION
+      CLIENT_PORT: 3000
+
+  # Callcenter services
+  callcenter-services:
+    build: ./CallCenterServices
+    ports:
+      - 3002:3002
+    environment:
+      PORT: 3002
+      MONGO: mongodb+srv://thaiduong032002:345486@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+
+  # Customer services
+  customer-services:
+    build: ./CustomerServices
+    ports:
+      - 3003:3003
+    environment:
+      PORT: 3003
+      MONGO: mongodb+srv://thaiduong032002:345486@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+      REDIS_HOST: redis-12043.c252.ap-southeast-1-1.ec2.cloud.redislabs.com
+      REDIS_PORT: 12043
+
+  # Driver services
+  driver-services:
+    build: ./DriverServices
+    ports:
+      - 3004:3004
+    environment:
+      PORT: 3004
+      MONGO: mongodb+srv://thaiduong032002:345486@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+      REDIS_URI: redis://:62jrIoy9xUHcJ1O09SL4YohI2HCUT0gS@redis-12043.c252.ap-southeast-1-1.ec2.cloud.redislabs.com:12043
+
+  # Notification services
+  notification-services:
+    build: ./NotificationServices
+    ports:
+      - 3009:3009
+    environment:
+      PORT: 3009
+      MONGO: mongodb+srv://quangthanh:quangthanh123456789@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+
+  # Price services
+  price-services:
+    build: ./PriceServices
+    ports:
+      - 3012:3012
+    environment:
+      PORT: 3012
+      MONGO: mongodb+srv://quangthanh:quangthanh123456789@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
+      BASE_FARE: 2000
+      NOON_TIME_FARE: 7000
+      EVENING_TIME_FARE: 9000
+      NIGHT_TIME_FARE: 15000
+      CAR_TYPE_FARE: 10000
+      BIKE_TYPE_FARE: 5000
+
+  # Promotion services
+  promotion-services:
+    build: ./PromotionServices
+    ports:
+      - 3006:3006
+    environment:
+      PORT: 3006
+      MONGO: mongodb+srv://quangthanh:quangthanh123456789@cluster0.2objg2r.mongodb.net/?retryWrites=true&w=majority
