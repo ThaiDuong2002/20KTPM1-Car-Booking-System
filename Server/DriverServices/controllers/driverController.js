@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import {UserService, DriverService} from "../services/services.js";
+import {UserService, DriverService, VehicleService} from "../services/services.js";
 
 const DriverController = {
     me: async (req, res, next) => {
@@ -23,17 +23,24 @@ const DriverController = {
     get_my_vehicle: async (req, res, next) => {
         try {
             const driver_id = req.headers['x-user-id']
+            const vehicle_id = req.params.id
 
-            const result = await DriverService.getDriverVehicle(driver_id)
-
-            if (!result) {
+            const driver = await UserService.getUserById(driver_id, {}, '-_id -password -refreshToken')
+            if (!driver) {
                 return next(createError.BadRequest("driver not found"))
             }
+            const vehicle = await VehicleService.getVehicleById(vehicle_id)
+            if (!vehicle) {
+                return next(createError.BadRequest("vehicle not found"))
+            }
 
+            if(!driver.vehicleId.equals(vehicle._id)) {
+                return next(createError.BadRequest("You don't have permission to access this vehicle"))
+            }
             res.json({
                 message: "Get driver's vehicle successfully",
                 status: 200,
-                data: result
+                data: vehicle
             })
         } catch (error) {
             next(createError.BadRequest(error.message))
@@ -57,6 +64,36 @@ const DriverController = {
                 status: 200,
                 data: result
             })
+        } catch (error) {
+            next(createError.BadRequest(error.message))
+        }
+    },
+    update_driver_vehicle: async (req, res, next) => {
+        const driver_id = req.headers['x-user-id']
+        const vehicle_id = req.params.id
+        const update_fields = req.body
+
+        try {
+            const driver = await UserService.getUserById(driver_id, {}, '-_id -password -refreshToken')
+            if (!driver) {
+                return next(createError.BadRequest("driver not found"))
+            }
+            const vehicle = await VehicleService.getVehicleById(vehicle_id)
+            if (!vehicle) {
+                return next(createError.BadRequest("vehicle not found"))
+            }
+            if(!driver.vehicleId.equals(vehicle._id)) {
+                return next(createError.BadRequest("You don't have permission to access this vehicle"))
+            }
+            const updatedVehicle = await VehicleService.updateVehicle(vehicle_id, update_fields)
+            if (!updatedVehicle) {
+                return next(createError.BadRequest("Update vehicle failed"))
+            }
+            res.json({
+                message: "Update driver's vehicle successfully",
+                status: 200,
+                data: updatedVehicle
+            });
         } catch (error) {
             next(createError.BadRequest(error.message))
         }

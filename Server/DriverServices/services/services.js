@@ -36,14 +36,6 @@ const UserService = {
 };
 
 const DriverService = {
-    async getDriverVehicle (driver_id) {
-        const vehicleId = await VehicleService.getVehicleId(driver_id);
-        if(!vehicleId) {
-            throw new Error('Driver does not have a vehicle');
-        }
-        const vehicle = await Vehicle.findById(vehicleId);
-        return vehicle;
-    },
     async updateDriverLocationToRedis (driverId, lat, lng, tripType) {
         const data_json_string = JSON.stringify({driverId, lat, lng, tripType});
         console.log(data_json_string)
@@ -66,9 +58,13 @@ const DriverService = {
 }
 
 const VehicleService = {
-    async getVehicleId (driverId) {
-        const driver = await Driver.findById(driverId);
-        return driver.vehicleId;
+    async getVehicleById (vehicleId) {
+        const vehicle = await Vehicle.findById(vehicleId);
+        return vehicle;
+    },
+    async updateVehicle (vehicleId, update_fields) {
+        const updatedVehicle = await Vehicle.findByIdAndUpdate(vehicleId, update_fields, {new: true});
+        return updatedVehicle
     },
     async getVehicleTypeList (filter, projection) {
         const result = await VehicleType.find(filter).select(projection);
