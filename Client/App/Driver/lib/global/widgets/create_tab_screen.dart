@@ -54,7 +54,7 @@ class CreateTabScreenState extends State<CreateTabScreen> {
                           onTap: () {
                             launchScreen(
                               context,
-                              const RideDetailVIew(orderId: 1),
+                              const RideDetailView(orderId: 1),
                               pageRouteAnimation: PageRouteAnimation.SlideBottomTop,
                             );
                           },

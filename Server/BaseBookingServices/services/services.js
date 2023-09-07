@@ -33,6 +33,37 @@ const BookingService = {
         }
         return await query.exec();
     },
+    async get_most_location (customerPhone) {
+        const result = await Booking.aggregate([
+            {
+                $match: {
+                    customerPhone: customerPhone,
+                },
+            },
+            {
+                $group: {
+                    _id: '$destinationLocation.address',
+                    count: { $sum: 1},
+                    coordinate: { $first: '$destinationLocation.coordinate' },
+                },
+            },
+            {
+              $sort: { count: -1 },
+            },
+            {
+                $limit: 5,
+            },
+            {
+                $project: {
+                    _id: 0, // Exclude the _id field
+                    coordinate: 1, // Include the coordinate field
+                    address: '$_id', // Rename _id to address
+                    // count: 1, // Include the count field
+                },
+            },
+        ])
+        return result
+    },
     async create_booking(booking_data) {
         try {
             const booking = new Booking(booking_data);

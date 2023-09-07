@@ -54,12 +54,13 @@ const PriceController = {
     calculate_fee: async (req, res, next) => {
         try {
             const {distance, time, tripType} = req.body;
-            // console.log(distance, time, tripType)
             const totalFare = await PriceService.get_calculate_fee(distance, time, tripType);
             res.status(200).json({
                 message: 'Calculate fee successfully',
                 status: 200,
-                data: totalFare,
+                data: {
+                    totalFare: totalFare
+                },
             })
         } catch (err) {
             console.log(err.message)
