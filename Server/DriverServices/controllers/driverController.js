@@ -6,7 +6,7 @@ const DriverController = {
         try {
             const driver_id = req.headers['x-user-id']
 
-            const result = await UserService.getUserById(driver_id, {}, '-_id -password -refreshToken')
+            const result = await UserService.getUserById(driver_id, {}, '-password -refreshToken')
 
             if (!result) {
                 return next(createError.BadRequest("driver not found"))

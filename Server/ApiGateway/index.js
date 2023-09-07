@@ -32,7 +32,7 @@ const routes = {
     '/api/customer': `http://customer-services:${process.env.PORT_CUSTOMER}`,
     '/api/driver': `http://driver-services:${process.env.PORT_DRIVER}`,
     '/api/bookings': `http://booking-services:${process.env.PORT_BOOKING}`,
-    // '/api/ratings': `http://rating-services:${process.env.PORT_RATING}`,
+    '/api/ratings': `http://rating-services:${process.env.PORT_RATING}`,
     '/api/promotions': `http://promotion-services:${process.env.PORT_PROMOTION}`,
     '/api/notifications': `http://notification-services:${process.env.PORT_NOTIFICATION}`,
     '/api/prices': `http://price-services:${process.env.PORT_PRICE}`,

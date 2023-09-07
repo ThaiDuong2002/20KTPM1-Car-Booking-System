@@ -10,7 +10,7 @@ load_dotenv()
 
 API_KEY = os.getenv("GOONG_API_KEY")
 REDIS_URI = os.getenv("REDIS_URI")
-DISPATCHER_PORT = os.getenv("DISPATCHER_PORT")
+PORT = os.getenv("PORT")
 
 redis_client = redis.from_url(REDIS_URI)
 # redis_client.flushdb()
@@ -198,4 +198,4 @@ def get_driver_locations():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=DISPATCHER_PORT, debug=True)
+    app.run(host='0.0.0.0', port=PORT)

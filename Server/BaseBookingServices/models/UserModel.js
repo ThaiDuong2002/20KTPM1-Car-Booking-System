@@ -90,6 +90,7 @@ DriverSchema.add({
     vehicleId: {
         type: Schema.Types.ObjectId,
         required: true,
+        ref: 'Vehicle',
     },
     isActive: {
         type: Boolean,

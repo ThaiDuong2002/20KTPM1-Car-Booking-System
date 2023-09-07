@@ -1,7 +1,4 @@
 import {Promotion} from '../models/PromotionModel.js'
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const PromotionService = {
     async get_promotion_list(filter, projection) {
@@ -15,7 +12,7 @@ const PromotionService = {
             const promotion = new Promotion(promotion_data);
             return await promotion.save();
         } catch (err) {
-            throw new Error(err.message);
+            throw err;
         }
     },
     async update_promotion(promotion_id, update_fields) {
@@ -25,14 +22,14 @@ const PromotionService = {
                 update_fields,
                 {new: true});
         } catch (err) {
-            throw new Error(err.message);
+            throw err;
         }
     },
     async delete_promotion(promotion_id) {
         try {
             return await Promotion.findByIdAndDelete(promotion_id)
         } catch (err) {
-            throw new Error(err.message);
+            throw err;
         }
     },
 }
