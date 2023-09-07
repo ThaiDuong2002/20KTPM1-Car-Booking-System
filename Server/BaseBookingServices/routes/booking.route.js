@@ -20,4 +20,6 @@ router.delete("/:id", BookingController.delete_booking);
 
 router.post("/consultant", BookingController.consultantBooking);
 
+router.get("/most_location/:phone", BookingController.get_most_location);
+
 export default router;
