@@ -5,13 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart' hide Marker;
 import 'dart:ui' as ui;
 import '../../../../app/constant/color.dart';
 import '../../../../app/constant/size.dart';
 import '../../../../model_gobal/pick_des.dart';
 import '../../../widget/custom_text.dart';
+import '../../decode/flexible_polyline.dart';
 import '../blocs/confirm_booking_bloc.dart';
 import '../blocs/confirm_booking_state.dart';
+
+import 'package:intl/intl.dart';
+
+String formatCurrency(int number) {
+  final formatter = NumberFormat('#,###', 'en_US');
+  return '${formatter.format(number)} VND';
+}
 
 class ConfirmBookingPage extends StatefulWidget {
   final PickUpAndDestication data;
@@ -136,7 +145,52 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
     );
     getIcons();
 
-    drawPolylines();
+    drawPolyliness();
+  }
+
+  Future<List<LatLng>> fetchRouteCoordinates(
+      LatLng origin, LatLng destination, String apiKey) async {
+    try {
+      final url =
+          'https://router.hereapi.com/v8/routes?origin=${origin.latitude},${origin.longitude}&transportMode=car&destination=${destination.latitude},${destination.longitude};sideOfStreetHint=${origin.latitude},${origin.longitude};matchSideOfStreet=always&return=polyline,summary&apikey=$apiKey';
+
+      final Dio dio = Dio();
+      final response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        final polyline = response.data['routes'][0]['sections'][0]['polyline'];
+        final coords = FlexiblePolyline.decode(polyline);
+        List<LatLng> data = [];
+        coords.forEach((element) {
+          print(element);
+          data.add(LatLng(element.lat, element.lng));
+        });
+        return data;
+      } else {
+        throw Exception('Failed to load route coordinates');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return [];
+  }
+
+  drawPolyliness() async {
+    List<LatLng> routePoints = await fetchRouteCoordinates(currentPosition,
+        desPosition, "hEw3XwDy1W81P-plM4aqi0guc50YBNmuKSo9uDkaYvw");
+    setState(() {});
+    polylines.add(Polyline(
+      polylineId: PolylineId(currentPosition.toString()),
+      visible: true,
+
+      patterns: [PatternItem.dash(10), PatternItem.gap(10)],
+      endCap: Cap.roundCap,
+      startCap: Cap.roundCap,
+      jointType: JointType.round,
+      width: 8, //width of polyline
+      points: routePoints,
+      color: Colors.deepOrangeAccent, //color of polyline
+    ));
   }
 
   drawPolylines() async {
@@ -200,55 +254,151 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                         color: COLOR_TEXT_BLACK,
                         fontSize: FONT_SIZE_LARGE,
                         fontWeight: FontWeight.w600),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: COLOR_BLUE_MAIN,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                print("!23");
+                                return Container(
+                                  height: 500,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 20),
+                                  color: Colors.white30,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const TextCustom(
+                                              text: "Ưu đãi hiện có",
+                                              color: COLOR_TEXT_BLACK,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600),
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(left: 10),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: COLOR_BLUE_MAIN,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                            child: InkWell(
+                                              onTap: () {
+                                                print("Về trang Search page");
+                                              },
+                                              child: const TextCustom(
+                                                  text: "Áp dụng",
+                                                  color: Colors.white,
+                                                  fontSize: FONT_SIZE_LARGE,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                        },
+                        child: const TextCustom(
+                            text: "Ưu đãi",
+                            color: Colors.white,
+                            fontSize: FONT_SIZE_LARGE,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    )
                   ],
                 ),
                 const Divider(),
-                Expanded(child: BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
+                Expanded(
+                    child: BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
                   builder: (context, state) {
-                    return ListView.separated(
-                      separatorBuilder: (context, index) => const Divider(),
-                      itemCount: vihicles.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Image.asset(
-                                    "assets/images/home/car.png",
-                                    width: 60,
-                                    height: 60,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      TextCustom(
-                                          text: "Xe 1",
-                                          color: COLOR_TEXT_BLACK,
-                                          fontSize: FONT_SIZE_LARGE,
-                                          fontWeight: FontWeight.w500),
-                                      TextCustom(
-                                          text: "Xe 1",
-                                          color: COLOR_TEXT_BLACK,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500),
-                                    ],
-                                  ),
-                                  Spacer(),
-                                  TextCustom(
-                                      text: "39.0000 VND",
-                                      color: COLOR_TEXT_BLACK,
-                                      fontSize: FONT_SIZE_LARGE,
-                                      fontWeight: FontWeight.w500)
-                                ],
-                              ),
-                            ],
+                    if (state is ConfirmBookingLoading) {
+                      return Column(children: [
+                        Center(
+                          child: Lottie.asset(
+                            'assets/loading.json',
+                            width: 120,
+                            height: 120,
                           ),
-                        );
-                      },
-                    );
+                        ),
+                        TextCustom(
+                            textAlign: TextAlign.center,
+                            text: "Hệ thống đang tính toán giá tiền",
+                            color: COLOR_TEXT_MAIN,
+                            fontSize: FONT_SIZE_LARGE,
+                            fontWeight: FontWeight.w500)
+                      ]);
+                    }
+                    if (state is ConfirmBookingSuccess) {
+                      return ListView.separated(
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemCount: state.data.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Image.asset(
+                                      state.data[index].pathIamge,
+                                      width: 60,
+                                      height: 60,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        TextCustom(
+                                            text: state.data[index].nameVihcle,
+                                            color: COLOR_TEXT_BLACK,
+                                            fontSize: FONT_SIZE_LARGE,
+                                            fontWeight: FontWeight.w500),
+                                        TextCustom(
+                                            text: state
+                                                .data[index].descriptionVihcle,
+                                            color: COLOR_TEXT_BLACK,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    TextCustom(
+                                        text: formatCurrency(int.parse(
+                                            state.data[index].priceVihcle)),
+                                        color: COLOR_TEXT_BLACK,
+                                        fontSize: FONT_SIZE_LARGE,
+                                        fontWeight: FontWeight.w500)
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return SizedBox();
                   },
                 ))
               ],
@@ -349,7 +499,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                               text: "Vị trí của tôi",
                               color: COLOR_TEXT_BLACK,
                               fontSize: FONT_SIZE_NORMAL,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
@@ -372,7 +522,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                                   widget.data.pickUpLocation!.label.toString(),
                               color: COLOR_TEXT_BLACK,
                               fontSize: FONT_SIZE_NORMAL,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),

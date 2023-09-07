@@ -108,8 +108,4 @@ app.use(errorHandler);
 app.listen(process.env.PORT, () => {
   console.log('Driver Services is running on port:' + process.env.PORT);
   console.log('http://localhost:' + process.env.PORT);
-<<<<<<< HEAD
-})});
-=======
 });
->>>>>>> dev

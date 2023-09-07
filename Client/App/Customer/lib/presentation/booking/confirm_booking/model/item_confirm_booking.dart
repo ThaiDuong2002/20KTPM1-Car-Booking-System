@@ -9,4 +9,9 @@ class ItemConfirmBooking {
     required this.priceVihcle,
     required this.descriptionVihcle,
   });
+
+  @override
+  String toString() {
+    return 'ItemConfirmBooking(pathIamge: $pathIamge, nameVihcle: $nameVihcle, priceVihcle: $priceVihcle, descriptionVihcle: $descriptionVihcle)';
+  }
 }

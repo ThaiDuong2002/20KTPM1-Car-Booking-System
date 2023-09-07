@@ -1,5 +1,5 @@
-import {Price} from '../models/PriceModel.js'
-import {Promotion} from '../models/PromotionModel.js'
+import { Price } from '../models/PriceModel.js'
+import { Promotion } from '../models/PromotionModel.js'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -20,7 +20,7 @@ const PriceService = {
     async get_price_details(price_id) {
         return await Price.findById(price_id);
     },
-    async create_price (price_data) {
+    async create_price(price_data) {
         try {
             const price = new Price(price_data);
             return await price.save();
@@ -51,11 +51,11 @@ const PriceService = {
             totalFare += nightTimeFare;
         }
         // Trip type
-        if (tripType === "car") {
+        if (tripType === "Car") {
             console.log("Car type")
             totalFare += carTypeFare;
         }
-        if (tripType === "bike") {
+        if (tripType === "Motorbike") {
             console.log("Bike type")
             totalFare += bikeTypeFare;
         }

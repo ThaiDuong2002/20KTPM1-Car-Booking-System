@@ -10,7 +10,7 @@ class ConfirmBookingState extends Equatable {
 class ConfirmBookingInitial extends ConfirmBookingState {}
 class ConfirmBookingLoading extends ConfirmBookingState {}
 class ConfirmBookingSuccess extends ConfirmBookingState {
-  ItemConfirmBooking data;
+  List<ItemConfirmBooking> data;
   ConfirmBookingSuccess({
     required this.data,
   });

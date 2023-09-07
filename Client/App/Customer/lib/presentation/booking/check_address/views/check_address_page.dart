@@ -104,7 +104,6 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                   BlocListener<CheckAddressBloc, CheckAddressState>(
                     listener: (context, state) {
                       // TODO: implement listener
-                      
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,10 +176,11 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
                                             state.searchEntities[index].lng);
                                         checkGestorPosition = false;
                                         containerHeight = 100;
-                                          
-                                        postion.currentPosition?.latitude = state.searchEntities[index].lat;
-                                        postion.currentPosition?.longitude = state.searchEntities[index].lng;
 
+                                        postion.currentPosition?.latitude =
+                                            state.searchEntities[index].lat;
+                                        postion.currentPosition?.longitude =
+                                            state.searchEntities[index].lng;
                                       });
                                     },
                                     tileColor:
@@ -327,8 +327,12 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
         },
         mapType: MapType.normal,
         myLocationEnabled: true,
-        initialCameraPosition:
-            CameraPosition(target: currentPosition, zoom: 18),
+        initialCameraPosition: CameraPosition(
+          target: currentPosition,
+          zoom: 16,
+          tilt: 30,
+          bearing: 30.0,
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import { errorHandler, notFound } from './helper/errorHandler.js';
 dotenv.config();
 const app = express();
 
+
 const corsOptions = {
     origin: 'http://localhost:' + process.env.PORT,
 };
@@ -23,17 +24,17 @@ const routes = {
     '/api/notifications': `http://localhost:${process.env.PORT_NOTIFICATION}`,
     '/api/prices': `http://localhost:${process.env.PORT_PRICE}`,
 };
-const unless = (path, middleware) => {
-    return function (req, res, next) {
-        if (req.path.includes(path)) {
-            return next();
-        } else {
-            return middleware(req, res, next);
-        }
-    };
-};
+// const unless = (path, middleware) => {
+//     return function (req, res, next) {
+//         if (req.path.includes(path)) {
+//             return next();
+//         } else {
+//             return middleware(req, res, next);
+//         }
+//     };
+// };
 
-app.use((unless('/api/authen', TokenService.verifyAccessToken)));
+// app.use((unless('/api/authen', TokenService.verifyAccessToken)));
 for (const route in routes) {
     app.use(
         route,
