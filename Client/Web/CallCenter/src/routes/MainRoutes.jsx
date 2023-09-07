@@ -5,6 +5,7 @@ import Loadable from "ui-component/Loadable";
 
 import MainLayout from "../layout/MainLayout/MainLayout";
 import DetailBooking from "views/utilities/HistoryBookingDetail/DetailBooking";
+import Map from "views/utilities/HistoryBookingDetail/Map";
 
 const MyProfile = Loadable(lazy(() => import("views/account/MyProfile")));
 const UtilsBooking = Loadable(
@@ -45,9 +46,14 @@ const MainRoutes = {
           path: "history-booking/:id",
           element: <DetailBooking />,
         },
+
         {
           path: "history-booking",
           element: <UtilsHistoryBooking />,
+        },
+        {
+          path: "map",
+          element: <Map />,
         },
       ],
     },

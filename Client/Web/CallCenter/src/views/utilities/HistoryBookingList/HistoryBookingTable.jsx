@@ -31,7 +31,7 @@ const HistoryBookingTable = (props) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosClient.get("book/history/0795907075");
+        const response = await axiosClient.get("booking/history/0795907075");
         setData(response.data.data);
         console.log("Repponse: ", response.data.data);
       } catch (error) {
@@ -42,7 +42,7 @@ const HistoryBookingTable = (props) => {
   }, []);
 
   const handleTableRowClick = (bookingId) => {
-    navigate(`/utils/history-booking/${bookingId}`);
+    navigate(`/utils/history-booking/${bookingId}`, { state: bookingId });
   };
 
   return (
@@ -108,21 +108,21 @@ const HistoryBookingTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((booking) => {
+              {data.map((booking, index) => {
                 return (
                   <TableRow
                     hover
                     key={booking._id}
                     onClick={() => handleTableRowClick(booking._id)}
                   >
-                    <TableCell>{booking._id}</TableCell>
-                    <TableCell>{booking?.bookingDate}</TableCell>
-                    <TableCell>{booking.bookingUser?.fullName}</TableCell>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{booking?.createdAt}</TableCell>
+                    <TableCell>{booking?.customerName}</TableCell>
 
-                    <TableCell>{booking.tripType}</TableCell>
-                    <TableCell>{booking.pickUpLocation?.location}</TableCell>
+                    <TableCell>{booking.type}</TableCell>
+                    <TableCell>{booking.pickupLocation?.address}</TableCell>
                     <TableCell>
-                      {booking.destinationLocation?.location}
+                      {booking.destinationLocation?.address}
                     </TableCell>
                     <TableCell>{booking.status}</TableCell>
                   </TableRow>

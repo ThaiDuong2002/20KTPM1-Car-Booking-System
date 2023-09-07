@@ -17,8 +17,9 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   justifyContent: "center",
 }));
 
-const PaymentCard = () => {
+const PaymentCard = (props) => {
   const theme = useTheme();
+  const bookingInfo = props.bookingInfo;
   return (
     <MainCard>
       <Typography

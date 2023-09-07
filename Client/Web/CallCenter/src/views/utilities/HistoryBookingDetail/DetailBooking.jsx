@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker";
 import axiosClient from "axiosConfig/axiosClient";
+import { useLocation } from "react-router-dom";
 
 // material ui import
 import { Grid } from "@mui/material";
@@ -13,24 +14,107 @@ import PaymentCard from "./PaymentCard";
 import DriverCard from "./DriverCard";
 import CustomerCard from "./CustomerCard";
 import TimelineCard from "./TimelineCard";
+
+const initialBookingInfo = {
+  pickupLocation: {
+    coordinate: {
+      lat: "",
+      lng: "",
+    },
+    address: "",
+  },
+  destinationLocation: {
+    coordinate: {
+      lat: "",
+      lng: "",
+    },
+    address: "",
+  },
+  _id: "",
+  userId: {
+    _id: "",
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone: "",
+    avatar: "",
+    salary: "",
+    __t: "",
+    createdAt: "",
+    updatedAt: "",
+    __v: "",
+    gender: "",
+    dob: "",
+    userRole: "",
+  },
+  driverId: {
+    _id: "",
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone: "",
+    avatar: "",
+    userRole: "",
+    driverLicense: ["", ""],
+    vehicleId: "",
+    isActive: "",
+    isDisabled: "",
+    isValid: "",
+    __t: "",
+    createdAt: "",
+    updatedAt: "",
+    __v: "",
+  },
+  customerName: "",
+  customerPhone: "",
+  type: "",
+  distance: "",
+  preTotal: "",
+  total: "",
+  promotionId: null,
+  status: "",
+  pickupTime: "",
+  dropOffTime: "",
+  paymentMethodId: {
+    _id: "",
+    name: "",
+    status: "",
+  },
+  refundId: {
+    _id: "",
+    booking_id: "",
+    amount: "",
+    date: "",
+    reason: "",
+    status: "",
+    user_id: "",
+  },
+  createdAt: "",
+  updatedAt: "",
+};
+
 const DetailBooking = () => {
-  const [data, setData] = useState();
+  const location = useLocation();
+  const { state: id } = location;
+  const bookingId = id;
+
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosClient.post("book/history/detail", {
-          params: {
-            bookingId: 12345,
-          },
-        });
+        const response = await axiosClient.get(
+          "/booking/64f17fd10036d9ad3dde74ff"
+        );
         setData(response.data.data);
-        console.log("Repponse: ", response.data.data);
+        console.log("Detail Booking: ", response.data.data);
       } catch (error) {
         console.log(error);
       }
     }
-  });
+    fetchData();
+  }, []);
+
   return (
     <Grid container spacing={gridSpacing}>
       {/* Cột thứ nhất */}
