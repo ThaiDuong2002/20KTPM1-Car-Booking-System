@@ -49,7 +49,7 @@ const unless = (path, middleware) => {
     };
 };
 
-// app.use((unless('/api/authen', TokenService.verifyAccessToken)));
+// app.use((unless('/api/authen', TokenService.verifyAccessToken)));    
 for (const route in routes) {
     app.use(
         route,
