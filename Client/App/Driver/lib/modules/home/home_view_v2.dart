@@ -58,7 +58,6 @@ class _HomeViewV2State extends State<HomeViewV2> {
     Future.delayed(const Duration(seconds: 1));
     _driverLocationUpdate();
     // getPolyPoints();
-    drawPolyliness();
     super.initState();
   }
 
@@ -136,22 +135,22 @@ class _HomeViewV2State extends State<HomeViewV2> {
           icon: BitmapDescriptor.fromBytes(icon!),
         ),
       );
-      if (_sourceLocation != null && _destinationLocation != null) {
-        _markers.add(
-          Marker(
-            markerId: const MarkerId('source'),
-            position: _sourceLocation!,
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          ),
-        );
-        _markers.add(
-          Marker(
-            markerId: const MarkerId('destination'),
-            position: _destinationLocation!,
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          ),
-        );
-      }
+      // if (_sourceLocation != null && _destinationLocation != null) {
+      //   _markers.add(
+      //     Marker(
+      //       markerId: const MarkerId('source'),
+      //       position: _sourceLocation!,
+      //       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      //     ),
+      //   );
+      //   _markers.add(
+      //     Marker(
+      //       markerId: const MarkerId('destination'),
+      //       position: _destinationLocation!,
+      //       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      //     ),
+      //   );
+      // }
     });
   }
 
@@ -176,13 +175,11 @@ class _HomeViewV2State extends State<HomeViewV2> {
   //   }
   // }
 
-  Future<void> drawPolyliness() async {
-    debugPrint(_hereWeGoApi);
+  Future<void> drawPolyliness(LatLng sourceLocation, LatLng destinationLocation) async {
     List<LatLng> routePoints =
-        await fetchRouteCoordinates(_sourceLocation!, _destinationLocation!, _hereWeGoApi);
-    debugPrint('routePoints: $routePoints');
+        await fetchRouteCoordinates(sourceLocation, destinationLocation, _hereWeGoApi);
     polylines.add(Polyline(
-      polylineId: PolylineId(_sourceLocation.toString()),
+      polylineId: PolylineId(sourceLocation.toString()),
       visible: true,
 
       width: 8, //width of polyline
@@ -204,10 +201,17 @@ class _HomeViewV2State extends State<HomeViewV2> {
       if (response.statusCode == 200) {
         final polyline = response.data['routes'][0]['sections'][0]['polyline'];
         final coords = FlexiblePolyline.decode(polyline);
-        List<LatLng> data = [];
-        for (var element in coords) {
-          data.add(LatLng(element.lat, element.lng));
-        }
+        // List<LatLng> data = [];
+        // for (var element in coords) {
+        //   data.add(LatLng(element.lat, element.lng));
+        // }
+        List<LatLng> data = List.generate(
+          coords.length,
+          (index) => LatLng(
+            coords[index].lat,
+            coords[index].lng,
+          ),
+        );
         return data;
       } else {
         throw Exception('Failed to load route coordinates');
@@ -280,10 +284,12 @@ class _HomeViewV2State extends State<HomeViewV2> {
                       builder: (context, value, child) {
                         try {
                           if (value.currentPosition != null && _isBookingAccepted) {
+                            debugPrint('currentPosition: ${value.currentPosition}');
                             _updateDriverMarker(LatLng(
                               value.currentPosition!.latitude,
                               value.currentPosition!.longitude,
                             ));
+
                             _markers.add(
                               Marker(
                                 markerId: const MarkerId('driver'),
@@ -294,13 +300,16 @@ class _HomeViewV2State extends State<HomeViewV2> {
                                 icon: BitmapDescriptor.fromBytes(icon!),
                               ),
                             );
+
+                            // drawPolyliness(value.currentPosition!, _sourceLocation!);
+                            // polylines.clear();
                           }
                           return GoogleMap(
                             compassEnabled: true,
                             zoomControlsEnabled: false,
                             mapToolbarEnabled: false,
                             mapType: MapType.normal,
-                            myLocationEnabled: true,
+                            myLocationEnabled: false,
                             initialCameraPosition: CameraPosition(
                               target: _driverLocation!,
                               zoom: 17,
@@ -363,8 +372,24 @@ class _HomeViewV2State extends State<HomeViewV2> {
                     BlocListener<BookingBloc, BookingState>(
                       listener: (context, state) async {
                         if (state is BookingRequestedState) {
+                          polylines.clear();
                           _sourceLocation = state.sourceLocation;
                           _destinationLocation = state.destinationLocation;
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('source'),
+                              position: _sourceLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('destination'),
+                              position: _destinationLocation!,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                            ),
+                          );
                           _updateDriverMarker(LatLng(
                             (state.sourceLocation.latitude + state.destinationLocation.latitude) /
                                 2,
@@ -373,7 +398,7 @@ class _HomeViewV2State extends State<HomeViewV2> {
                           ));
                           _driverLocationUpdate();
                           // getPolyPoints();
-                          await drawPolyliness();
+                          await drawPolyliness(_sourceLocation!, _destinationLocation!);
                         } else if (state is BookingAcceptedState) {
                           _isBookingAccepted = true;
                           _sourceLocation = state.sourceLocation;
@@ -385,6 +410,16 @@ class _HomeViewV2State extends State<HomeViewV2> {
                               (state.sourceLocation.longitude +
                                       state.destinationLocation.longitude) /
                                   2,
+                            ),
+                          );
+                          polylines.clear();
+                          _markers.clear();
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('source'),
+                              position: _sourceLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
                             ),
                           );
                           _driverLocationUpdate();
@@ -399,6 +434,7 @@ class _HomeViewV2State extends State<HomeViewV2> {
                               _driverLocation!.longitude,
                             ),
                           );
+                          polylines.clear();
                           _driverLocationUpdate();
                           // getPolyPoints();
                         } else if (state is BookingFinishRidingState) {
@@ -410,6 +446,7 @@ class _HomeViewV2State extends State<HomeViewV2> {
                             _driverLocation!.latitude,
                             _driverLocation!.longitude,
                           ));
+                          polylines.clear();
                           _driverLocationUpdate();
                           // getPolyPoints();
                         } else if (state is BookingStartRidingState) {
@@ -423,11 +460,11 @@ class _HomeViewV2State extends State<HomeViewV2> {
                               state.sourceLocation.longitude,
                             ),
                           );
+                          polylines.clear();
                         }
                       },
                       child: BlocBuilder<BookingBloc, BookingState>(
                         builder: (context, state) {
-                          debugPrint('state: $state');
                           if (state is BookingInitialState || state is BookingFinishRidingState) {
                             return const SizedBox();
                           }

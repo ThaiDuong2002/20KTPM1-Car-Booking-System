@@ -9,7 +9,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   BookingBloc() : super(const BookingInitialState()) {
     try {
       bookingSocket.socket.on('newTrip', (data) {
-        debugPrint("test " + data.toString());
         final source = LatLng(
           data['sourceLocation']['lat'],
           data['sourceLocation']['lng'],
@@ -36,7 +35,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       });
 
       on<BookingRequestingEvent>((event, emit) {
-        debugPrint("test " + event.toString());
         emit(BookingRequestedState(
           sourceLocation: event.sourceLocation,
           destinationLocation: event.destinationLocation,
