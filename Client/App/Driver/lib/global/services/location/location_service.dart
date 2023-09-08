@@ -32,9 +32,8 @@ class LocationService extends ChangeNotifier {
     _socketService.initilize();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  
+  void disposeService() {
     _isolate.kill();
     _socketService.disconnect();
   }
@@ -43,7 +42,7 @@ class LocationService extends ChangeNotifier {
     if (value) {
       startIsolates();
     } else {
-      dispose();
+      disposeService();
     }
   }
 
@@ -79,12 +78,9 @@ class LocationService extends ChangeNotifier {
           locationData['lat'],
           locationData['lng'],
         );
-        debugPrint('123' + message.toString());
         notifyListeners();
-
         // Gửi dữ liệu vị trí qua socket
         _socketService.emit('driver-location', locationData);
-        debugPrint('Location updated from Isolate');
       } else if (message is SendPort) {
         final sendPortToIsolate = message;
         // Bắt đầu tính toán và gửi dữ liệu đến Isolate

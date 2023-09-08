@@ -3,24 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class BookingSocket {
-  static final BookingSocket _instance = BookingSocket._internal();
-
-  factory BookingSocket() {
-    return _instance;
-  }
-
-  BookingSocket._internal();
-
-  late io.Socket _socket;
-
-  void initilize(String socketUrl) {
-    _socket = io.io(socketUrl, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-    });
-
-    _socket.connect();
-  }
+  static final io.Socket _socket = io.io(socketHardUrl, <String, dynamic>{
+    'transports': ['websocket'],
+    'autoConnect': false,
+  });
 
   void dispose() {
     _socket.disconnect();
@@ -34,13 +20,17 @@ class BookingSocket {
     }
   }
 
+  get socket => _socket;
+
   void startListening() {
-    initilize(socketListenUrl);
+    _socket.connect();
     _socket.on('driver-listening', (data) {
       debugPrint(data.toString());
     });
-    _socket.on('coordinate', (data) {
-      debugPrint(data.toString());
-    });
+    _socket.on('newTrip', (data) {});
+  }
+
+  void sendFirstRegister(String socketName) {
+    _socket.emit(socketName, '123');
   }
 }

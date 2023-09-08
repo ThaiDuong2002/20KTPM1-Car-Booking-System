@@ -52,7 +52,6 @@ class _HomeViewState extends State<HomeView> {
     Future.delayed(const Duration(seconds: 1));
     _driverLocationUpdate();
     getPolyPoints();
-    locationService.init();
     super.initState();
   }
 
@@ -64,13 +63,9 @@ class _HomeViewState extends State<HomeView> {
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
-
-    // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
       return Future.error('Location services are disabled.');
     }
 
@@ -78,23 +73,15 @@ class _HomeViewState extends State<HomeView> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
         return Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
   }
 
@@ -111,7 +98,9 @@ class _HomeViewState extends State<HomeView> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: position,
-            zoom: 15,
+            zoom: 17,
+            tilt: 60,
+            bearing: 30,
           ),
         ),
       );
@@ -127,7 +116,6 @@ class _HomeViewState extends State<HomeView> {
       _destinationLocation = const LatLng(10.7692, 106.688);
       _determinePosition().then(
         (value) => {
-          debugPrint('result: ${value.latitude}, ${value.longitude}'),
           setState(
             () {
               _sourceLocation = LatLng(value.latitude, value.longitude);
@@ -221,7 +209,9 @@ class _HomeViewState extends State<HomeView> {
                     onAccept: (v) {
                       _isOffline = value;
                       locationService.toggleSwitch(value);
+
                       bookingSocket.toggleSwitch(value);
+                      bookingSocket.sendFirstRegister('registerClientId');
                       setState(() {});
                     },
                   );
@@ -261,13 +251,7 @@ class _HomeViewState extends State<HomeView> {
                     Consumer<LocationService>(
                       builder: (context, value, child) {
                         try {
-                          debugPrint('test rebuild');
-                          debugPrint(value.currentPosition != null
-                              ? 'value: ${value.currentPosition}'
-                              : 'null');
-
                           if (value.currentPosition != null) {
-                            debugPrint('value: ${value.currentPosition}');
                             _updateDriverMarker(LatLng(
                               value.currentPosition!.latitude,
                               value.currentPosition!.longitude,
@@ -284,7 +268,6 @@ class _HomeViewState extends State<HomeView> {
                               ),
                             );
                           }
-
                           return GoogleMap(
                             compassEnabled: true,
                             zoomControlsEnabled: false,
@@ -293,7 +276,9 @@ class _HomeViewState extends State<HomeView> {
                             myLocationEnabled: true,
                             initialCameraPosition: CameraPosition(
                               target: _driverLocation!,
-                              zoom: 15,
+                              zoom: 17,
+                              tilt: 60,
+                              bearing: 30,
                             ),
                             markers: _markers,
                             onMapCreated: (mapController) {
@@ -355,7 +340,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                     ),
-                    _serviceData == false
+                    _serviceData == true
                         ? SizedBox.expand(
                             child: Stack(
                               children: [
