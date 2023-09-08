@@ -16,7 +16,6 @@
     "nodemon": "^3.0.1"
   },
   "dependencies": {
-    "@radarlabs/s2": "^0.0.5",
     "amqplib": "^0.10.3",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
