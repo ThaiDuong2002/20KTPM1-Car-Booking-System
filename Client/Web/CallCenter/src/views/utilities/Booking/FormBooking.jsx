@@ -55,12 +55,7 @@ const initialValues = {
   vehicleType: "",
 };
 
-const pickUpLocationCoordinate = {
-  lat: null,
-  log: null,
-};
-
-const dropOffLocationCoordinate = {
+const initialCoordinateValue = {
   lat: null,
   log: null,
 };
@@ -74,30 +69,64 @@ const FormBooking = () => {
   const [historyList, setHistoryList] = useState([]);
   const [mostlyLocationList, setMostlyLocationList] = useState([]);
   const [formValue, setFormValue] = useState(initialValues);
+  const [pickUpLocationCoordinate, setPickUpLocationCoordinate] = useState(
+    initialCoordinateValue
+  );
+  const [dropOffLocationCoordinate, setDropOffLocationCoordinate] = useState(
+    initialCoordinateValue
+  );
 
   const formikRef = useRef();
   const handlePickUpBtnClick = (object) => {
     console.log("Object: ", object);
+    console.log("Object Coor: ", object.coordinate);
     formikRef.current.setFieldValue("pickUpLocation", object.address);
+    setPickUpLocationCoordinate({
+      lat: object.coordinate.lat,
+      lng: object.coordinate.lng,
+    });
   };
-  const handleDestinationalBtnClick = () => {};
-  const handleChooseLocationBtnClick = () => {};
+  const handleDestinationalBtnClick = (object) => {
+    formikRef.current.setFieldValue("dropOffLocation", object.address);
+    setDropOffLocationCoordinate({
+      lat: object.coordinate.lat,
+      lng: object.coordinate.lng,
+    });
+  };
+  const handleChooseLocationBtnClick = (object) => {
+    formikRef.current.setFieldValue(
+      "pickUpLocation",
+      object.pickupLocation.address
+    );
+    formikRef.current.setFieldValue(
+      "dropOffLocation",
+      object.destinationLocation.address
+    );
+    setPickUpLocationCoordinate({
+      lat: object.coordinate.lat,
+      lng: object.coordinate.lng,
+    });
+    setDropOffLocationCoordinate({
+      lat: object.coordinate.lat,
+      lng: object.coordinate.lng,
+    });
+  };
 
   const handleFormSubmit = async (values) => {
     const postBody = {
       customerName: values.customerName,
       phoneNumber: values.phoneNumber,
       pickupLocation: {
-        coordinate: {},
+        coordinate: pickUpLocationCoordinate,
         address: values.pickUpLocation,
       },
       dropOffLocation: {
-        coordinate: {},
+        coordinate: dropOffLocationCoordinate,
         address: values.dropOffLocation,
       },
       vehicleType: values.vehicleType,
     };
-
+    console.log("Pick Up Coordinate: ", { pickUpLocationCoordinate });
     console.log("Form values: ", postBody);
     // try {
     //   const response = await axiosClient.post(
@@ -151,14 +180,6 @@ const FormBooking = () => {
             isSubmitting,
           }) => (
             <form onSubmit={handleSubmit}>
-              {/* <Box
-                display="grid"
-                gap="30px"
-                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                sx={{
-                  "& > div": { gridColumn: "span 7" },
-                }}
-              > */}
               <Grid container spacing={gridSpacing}>
                 <Grid item lg={4}>
                   <TextField
@@ -219,7 +240,7 @@ const FormBooking = () => {
                     label="Drop Off Location"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.dropOffLocation.address}
+                    value={values.dropOffLocation}
                     name="dropOffLocation"
                     error={
                       Boolean(touched.dropOffLocation) &&
@@ -276,8 +297,8 @@ const FormBooking = () => {
         </Formik>
       </Box>
       <Grid container spacing={gridSpacing}>
+        {/* History Booking List */}
         <Grid item lg={7}>
-          {/* <CustomerHistoryBooking historyList={historyList} /> */}
           <Card>
             <Typography
               variant="h3"
@@ -374,7 +395,11 @@ const FormBooking = () => {
                               <TourOutlined />
                             </IconButton>
                             <IconButton
-                              onClick={() => handleDestinationalBtnClick()}
+                              onClick={() =>
+                                handleDestinationalBtnClick(
+                                  booking.destinationLocation
+                                )
+                              }
                               target="_blank"
                               disableRipple
                               color="primary"
@@ -395,9 +420,7 @@ const FormBooking = () => {
                             <IconButton
                               hover
                               onClick={() =>
-                                handlePickUpBtnClick(
-                                  booking.destinationLocation
-                                )
+                                handlePickUpBtnClick(booking.pickupLocation)
                               }
                               target="_blank"
                               disableRipple
@@ -412,7 +435,11 @@ const FormBooking = () => {
                             </IconButton>
                             <IconButton
                               hover
-                              onClick={() => handleDestinationalBtnClick()}
+                              onClick={() =>
+                                handleDestinationalBtnClick(
+                                  booking.destinationLocation
+                                )
+                              }
                               target="_blank"
                               disableRipple
                               color="primary"
@@ -429,7 +456,9 @@ const FormBooking = () => {
                           <TableCell>{booking.type}</TableCell>
                           <TableCell>
                             <Button
-                              onClick={() => handleChooseLocationBtnClick()}
+                              onClick={() =>
+                                handleChooseLocationBtnClick(booking)
+                              }
                               variant="contained"
                               startIcon={<CheckIcon />}
                               size="small"
