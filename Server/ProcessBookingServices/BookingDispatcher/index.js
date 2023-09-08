@@ -25,7 +25,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
 // Dùng body-parser (nếu bạn sử dụng Express < 4.16.0)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -44,8 +43,6 @@ async function dispatcher() {
         await channel.bindQueue(queue, exchangeName, routingKey);
         console.log(`[*] Booking reception.`);
         console.log(`[*] Waiting for booking info.`);
-
-
 
         // Consume message
         await channel.consume(queue, async (msg) => {
@@ -122,11 +119,9 @@ process.on('SIGINT', async () => {
             res.status(200).json({ status: 'OK' });
         });
 
-        // Health check
-        app.get('/requestTripFromCustomer', async (req, res) => {
-            try {
-
-
+    // Health check
+    app.get('/requestTripFromCustomer', async (req, res) => {
+      try {
                 // const trip = {
                 //     sourceLocation: { lat: 10.763067461221109, lng: 106.68250385945508 }, // Vị trí San Francisco, California
                 //     destinationLocation: { lat: 10.75539299045719, lng: 106.68182394229112 }, // Vị trí Los Angeles, California
@@ -139,71 +134,65 @@ process.on('SIGINT', async () => {
                 //     customerImage: "https://khoinguonsangtao.vn/wp-content/uploads/2022/08/hinh-anh-avatar-sadboiz.jpg"
                 // };
 
+        const trip = {
+          sourceLocation: req.body.sourceLocation,
+          destinationLocation: req.body.destinationLocation,
+          sourceName: req.body.sourceName,
+          destinationName: req.body.destinationName,
+          distance: req.body.distance,
+          price: req.body.price,
+          customerName: req.body.customerName,
+          customerPhone: req.body.customerPhone,
+          customerImage: req.body.customerImage,
+        };
 
-                const trip = {
-                    sourceLocation: req.body.sourceLocation,
-                    destinationLocation: req.body.destinationLocation,
-                    sourceName: req.body.sourceName,
-                    destinationName: req.body.destinationName,
-                    distance: req.body.distance,
-                    price: req.body.price,
-                    customerName: req.body.customerName,
-                    customerPhone: req.body.customerPhone,
-                    customerImage: req.body.customerImage
-                };
+        const payload = {
+          lat: trip.sourceLocation.lat,
+          lng: trip.sourceLocation.lng,
+          trip_type: req.body.trip_type,
+        };
+        // Call the /find-drivers API
 
-                const payload = {
-                    "lat": trip.sourceLocation.lat,
-                    "lng": trip.sourceLocation.lng,
-                    "trip_type": req.body.trip_type,
-                };
-                // Call the /find-drivers API
-                const response = await axios.post('http://localhost:3011/find_drivers', payload);
+        const response = await axios.post('http://127.0.0.1:5048/find_drivers', payload);
 
-                // tài xế tiềm năng
-                // response = [driver01,driver02]
+        // tài xế tiềm năng
+        // response = [driver01,driver02]
 
-              
+        // io.on('accept_trip', function (data) {
 
-                // io.on('accept_trip', function (data) {
+        //     // create booking schema
 
+        //     console.log(data);
+        // });
+        // io.on('reject_trip', function (data) {
+        //     //loop to last driver to send emit
+        //     console.log(data);
+        // });
 
-                //     // create booking schema
-
-                //     console.log(data);
-                // });
-                // io.on('reject_trip', function (data) {
-                //     //loop to last driver to send emit   
-                //     console.log(data);
-                // });
-
-
-                // Send booking info to the driver
-                if (userActive[response.data.driver[0].id.toString()]) {
-
+        // Send booking info to the driver
+        if (userActive[response.data.driver[0].id.toString()]) {
+                    io.to(userActive[response.data.driver[0].id.toString()]).emit('newTrip', trip);
                     io.to(userActive[response.data.driver[0].id.toString()]).emit('newTrip', trip);
 
-                } else {
-                    console.log(`Client ${response.data.driver[0].id.toString()} not allowed.`);
-                }
+          io.to(userActive[response.data.driver[0].id.toString()]).emit('newTrip', trip);
 
+        } else {
+          console.log(`Client ${response.data.driver[0].id.toString()} not allowed.`);
+        }
 
+        // // Send response back to the client
+        res.status(200).json({ status: 'OK', driversData: response.data });
+      } catch (error) {
+        console.error('Error calling /find-drivers:', error.message);
+        res.status(500).json({ status: 'Error', message: error.message });
+      }
+    });
 
-                // // Send response back to the client
-                res.status(200).json({ status: 'OK', driversData: response.data });
-
-
-            } catch (error) {
-                console.error('Error calling /find-drivers:', error.message);
-                res.status(500).json({ status: 'Error', message: error.message });
-            }
-        });
-
-        // Start server
-        server.listen(config.PORT, () => {
-            console.log(`Server is running on port ${config.PORT}`);
-        });
-    } catch (error) {
-        console.error('Error starting the application:', error);
-    }
+    // Start server
+    server.listen(config.PORT, () => {
+      console.log(`Server is running on port ${config.PORT}`);
+    });
+  } catch (error) {
+    console.error('Error starting the application:', error);
+  }
 })();
