@@ -26,7 +26,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   startSplash() async {
-    return Timer(const Duration(seconds: 5), () {
+    return Timer(const Duration(seconds: 4), () {
       pref.getUserInfo().then((value) => {
             // Goi API để check token có hết hạn hay chưa, nếu token chưa hết hạn thì chuyển sang trang home, nếu hết hạn thì show Dialog "Hết phiên đăng nhập ! Vui lòng đăng nhập lại"
             if (value.isNotEmpty)

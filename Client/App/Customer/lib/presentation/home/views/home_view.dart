@@ -92,7 +92,7 @@ class HomeView extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(
-              MediaQuery.of(context).size.height * 0.1), // 10% of screen height
+              MediaQuery.of(context).size.height * 0.08), // 10% of screen height
           child: AppBar(
             backgroundColor: COLOR_BLUE_MAIN,
             flexibleSpace: Center(
@@ -100,13 +100,13 @@ class HomeView extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height *
-                        0.04, // 2% of screen height
+                        0.05, // 2% of screen height
                   ),
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return Container(
                         height: MediaQuery.of(context).size.height *
-                            0.08, // 8% of screen height
+                            0.07, // 8% of screen height
                         padding: EdgeInsets.symmetric(
                             vertical: MediaQuery.of(context).size.height *
                                 0.01, // 2% of screen height
@@ -135,7 +135,7 @@ class HomeView extends StatelessWidget {
                                             MediaQuery.of(context).size.width *
                                                 0.02, // 2% of screen width
                                         vertical: 0)),
-                                hintText: 'Tìm dịch vụ , món ngon, địa điểm',
+                                hintText: 'Tìm dịch vụ,món ngon,địa điểm',
                                 hintStyle: MaterialStatePropertyAll(TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16,
@@ -179,7 +179,36 @@ class HomeView extends StatelessWidget {
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
                     children: [
-                      ...IconBooking.map((item) => Expanded(
+                      ...IconBooking.map((item) {
+                        Widget filter = Container();
+                        if (item['slug'] == 'send' || item['slug'] == 'food') {
+                          filter = Opacity(
+                            opacity: 0.5,
+                            child: Expanded(
+                              child: InkWell(
+                                onTap: () {},
+                                child: Column(
+                                  children: [
+                                    Image(
+                                      height: 50,
+                                      width: 80,
+                                      image: AssetImage(item['image']),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                    Text(
+                                      item['title'],
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          filter = Expanded(
                             child: InkWell(
                               onTap: () {
                                 Navigator.pushNamed(
@@ -204,7 +233,10 @@ class HomeView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          )).toList(),
+                          );
+                        }
+                        return filter;
+                      }).toList(),
                     ],
                   ),
                 ),

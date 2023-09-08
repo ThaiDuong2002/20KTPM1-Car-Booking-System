@@ -13,7 +13,7 @@ class SocketService with ChangeNotifier {
 
   _connect() {
     socket =
-        IO.io('https://24a2-42-115-94-181.ngrok-free.app', <String, dynamic>{
+        IO.io('https://f66e-113-161-84-248.ngrok-free.app', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });

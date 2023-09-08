@@ -3,6 +3,8 @@ import 'package:user/app/constant/color.dart';
 import 'package:user/app/constant/size.dart';
 import 'package:user/presentation/widget/custom_text.dart';
 
+import '../../app/routes/route_name.dart';
+
 class DetailPromotionPage extends StatelessWidget {
   const DetailPromotionPage({super.key});
   @override
@@ -20,12 +22,17 @@ class DetailPromotionPage extends StatelessWidget {
               bottomLeft: Radius.circular(15),
               bottomRight: Radius.circular(15),
             )),
-        child: const Center(
-          child: TextCustom(
-              text: "Sử dụng",
-              color: Colors.white,
-              fontSize: FONT_SIZE_LARGE,
-              fontWeight: FontWeight.w600),
+        child: InkWell(
+          onTap: () {
+               Navigator.pushNamed(context, AppRouterName.intialBookingPage);
+          },
+          child: const Center(
+            child: TextCustom(
+                text: "Sử dụng",
+                color: Colors.white,
+                fontSize: FONT_SIZE_LARGE,
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       appBar: AppBar(

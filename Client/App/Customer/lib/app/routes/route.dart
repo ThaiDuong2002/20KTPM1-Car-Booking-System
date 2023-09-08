@@ -86,7 +86,24 @@ class AppRoute {
       case AppRouterName.intialBookingPage:
         return MaterialPageRoute(builder: (_) => const InitalBookingPage());
       case AppRouterName.navigation:
-        return MaterialPageRoute(builder: (_) => const NavigationBottom());
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const NavigationBottom(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+
       case AppRouterName.detailPromotionPage:
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
@@ -347,7 +364,6 @@ class AppRoute {
           },
         );
       case AppRouterName.ratingPage:
-       
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => RatingView(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

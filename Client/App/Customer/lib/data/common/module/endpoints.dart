@@ -1,12 +1,8 @@
 class Endpoints {
   Endpoints._();
-
-  static const String baseURL = 'http://192.168.1.56:3000/api';
-
+  static const String baseURL = 'http://192.168.2.110:3000/api';
   static const Duration receiveTimeout = Duration(milliseconds: 6000);
-
   static const Duration connectionTimeout = Duration(milliseconds: 5000);
-
   static const String users = '/users';
   static const String login = '/login';
   static const String register = '/register';
