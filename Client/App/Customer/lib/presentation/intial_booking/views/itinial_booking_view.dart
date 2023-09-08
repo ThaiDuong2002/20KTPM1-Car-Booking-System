@@ -6,10 +6,20 @@ import 'package:user/app/constant/color.dart';
 
 import '../../../model_gobal/mylocation.dart';
 
-class InitialBokingView extends StatelessWidget {
+class InitialBokingView extends StatefulWidget {
   const InitialBokingView({super.key});
+
+  @override
+  State<InitialBokingView> createState() => _InitialBokingViewState();
+}
+
+class _InitialBokingViewState extends State<InitialBokingView> {
+
+
   @override
   Widget build(BuildContext context) {
+    final currentPositon = Provider.of<MyLocation>(context, listen: false);
+    final currrent = LatLng(currentPositon.latitude!,currentPositon.longitude!);
     print("rebuild initial booking view");
       var myLocation = Provider.of<MyLocation>(context, listen: false);
       print(myLocation.toString());
@@ -92,7 +102,7 @@ class InitialBokingView extends StatelessWidget {
                           vertical: 10,
                         ),
                         height: 150,
-                        child: const ClipRRect(
+                        child:  ClipRRect(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30),
@@ -104,7 +114,7 @@ class InitialBokingView extends StatelessWidget {
                             myLocationEnabled: true,
                             // compassEnabled: false,
                             initialCameraPosition: CameraPosition(
-                                target: LatLng(10.8415169, 106.7098374),
+                                target: currrent,
                                 zoom: 12),
                           ),
                         ),

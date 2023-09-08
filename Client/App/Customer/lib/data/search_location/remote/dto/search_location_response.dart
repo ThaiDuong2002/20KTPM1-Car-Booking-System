@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 class SearchLocationResponse {
-  List<dynamic>? results; 
+  List<dynamic>? items; 
   SearchLocationResponse({
-    this.results,
+    this.items,
   });
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
   
-    if(results != null){
-      result.addAll({'results': results});
+    if(items != null){
+      result.addAll({'items': items});
     }
   
     return result;
@@ -18,7 +18,7 @@ class SearchLocationResponse {
 
   factory SearchLocationResponse.fromMap(Map<String, dynamic> map) {
     return SearchLocationResponse(
-      results: List<dynamic>.from(map['results']),
+      items: List<dynamic>.from(map['items']),
     );
   }
 

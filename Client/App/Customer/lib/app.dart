@@ -5,6 +5,9 @@ import 'package:user/model_gobal/mylocation.dart';
 import 'package:user/model_gobal/pick_des.dart';
 import 'package:user/model_gobal/socket_client.dart';
 import 'app/routes/route.dart';
+import 'data/common/interceptor/authorization_interceptor.dart';
+import 'data/common/module/network_module.dart';
+import 'data/common/module/shared_pref_module.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -56,13 +59,17 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     // TODO: implement initState
-    _determinePosition().then((value) {
-      setState(() {
-        currentLocation =
-            MyLocation(latitude: value.latitude, longitude: value.longitude);
-      });
-    });
+    _initializeLocation();
     super.initState();
+  }
+
+  _initializeLocation() async {
+    var value = await _determinePosition();
+    setState(() {
+      print("Có vô đây không");
+      currentLocation =
+          MyLocation(latitude: value.latitude, longitude: value.longitude);
+    });
   }
 
   @override
@@ -75,16 +82,24 @@ class _MyAppState extends State<MyApp> {
         Provider(
           create: (context) => PickUpAndDestication(),
         ),
-         Provider(
+        Provider(
           create: (context) => SocketService(),
         ),
-        
+        Provider(create: (context) {
+          SharedPreferenceModule pref = SharedPreferenceModule();
+          RequestInterceptor requestInterceptor = RequestInterceptor();
+          RequestInterceptor.pref = pref;
+          NetworkModule.instance.initialize(interceptor: requestInterceptor);
+          NetworkModule networkModule = NetworkModule.instance;
+          return networkModule;
+        }),
+        Provider(create: (context) => SharedPreferenceModule()),
       ],
       child: const MaterialApp(
         title: "BookingModel App",
         // home: SplashPage(),
         debugShowCheckedModeBanner: false,
-        initialRoute: '/navigationPage',
+        initialRoute: '/splashPage',
         onGenerateRoute: AppRoute.onGenerateRoute,
       ),
     );

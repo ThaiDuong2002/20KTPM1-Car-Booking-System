@@ -1,9 +1,8 @@
-import 'dart:math';
 
-import 'package:dio/dio.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:user/app/constant/color.dart';
@@ -14,10 +13,7 @@ import 'package:user/presentation/search_location_page/blocs/search_location_eve
 import 'package:user/presentation/search_location_page/blocs/search_location_state.dart';
 import 'package:user/presentation/widget/custom_text.dart';
 
-import '../../../data/search_location/remote/api/search_location_api_impl.dart';
-import '../../../data/search_location/respository/search_location_repository.dart';
-import '../../../domain/search_location/entity/item_search_entity.dart';
-import '../../../domain/search_location/services/search_location_services.dart';
+
 import '../../../model_gobal/mylocation.dart';
 
 class SearchLocationView extends StatefulWidget {
@@ -30,13 +26,18 @@ class SearchLocationView extends StatefulWidget {
 class _SearchLocationViewState extends State<SearchLocationView> {
   final _controller_location = TextEditingController();
   final _controller_current_location = TextEditingController();
-
+  Timer? _debounceTimer;
   @override
   void initState() {
     // TODO: implement initState
 
     _controller_current_location.text = "Vị trí hiện tại";
     super.initState();
+  }
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -153,11 +154,15 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                           // Sử dụng Expanded để đảm bảo TextField chiếm đủ không gian còn lại
                           child: TextFormField(
                             onChanged: (value) {
-                              // print("123");
+                             // Hủy timer cũ nếu nó đang chạy
+                              _debounceTimer?.cancel();
 
-                              context.read<SearchLocationBloc>().add(
-                                  SearchLocationEventSearch(
-                                      value, currentLocation));
+                              // Tạo timer mới để chờ 2 giây trước khi thực hiện hành động
+                              _debounceTimer = Timer(Duration(seconds: 1), () {
+                                context.read<SearchLocationBloc>().add(
+                                    SearchLocationEventSearch(
+                                        value, currentLocation));
+                              });
                             },
                             controller: _controller_location,
                             decoration: const InputDecoration(
@@ -257,7 +262,7 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                     MediaQuery.of(context).size.height * 0.12,
                                 padding: const EdgeInsets.all(15),
                                 decoration: BoxDecoration(
-                                    color: Colors.red,
+                                    color: Colors.white,
                                     border: Border.all(
                                         color: Colors.grey.shade300, width: 1),
                                     borderRadius: BorderRadius.circular(10)),
@@ -265,6 +270,7 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Expanded(
+                                      flex: 2,
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -277,10 +283,14 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                             height: 5,
                                           ),
                                           TextCustom(
-                                              text: state.searchEntities[index]
+                                              text:  state.searchEntities[index]
+                                                      .distance > 100 ? state.searchEntities[index]
                                                       .distance
                                                       .toString() +
-                                                  " km",
+                                                  " m" : state.searchEntities[index]
+                                                          .distance
+                                                          .toString() +
+                                                      " km",
                                               color: COLOR_TEXT_MAIN,
                                               fontSize: FONT_SIZE_SMALL,
                                               fontWeight: FontWeight.w500)
@@ -291,14 +301,14 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                       width: 5,
                                     ),
                                     Expanded(
-                                      flex: 5,
+                                      flex: 10,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           TextCustom(
                                               text: state
-                                                  .searchEntities[index].name
+                                                  .searchEntities[index].title
                                                   .toString(),
                                               color: COLOR_TEXT_BLACK,
                                               fontSize: 13,
@@ -307,8 +317,8 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                             height: 5,
                                           ),
                                           TextCustom(
-                                              text: state.searchEntities[index]
-                                                  .formatted_address
+                                              text: state
+                                                  .searchEntities[index].label
                                                   .toString(),
                                               overflow: TextOverflow.ellipsis,
                                               color: COLOR_TEXT_MAIN,
@@ -319,11 +329,12 @@ class _SearchLocationViewState extends State<SearchLocationView> {
                                       ),
                                     ),
                                     Expanded(
+                                        flex: 2,
                                         child: Center(
                                             child: Icon(
-                                      Icons.bookmark,
-                                      color: Colors.grey.shade400,
-                                    )))
+                                          Icons.bookmark,
+                                          color: Colors.grey.shade400,
+                                        )))
                                   ],
                                 )),
                           );

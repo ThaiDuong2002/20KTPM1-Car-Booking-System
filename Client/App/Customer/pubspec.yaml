@@ -49,6 +49,10 @@ dependencies:
   socket_io_client: ^2.0.2
   image_picker: ^1.0.1
   provider: ^6.0.5
+  lottie: ^2.6.0
+  flutter_rating_bar: ^4.0.1
+  tuple: ^2.0.2
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +77,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/
+    - assets/images/
+    - assets/images/lottie/
     - assets/images/splash/
     - assets/images/login/
     - assets/images/icons/
@@ -80,6 +87,7 @@ flutter:
     - assets/images/order/
     - assets/images/menu/
     - assets/images/promotion/
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

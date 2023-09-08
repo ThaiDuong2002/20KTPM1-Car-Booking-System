@@ -12,8 +12,9 @@ class SocketService with ChangeNotifier {
   }
 
   _connect() {
-    socket = IO.io('http://192.168.2.74:3009', <String, dynamic>{
-      'transports': ['websocket'],  
+    socket =
+        IO.io('https://f66e-113-161-84-248.ngrok-free.app', <String, dynamic>{
+      'transports': ['websocket'],
       'autoConnect': false,
     });
 
@@ -21,10 +22,10 @@ class SocketService with ChangeNotifier {
       print('Connected');
     });
 
-    socket!.on('coordinate', (data) {
-      _message = data.toString();
-      notifyListeners(); // Notify listeners when a new message arrives
-    });
+    // socket!.on('coordinate', (data) {
+    //   _message = data.toString();
+    //   notifyListeners(); // Notify listeners when a new message arrives
+    // });
 
     socket!.connect();
   }
@@ -33,7 +34,7 @@ class SocketService with ChangeNotifier {
     socket?.disconnect();
   }
 
-  void sendMessage(String message,dynamic data) {
+  void sendMessage(String message, dynamic data) {
     socket?.emit(message, {
       'data': data,
     }); // This sends a signal named 'accept' to the server

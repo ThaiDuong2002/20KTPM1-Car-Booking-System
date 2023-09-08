@@ -20,4 +20,12 @@ class SearchLocationRepository {
       return BaseResult.error(BaseFailure(message: e.message, code: e.code!));
     }
   }
+  Future<BaseResult<List<ItemSearchEntity>, Failure>> searchCheck( MyLocation currentLocation) async {
+    try {
+      var result = await searchLocationApi.searchCheck(currentLocation);
+      return BaseResult.success(result);
+    } on BaseException catch (e) {
+      return BaseResult.error(BaseFailure(message: e.message, code: e.code!));
+    }
+  }
 }

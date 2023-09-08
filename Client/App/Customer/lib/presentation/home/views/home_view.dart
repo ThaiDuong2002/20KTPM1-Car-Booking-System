@@ -6,6 +6,20 @@ import 'package:user/app/constant/size.dart';
 import 'package:user/presentation/widget/custom_text.dart';
 
 class HomeView extends StatelessWidget {
+  static final List itemPromotions = [
+    {
+      "name": "Nhà riêng",
+      "item": "Giảm 30% tối đa 60k cho 1 đơn hàng đầu tiên",
+    },
+    {
+      "name": "Địa điểm đã ghé thămn",
+      "item": "Giảm 50% tối đa 20k cho 2 đơn hàng đầu tiên",
+    },
+    {
+      "name": "Công ty",
+      "item": "Giảm 30% tối đa 60k cho 1 đơn hàng đầu tiên",
+    }
+  ];
   static final List promotion = [
     {
       "image": "assets/images/promotion/2.png",
@@ -78,7 +92,7 @@ class HomeView extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(
-              MediaQuery.of(context).size.height * 0.1), // 10% of screen height
+              MediaQuery.of(context).size.height * 0.08), // 10% of screen height
           child: AppBar(
             backgroundColor: COLOR_BLUE_MAIN,
             flexibleSpace: Center(
@@ -86,13 +100,13 @@ class HomeView extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height *
-                        0.04, // 2% of screen height
+                        0.05, // 2% of screen height
                   ),
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return Container(
                         height: MediaQuery.of(context).size.height *
-                            0.08, // 8% of screen height
+                            0.07, // 8% of screen height
                         padding: EdgeInsets.symmetric(
                             vertical: MediaQuery.of(context).size.height *
                                 0.01, // 2% of screen height
@@ -121,7 +135,7 @@ class HomeView extends StatelessWidget {
                                             MediaQuery.of(context).size.width *
                                                 0.02, // 2% of screen width
                                         vertical: 0)),
-                                hintText: 'Tìm dịch vụ , món ngon, địa điểm',
+                                hintText: 'Tìm dịch vụ,món ngon,địa điểm',
                                 hintStyle: MaterialStatePropertyAll(TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16,
@@ -165,7 +179,36 @@ class HomeView extends StatelessWidget {
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
                     children: [
-                      ...IconBooking.map((item) => Expanded(
+                      ...IconBooking.map((item) {
+                        Widget filter = Container();
+                        if (item['slug'] == 'send' || item['slug'] == 'food') {
+                          filter = Opacity(
+                            opacity: 0.5,
+                            child: Expanded(
+                              child: InkWell(
+                                onTap: () {},
+                                child: Column(
+                                  children: [
+                                    Image(
+                                      height: 50,
+                                      width: 80,
+                                      image: AssetImage(item['image']),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                    Text(
+                                      item['title'],
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          filter = Expanded(
                             child: InkWell(
                               onTap: () {
                                 Navigator.pushNamed(
@@ -190,7 +233,10 @@ class HomeView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          )).toList(),
+                          );
+                        }
+                        return filter;
+                      }).toList(),
                     ],
                   ),
                 ),
@@ -409,6 +455,78 @@ class HomeView extends StatelessWidget {
                             ),
                           ));
                     },
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Image(
+                      width: 20,
+                      height: 20,
+                      image: AssetImage("assets/images/icons/icon.png"),
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    RichText(
+                        text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Địa điểm",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: " | ",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "RideNow bên cạnh bạn mỗi chuyến đi",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Row(
+                    children: [
+                      ...itemPromotions.map((promotionItem) => Container(
+                            margin: const EdgeInsets.only(right: 10, top: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 1,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(promotionItem['name'],
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                      color: Colors.black)),
+                            ),
+                          ))
+                    ],
                   ),
                 ),
               ],

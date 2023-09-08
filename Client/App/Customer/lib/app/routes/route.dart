@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:user/model_gobal/mylocation.dart';
-import 'package:user/presentation/booking/check_address/views/check_address_page.dart';
 import 'package:user/presentation/booking/confirm_booking/views/confirm_booking_page.dart';
 import 'package:user/presentation/booking/in_progress/views/in_progress_booking_view.dart';
+import 'package:user/presentation/booking/rating/view/rating_booking_view.dart';
 import 'package:user/presentation/callcenter/callcenter_page.dart';
 import 'package:user/presentation/detail_notification/views/detail_notification_page.dart';
 import 'package:user/presentation/detail_promotion/detail_promotion_page.dart';
@@ -14,7 +14,8 @@ import 'package:user/presentation/detail_order/detail_booking_page.dart';
 import 'package:user/presentation/promotion/views/promotion_page.dart';
 import 'package:user/presentation/upgrade_customer/upgrade_page.dart';
 import '../../model_gobal/pick_des.dart';
-import '../../presentation/booking/in_progress/views/in_pogress_booking.dart';
+import '../../presentation/booking/check_address/views/check_addres_view.dart';
+import '../../presentation/booking/confirm_booking/views/confirm_booking_view.dart';
 import '../../presentation/menu_option/changeLanguagePage/views/changeLanguage_page.dart';
 import '../../presentation/menu_option/manageAccount/views/manegement_page.dart';
 import '../../presentation/menu_option/methodPaymentPage/views/methodPayment_page.dart';
@@ -85,7 +86,24 @@ class AppRoute {
       case AppRouterName.intialBookingPage:
         return MaterialPageRoute(builder: (_) => const InitalBookingPage());
       case AppRouterName.navigation:
-        return MaterialPageRoute(builder: (_) => const NavigationBottom());
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const NavigationBottom(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+
       case AppRouterName.detailPromotionPage:
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
@@ -307,7 +325,7 @@ class AppRoute {
         final MyLocation data = args as MyLocation;
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              CheckAddressPage(
+              CheckAddressView(
             currentLocation: data,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -328,9 +346,26 @@ class AppRoute {
         final PickUpAndDestication data = args as PickUpAndDestication;
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              ConfirmBookingPage(
+              ConfirmBookingView(
             data: data,
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+      case AppRouterName.ratingPage:
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => RatingView(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;

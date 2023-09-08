@@ -8,6 +8,7 @@ import { errorHandler, notFound } from './helper/errorHandler.js';
 dotenv.config();
 const app = express();
 
+
 const corsOptions = {
     origin: 'http://localhost:' + process.env.PORT,
 };
@@ -48,7 +49,7 @@ const unless = (path, middleware) => {
     };
 };
 
-app.use((unless('/api/authen', TokenService.verifyAccessToken)));
+// app.use((unless('/api/authen', TokenService.verifyAccessToken)));    
 for (const route in routes) {
     app.use(
         route,

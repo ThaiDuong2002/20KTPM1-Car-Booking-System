@@ -6,12 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:user/presentation/booking/in_progress/bloc/in_progress_bloc.dart';
+import 'package:user/presentation/widget/loading.dart';
 
 import '../../../../app/constant/color.dart';
 import '../../../../app/constant/size.dart';
 import '../../../../model_gobal/pick_des.dart';
 import '../../../widget/custom_text.dart';
-import '../bloc/in_progress_event.dart';
+
 import '../bloc/in_progress_state.dart';
 
 class InProgressBooking extends StatefulWidget {
@@ -160,234 +161,273 @@ class _InProgressBookingState extends State<InProgressBooking> {
     print(widget.data);
     print("tress hhihi");
 
-    return Scaffold(
-      extendBody: true,
-      bottomNavigationBar: AnimatedContainer(
-        height: 350,
-        duration: const Duration(milliseconds: 500),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        curve: Curves.easeInOut,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-        ),
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const TextCustom(
-                        text: "Thông tin tài xế",
-                        color: COLOR_TEXT_BLACK,
-                        fontSize: FONT_SIZE_LARGE,
-                        fontWeight: FontWeight.w600),
-                  ],
-                ),
-                const Divider(),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Center(
-                        child: Image.network(
-                          "https://media.istockphoto.com/id/1297328248/vector/circular-worker-avatar-icon-illustration-police-man-bus-driver.jpg?s=612x612&w=0&k=20&c=rqa0kzR7oAnPotA1chDBKjgquB71aWzhmUHszyGbgsw=",
-                          width: 50,
-                          height: 50,
-                        ),
-                      ),
-                      TextCustom(
-                          text: "Bui Quang Thanh",
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.w500),
-                      TextCustom(
-                          text: "4.7 sao",
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.w500),
-                      TextCustom(
-                          text: "Xe Blade",
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.w500)
-                    ])),
-              ],
-            ),
-            Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 10, bottom: 0),
-                  color: Colors.white,
-                  child: InkWell(
-                    onTap: () {
-                      print("Đã ấn");
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 10, bottom: 10),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: COLOR_BLUE_MAIN,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const TextCustom(
-                          textAlign: TextAlign.center,
-                          text: "Tiếp tục",
-                          color: Colors.white,
-                          fontSize: FONT_SIZE_LARGE,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ))
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: const Icon(
-          Icons.arrow_back_ios,
-          color: COLOR_TEXT_MAIN,
-        ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          BlocListener<InProgressBloc, InProgressState>(
-            listener: (context, state) {
-              if (state is InProgressDriverArrivedLocation && !_showDialog) {
-                setState(() {
-                  _showDialog = true;
-                });
-                _showDriverArrivedDialog(context).then((_) {
-                  setState(() {
-                    _showDialog = false;
-                  });
-                });
-              }
-            },
-            child: BlocBuilder<InProgressBloc, InProgressState>(
-              builder: (context, state) {
-                if (state is InProgresssStateWaiting) {
-                  _markers.add(
-                    Marker(
-                      markerId: const MarkerId('3'),
-                      icon: BitmapDescriptor.fromBytes(bytes),
-                      position: state.markersLatLong,
-                      infoWindow: const InfoWindow(title: 'Vị trí tài xế'),
-                    ),
-                  );
-
-                  _updateDriverMarker(state.markersLatLong);
-                  return GoogleMap(
-                    onMapCreated: (GoogleMapController controller) {
-                      mapController = controller;
-                    },
-                    zoomGesturesEnabled: true,
-                    tiltGesturesEnabled: false,
-                    trafficEnabled: true,
-                    myLocationButtonEnabled: true,
-                    minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
-                    markers: _markers.toSet(),
-                    onCameraIdle: () {},
-                    polylines: polylines,
-                    onCameraMove: (CameraPosition cameraPosition) {
-                      print(cameraPosition.target.latitude);
-                    },
-                    mapType: MapType.normal,
-                    myLocationEnabled: true,
-                    initialCameraPosition:
-                        CameraPosition(target: currentPositionCamera, zoom: 16),
-                  );
-                }
-                return Container();
-              },
-            ),
+    return BlocListener<InProgressBloc, InProgressState>(
+      listener: (context, state) {
+        if (state is InProgressInitial) {
+          LoadingDialog();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        bottomNavigationBar: AnimatedContainer(
+          height: 350,
+          duration: const Duration(milliseconds: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          curve: Curves.easeInOut,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           ),
-          Positioned(
-            top: 455,
-            right: 10,
-            left: 10,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Column(
+          child: Stack(
+            children: [
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.only(left: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Icon(
-                          Icons.location_on,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const TextCustom(
+                          text: "Tình trạng cuốc xe",
                           color: COLOR_TEXT_BLACK,
-                          size: 20,
-                        ),
-                        SizedBox(width: 10),
-                        TextCustom(
-                            text: "Điểm đón",
-                            color: COLOR_TEXT_BLACK,
-                            fontSize: FONT_SIZE_NORMAL,
-                            fontWeight: FontWeight.w500),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextCustom(
-                              text: "Vị trí của tôi",
-                              color: COLOR_TEXT_BLACK,
-                              fontSize: FONT_SIZE_NORMAL,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
+                          fontSize: FONT_SIZE_LARGE,
+                          fontWeight: FontWeight.w600),
+                    ],
                   ),
-                  Divider(),
-                  Container(
-                    margin: const EdgeInsets.only(left: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Icon(
-                          Icons.location_on,
-                          color: COLOR_TEXT_BLACK,
-                          size: 20,
-                        ),
-                        SizedBox(width: 10),
-                        TextCustom(
-                            text: "Điểm đi    ",
-                            color: COLOR_TEXT_BLACK,
-                            fontSize: FONT_SIZE_NORMAL,
-                            fontWeight: FontWeight.w500),
-                        SizedBox(width: 10),
-                        Expanded(
+                  const Divider(),
+                  Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                        Center(
                           child: TextCustom(
-                              text:
-                                  widget.data.pickUpLocation!.title.toString(),
+                              text: "Thông tin tài xế",
                               color: COLOR_TEXT_BLACK,
-                              fontSize: FONT_SIZE_NORMAL,
-                              fontWeight: FontWeight.w500),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
                         ),
-                      ],
-                    ),
-                  )
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Image.network(
+                              "https://media.istockphoto.com/id/1297328248/vector/circular-worker-avatar-icon-illustration-police-man-bus-driver.jpg?s=612x612&w=0&k=20&c=rqa0kzR7oAnPotA1chDBKjgquB71aWzhmUHszyGbgsw=",
+                              width: 80,
+                              height: 80,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextCustom(
+                                    text: "Bui Quang Thanh",
+                                    color: COLOR_TEXT_BLACK,
+                                    fontSize: FONT_SIZE_NORMAL,
+                                    fontWeight: FontWeight.w600),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                TextCustom(
+                                    text: "4.7 sao",
+                                    color: COLOR_TEXT_BLACK,
+                                    fontSize: FONT_SIZE_NORMAL,
+                                    fontWeight: FontWeight.w500),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                TextCustom(
+                                    text: "Xe Blade",
+                                    color: COLOR_TEXT_BLACK,
+                                    fontSize: FONT_SIZE_NORMAL,
+                                    fontWeight: FontWeight.w500),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                TextCustom(
+                                    text: "59B1- 69405",
+                                    color: COLOR_TEXT_BLACK,
+                                    fontSize: FONT_SIZE_NORMAL,
+                                    fontWeight: FontWeight.w500)
+                              ],
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Center(
+                          child: TextCustom(
+                              text: "Tài xế đang đến đón bạn ..",
+                              color: COLOR_TEXT_BLACK,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                      ])),
                 ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            Icons.arrow_back_ios,
+            color: COLOR_TEXT_MAIN,
+          ),
+        ),
+        body: Stack(
+          children: <Widget>[
+            BlocListener<InProgressBloc, InProgressState>(
+              listener: (context, state) {
+                if (state is InProgressDriverArrivedLocation && !_showDialog) {
+                  setState(() {
+                    _showDialog = true;
+                  });
+                  _showDriverArrivedDialog(context).then((_) {
+                    setState(() {
+                      _showDialog = false;
+                    });
+                  });
+                }
+              },
+              child: BlocBuilder<InProgressBloc, InProgressState>(
+                builder: (context, state) {
+                  if (state is InProgressInitial) {
+                    return GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        mapController = controller;
+                      },
+                      zoomGesturesEnabled: true,
+                      tiltGesturesEnabled: false,
+                      trafficEnabled: true,
+                      myLocationButtonEnabled: true,
+                      minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
+                      markers: _markers.toSet(),
+                      onCameraIdle: () {},
+                      polylines: polylines,
+                      onCameraMove: (CameraPosition cameraPosition) {
+                        print(cameraPosition.target.latitude);
+                      },
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      initialCameraPosition: CameraPosition(
+                          target: currentPositionCamera, zoom: 16),
+                    );
+                  }
+                  if (state is InProgresssStateWaiting) {
+                    _markers.add(
+                      Marker(
+                        markerId: const MarkerId('3'),
+                        icon: BitmapDescriptor.fromBytes(bytes),
+                        position: state.markersLatLong,
+                        infoWindow: const InfoWindow(title: 'Vị trí tài xế'),
+                      ),
+                    );
+
+                    _updateDriverMarker(state.markersLatLong);
+                    return GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        mapController = controller;
+                      },
+                      zoomGesturesEnabled: true,
+                      tiltGesturesEnabled: false,
+                      trafficEnabled: true,
+                      myLocationButtonEnabled: true,
+                      minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
+                      markers: _markers.toSet(),
+                      onCameraIdle: () {},
+                      polylines: polylines,
+                      onCameraMove: (CameraPosition cameraPosition) {
+                        print(cameraPosition.target.latitude);
+                      },
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      initialCameraPosition: CameraPosition(
+                          target: currentPositionCamera, zoom: 16),
+                    );
+                  }
+                  return Container();
+                },
+              ),
+            ),
+            Positioned(
+              top: 460,
+              right: 10,
+              left: 10,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                            "assets/images/icon_marker.png",
+                            width: 25,
+                            height: 25,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextCustom(
+                                text: "Vị trí của tôi",
+                                color: COLOR_TEXT_BLACK,
+                                fontSize: FONT_SIZE_NORMAL,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.grey.shade600,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Image.asset(
+                            "assets/images/icon_marker_destination.png",
+                            width: 25,
+                            height: 25,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextCustom(
+                                text: widget.data.pickUpLocation!.label
+                                    .toString(),
+                                color: COLOR_TEXT_BLACK,
+                                fontSize: FONT_SIZE_NORMAL,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

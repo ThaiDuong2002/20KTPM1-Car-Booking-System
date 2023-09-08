@@ -15,4 +15,8 @@ class SearchLocationServices {
      String address, MyLocation currentLocation) async {
     return await loginRepository.search(address, currentLocation);
   }
+  Future<BaseResult<List<ItemSearchEntity>, Failure>> searchCheck(
+      MyLocation currentLocation) async {
+    return await loginRepository.searchCheck(currentLocation);
+  }
 }

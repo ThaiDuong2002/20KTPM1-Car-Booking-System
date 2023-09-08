@@ -13,3 +13,6 @@ class InProgressEventWaiting extends InProgressEvent {
 class InProgressEventDriverArrivedLocation extends InProgressEvent {
 
 }
+class InProgressEventInformationDriver extends InProgressEvent {
+
+}
