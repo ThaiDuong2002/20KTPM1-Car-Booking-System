@@ -26,6 +26,13 @@ const SocketListener = {
                 }
             });
 
+            socket.on('driver-location', function (data) {
+                console.log(data);
+                socket.broadcast.emit('coordinate', data);
+            });
+
+
+
             socket.on('disconnect', function () {
                 console.log('user disconnected');
                 const disconnectedClientId = Object.keys(userActive).find(
