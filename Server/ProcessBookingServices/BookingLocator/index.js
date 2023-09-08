@@ -59,23 +59,45 @@ async function locator() {
             try {
                 const bookingData = JSON.parse(msg.content.toString());
                 console.log(`[x] Received booking info:`, bookingData);
-                const pickupCoordinate = bookingData.trip_pickup_location;
+                const pickupCoordinate = bookingData.pickupLocation;
+                const destinationCoordinate = bookingData.destinationLocation;
+
+                let message_data
+                let locatedCoordinate
                 if (!pickupCoordinate.coordinate) {
                     // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
-                    const coordinates = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
-                    if (coordinates.length === 0) {
-                        const message_data = {
+                    locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
+                    if (locatedCoordinate.length === 0) {
+                        message_data = {
                             message: 'Your pickup address is not found',
-                            phone: bookingData.customer_phone
+                            phone: bookingData.customerPhone
                         }
                         await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
                     } else {
-                        bookingData.trip_pickup_location.coordinate = {
-                            x: coordinates[0].geometry.location.lat,
-                            y: coordinates[0].geometry.location.lng,
+                        bookingData.pickupLocation.coordinate = {
+                            lat: locatedCoordinate[0].geometry.location.lat,
+                            lng: locatedCoordinate[0].geometry.location.lng,
                         };
                     }
                 }
+
+                if (!destinationCoordinate.coordinate) {
+                    // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
+                    locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
+                    if (locatedCoordinate.length === 0) {
+                        message_data = {
+                            message: 'Your destination address is not found',
+                            phone: bookingData.customerPhone
+                        }
+                        await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
+                    } else {
+                        bookingData.destinationLocation.coordinate = {
+                            lat: locatedCoordinate[0].geometry.location.lat,
+                            lng: locatedCoordinate[0].geometry.location.lng,
+                        };
+                    }
+                }
+
                 channel.ack(msg); // Acknowledge the message
                 await publishBookingInfo(bookingData);
                 console.log(bookingData);
