@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import ScrollBar from "react-perfect-scrollbar";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import MainCard from "ui-component/cards/MainCard";
 import {
   Avatar,
   Box,
@@ -21,10 +22,12 @@ import {
   Typography,
 } from "@mui/material";
 
+import { mockDataHistoryBooking } from "data/mockData";
+
 const LocatingList = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(mockDataHistoryBooking);
 
   useEffect(() => {
     async function fetchData() {
@@ -43,92 +46,89 @@ const LocatingList = () => {
   };
 
   return (
-    <Card>
-      <ScrollBar>
-        <Box sx={{ minWidth: 800 }}>
-          <Table>
-            <TableHead
-              sx={{
-                backgroundColor: theme.palette.primary.light,
-              }}
-            >
-              <TableRow>
-                <TableCell
+    <>
+      <MainCard title="Locating Process">
+        <Card>
+          <ScrollBar>
+            <Box sx={{ minWidth: 800 }}>
+              <Table>
+                <TableHead
                   sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
+                    backgroundColor: theme.palette.primary.light,
                   }}
                 >
-                  ID
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Booking Date
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Customer
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Vehicle Type
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Pick Up Location
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Destination Location
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold", // You can adjust the font weight as needed
-                  }}
-                >
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((booking, index) => {
-                return (
-                  <TableRow
-                    hover
-                    key={booking._id}
-                    onClick={() => handleTableRowClicked(booking)}
-                  >
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{booking?.createdAt}</TableCell>
-                    <TableCell>{booking?.customerName}</TableCell>
-
-                    <TableCell>{booking.type}</TableCell>
-                    <TableCell>{booking.pickupLocation?.address}</TableCell>
-                    <TableCell>
-                      {booking.destinationLocation?.address}
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold", // You can adjust the font weight as needed
+                      }}
+                    >
+                      ID
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold", // You can adjust the font weight as needed
+                      }}
+                    >
+                      Booking Date
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold", // You can adjust the font weight as needed
+                      }}
+                    >
+                      Customer
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold", // You can adjust the font weight as needed
+                      }}
+                    >
+                      Vehicle Type
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold", // You can adjust the font weight as needed
+                      }}
+                    >
+                      Pick Up Location
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold", // You can adjust the font weight as needed
+                      }}
+                    >
+                      Destination Location
                     </TableCell>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Box>
-      </ScrollBar>
-    </Card>
+                </TableHead>
+                <TableBody>
+                  {data.map((booking, index) => {
+                    return (
+                      <TableRow
+                        hover
+                        key={booking._id}
+                        onClick={() => handleTableRowClicked(booking)}
+                      >
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{booking?.createdAt}</TableCell>
+                        <TableCell>{booking?.customerName}</TableCell>
+
+                        <TableCell>{booking.type}</TableCell>
+                        <TableCell>{booking.pickupLocation?.address}</TableCell>
+                        <TableCell>
+                          {booking.destinationLocation?.address}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Box>
+          </ScrollBar>
+        </Card>
+      </MainCard>
+    </>
   );
 };
 
