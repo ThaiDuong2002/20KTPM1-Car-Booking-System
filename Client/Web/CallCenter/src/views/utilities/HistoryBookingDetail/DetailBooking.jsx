@@ -4,7 +4,7 @@ import axiosClient from "axiosConfig/axiosClient";
 import { useLocation } from "react-router-dom";
 
 // material ui import
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 
 // component import
 import SubCard from "ui-component/cards/SubCard";
@@ -98,29 +98,26 @@ const DetailBooking = () => {
   const { state: id } = location;
   const bookingId = id;
 
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(initialBookingInfo);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosClient.get(
-          "/booking/64f17fd10036d9ad3dde74ff"
-        );
+        const response = await axiosClient.get(`/booking/${bookingId}`);
         setData(response.data.data);
-        console.log("Detail Booking: ", response.data.data);
+        console.log("Detail Booking: ", data);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-  }, []);
+  }, [bookingId]);
 
   return (
     <Grid container spacing={gridSpacing}>
       {/* Cột thứ nhất */}
       <Grid item lg={8}>
         {/* Dòng thứ nhất */}
-
         <Grid container spacing={gridSpacing}>
           <Grid item lg={12}>
             <TripCard bookingInfo={data} />

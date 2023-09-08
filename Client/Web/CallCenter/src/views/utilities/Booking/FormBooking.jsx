@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import axiosClient from "axiosConfig/axiosClient";
@@ -17,7 +17,18 @@ import {
   Autocomplete,
   Grid,
   Divider,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton,
+  Typography,
 } from "@mui/material";
+import ScrollBar from "react-perfect-scrollbar";
+import CheckIcon from "@mui/icons-material/Check";
+import { PlaceOutlined, TourOutlined } from "@mui/icons-material";
 
 // third party
 import * as yup from "yup";
@@ -27,6 +38,7 @@ import { Formik } from "formik";
 // import useScriptRef from "hooks/useScriptRef";
 import AnimateButton from "ui-component/extended/AnimateButton";
 import { margin } from "@mui/system";
+import { values } from "lodash";
 
 const vehicleType = [
   { label: "Motor" },
@@ -36,11 +48,21 @@ const vehicleType = [
 ];
 
 const initialValues = {
-  customerName: "",
-  phoneNumber: "",
+  customerName: "Nguyen Van A",
+  phoneNumber: "079590707",
   pickUpLocation: "",
   dropOffLocation: "",
   vehicleType: "",
+};
+
+const pickUpLocationCoordinate = {
+  lat: null,
+  log: null,
+};
+
+const dropOffLocationCoordinate = {
+  lat: null,
+  log: null,
 };
 
 const bookingSchema = yup.object().shape({
@@ -49,12 +71,34 @@ const bookingSchema = yup.object().shape({
 
 const FormBooking = () => {
   const theme = useTheme();
-  // const scriptedRef = useScriptRef();
   const [historyList, setHistoryList] = useState([]);
   const [mostlyLocationList, setMostlyLocationList] = useState([]);
+  const [formValue, setFormValue] = useState(initialValues);
+
+  const formikRef = useRef();
+  const handlePickUpBtnClick = (object) => {
+    console.log("Object: ", object);
+    formikRef.current.setFieldValue("pickUpLocation", object.address);
+  };
+  const handleDestinationalBtnClick = () => {};
+  const handleChooseLocationBtnClick = () => {};
 
   const handleFormSubmit = async (values) => {
-    console.log("Form values: ", values);
+    const postBody = {
+      customerName: values.customerName,
+      phoneNumber: values.phoneNumber,
+      pickupLocation: {
+        coordinate: {},
+        address: values.pickUpLocation,
+      },
+      dropOffLocation: {
+        coordinate: {},
+        address: values.dropOffLocation,
+      },
+      vehicleType: values.vehicleType,
+    };
+
+    console.log("Form values: ", postBody);
     // try {
     //   const response = await axiosClient.post(
     //     "/bookings",
@@ -74,13 +118,13 @@ const FormBooking = () => {
       const historyListResponse = await axiosClient.get(
         `booking/history/${phoneNumber}`
       );
-      // const mostlyLocationlistResponse = await axiosClient.get(
-      //   "booking/mostly-location/0795907075"
-      // );
+      const mostlyLocationlistResponse = await axiosClient.get(
+        `booking/most_location/${phoneNumber}`
+      );
       setHistoryList(historyListResponse.data.data);
-      // setMostlyLocationList(mostlyLocationlistResponse.data.data);
+      setMostlyLocationList(mostlyLocationlistResponse.data.data);
       console.log("History List: ", historyList);
-      // console.log("Mosyly List: " + mostlyLocationList);
+      console.log("Mosyly List: " + mostlyLocationList);
     } catch (error) {
       console.log(error);
     }
@@ -92,8 +136,9 @@ const FormBooking = () => {
     <>
       <Box>
         <Formik
+          innerRef={formikRef}
           onSubmit={handleFormSubmit}
-          initialValues={initialValues}
+          initialValues={formValue}
           validationSchema={bookingSchema}
         >
           {({
@@ -120,7 +165,7 @@ const FormBooking = () => {
                     label="Customer Name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    values={values.customerName}
+                    value={values.customerName}
                     name="customerName"
                     error={
                       Boolean(touched.customerName) &&
@@ -140,7 +185,7 @@ const FormBooking = () => {
                       handleChange(event);
                       handlePhoneNumberChange(event); // Gọi hàm handlePhoneNumberChange
                     }}
-                    values={values.phoneNumber}
+                    value={values.phoneNumber}
                     name="phoneNumber"
                     error={
                       Boolean(touched.phoneNumber) &&
@@ -158,7 +203,7 @@ const FormBooking = () => {
                     label="Pick Up Location"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    values={values.pickUpLocation}
+                    value={values.pickUpLocation}
                     name="pickUpLocation"
                     error={
                       Boolean(touched.pickUpLocation) &&
@@ -174,7 +219,7 @@ const FormBooking = () => {
                     label="Drop Off Location"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    values={values.dropOffLocation}
+                    value={values.dropOffLocation.address}
                     name="dropOffLocation"
                     error={
                       Boolean(touched.dropOffLocation) &&
@@ -232,7 +277,174 @@ const FormBooking = () => {
       </Box>
       <Grid container spacing={gridSpacing}>
         <Grid item lg={7}>
-          <CustomerHistoryBooking historyList={historyList} />
+          {/* <CustomerHistoryBooking historyList={historyList} /> */}
+          <Card>
+            <Typography
+              variant="h3"
+              ml="5"
+              mt="5"
+              mb="1"
+              color={theme.palette.secondary.main}
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              History Booking
+            </Typography>
+            <ScrollBar>
+              <Box sx={{ minWidth: 600 }}>
+                <Table>
+                  <TableHead
+                    sx={{
+                      backgroundColor: theme.palette.primary.light,
+                    }}
+                  >
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ID
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Booking Date
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Pick Up Location
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Destination Location
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Vehicle Type
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Action
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {historyList.map((booking, index) => {
+                      return (
+                        <TableRow
+                          hover
+                          key={booking._id}
+                          // onClick={() => handleTableRowClick(booking._id)}
+                        >
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{booking?.createdAt}</TableCell>
+                          <TableCell>
+                            <Typography>
+                              {booking.pickupLocation?.address}
+                            </Typography>
+                            <IconButton
+                              onClick={() =>
+                                handlePickUpBtnClick(booking.pickupLocation)
+                              }
+                              target="_blank"
+                              disableRipple
+                              color="primary"
+                              title="Select Pick Up Location"
+                              sx={{
+                                color: "text.primary",
+                                bgcolor: "grey.100",
+                              }}
+                            >
+                              <TourOutlined />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => handleDestinationalBtnClick()}
+                              target="_blank"
+                              disableRipple
+                              color="primary"
+                              title="Select Destinational Location"
+                              sx={{
+                                marginLeft: "5px",
+                                color: "text.primary",
+                                bgcolor: "grey.100",
+                              }}
+                            >
+                              <PlaceOutlined />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>
+                            <Typography>
+                              {booking.destinationLocation?.address}
+                            </Typography>
+                            <IconButton
+                              hover
+                              onClick={() =>
+                                handlePickUpBtnClick(
+                                  booking.destinationLocation
+                                )
+                              }
+                              target="_blank"
+                              disableRipple
+                              color="primary"
+                              title="Select Pick Up Location"
+                              sx={{
+                                color: "text.primary",
+                                bgcolor: "grey.100",
+                              }}
+                            >
+                              <TourOutlined />
+                            </IconButton>
+                            <IconButton
+                              hover
+                              onClick={() => handleDestinationalBtnClick()}
+                              target="_blank"
+                              disableRipple
+                              color="primary"
+                              title="Select Destinational Location"
+                              sx={{
+                                marginLeft: "5px",
+                                color: "text.primary",
+                                bgcolor: "grey.100",
+                              }}
+                            >
+                              <PlaceOutlined />
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>{booking.type}</TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() => handleChooseLocationBtnClick()}
+                              variant="contained"
+                              startIcon={<CheckIcon />}
+                              size="small"
+                            >
+                              Choose Location
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </Box>
+            </ScrollBar>
+          </Card>
         </Grid>
         <Grid item lg={5}>
           <MostlyVistedLocation mostlyLocationList={mostlyLocationList} />

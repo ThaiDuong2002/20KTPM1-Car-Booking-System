@@ -162,6 +162,7 @@ const TripCard = (props) => {
   const color = theme.palette.secondary.light;
   const gridSpacing = 2;
   const bookingInfo = props.bookingInfo;
+  // const bookingInfo = mockData;
 
   // const center = {
   //   lat: -34.397,
@@ -270,7 +271,7 @@ const TripCard = (props) => {
               <SvgIcon color="primary" fontSize="small">
                 <PlaceIcon />
               </SvgIcon>
-              {bookingInfo.pickupLocation.address}
+              {bookingInfo.pickupLocation?.address}
             </Card>
           </Grid>
 
@@ -318,7 +319,7 @@ const TripCard = (props) => {
                 <SvgIcon color="primary" fontSize="small">
                   <CalendarMonthIcon />
                 </SvgIcon>
-                {bookingInfo.createdAt}
+                {bookingInfo?.createdAt}
               </Card>
             </Grid>
             <Grid item lg={6}>
@@ -354,7 +355,7 @@ const TripCard = (props) => {
                   display: "flex",
                 }}
               >
-                Pending
+                {bookingInfo.status}
               </Typography>
             </CardWrapper>
           </Grid>
