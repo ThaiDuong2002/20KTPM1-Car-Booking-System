@@ -1,8 +1,15 @@
 import 'package:driver/global/utils/constants/colors.dart';
 import 'package:driver/global/utils/helpers/dialogs/confirm_dialog.dart';
+import 'package:driver/global/utils/helpers/navigation/launch_screen.dart';
 import 'package:driver/global/utils/style/common_style.dart';
 import 'package:driver/global/widgets/app_button.dart';
 import 'package:driver/global/widgets/common_widget.dart';
+import 'package:driver/modules/info/bank/bank_view.dart';
+import 'package:driver/modules/info/profile/edit/edit_profile_view.dart';
+import 'package:driver/modules/info/vehicle/vehicle_view.dart';
+import 'package:driver/modules/info/wallet/wallet_view.dart';
+import 'package:driver/modules/rides/list/ride_list.dart';
+import 'package:driver/modules/setting/setting_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -56,43 +63,79 @@ class _DrawerViewState extends State<DrawerView> {
             DrawerWidget(
               title: 'My Profile',
               iconData: Icons.person_outline_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                launchScreen(
+                  context,
+                  const EditProfileView(),
+                  pageRouteAnimation: PageRouteAnimation.Slide,
+                );
+              },
             ),
             const SizedBox(height: 16),
             DrawerWidget(
               title: 'My Rides',
               iconData: Icons.car_rental_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                launchScreen(
+                  context,
+                  const RideListView(),
+                  pageRouteAnimation: PageRouteAnimation.Slide,
+                );
+              },
             ),
             const SizedBox(height: 16),
             DrawerWidget(
               title: 'Vehicle Details',
               iconData: Icons.car_crash_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                launchScreen(
+                  context,
+                  const VehicleDetailView(),
+                  pageRouteAnimation: PageRouteAnimation.Slide,
+                );
+              },
             ),
             const SizedBox(height: 16),
             DrawerWidget(
               title: 'My Wallet',
               iconData: Icons.wallet_outlined,
-              onTap: () {},
-            ),
-            const SizedBox(height: 16),
-            DrawerWidget(
-              title: 'Driver License',
-              iconData: Icons.edit_document,
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                launchScreen(
+                  context,
+                  const WalletView(),
+                  pageRouteAnimation: PageRouteAnimation.Slide,
+                );
+              },
             ),
             const SizedBox(height: 16),
             DrawerWidget(
               title: 'Bank Info',
               iconData: Icons.other_houses_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                launchScreen(
+                  context,
+                  const BankInfoView(),
+                  pageRouteAnimation: PageRouteAnimation.Slide,
+                );
+              },
             ),
             const SizedBox(height: 16),
             DrawerWidget(
               title: 'Setting',
               iconData: Icons.settings_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                launchScreen(
+                  context,
+                  const SettingView(),
+                  pageRouteAnimation: PageRouteAnimation.Slide,
+                );
+              },
             ),
             const SizedBox(height: 50),
             Center(

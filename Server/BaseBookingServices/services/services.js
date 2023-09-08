@@ -1,5 +1,6 @@
 import {Booking} from "../models/BookingModel.js";
 import {User} from "../models/UserModel.js";
+import {Vehicle} from "../models/VehicleModel.js";
 import {Promotion} from "../models/PromotionModel.js";
 import {PaymentMethod} from "../models/PaymentMethodModel.js";
 import {Refund} from "../models/RefundModel.js";
@@ -25,10 +26,21 @@ const BookingService = {
         const query = Booking.findById(booking_id);
         if (populate_options) {
             for (const field in populate_options) {
-                query.populate({
-                    path: field,
-                    select: populate_options[field],
-                });
+                if (field === "driverId"){
+                    query.populate({
+                        path: field,
+                        select: populate_options[field],
+                        populate: {
+                            path: "vehicleId",
+                        }
+                    });
+                } else {
+                // For other fields, apply the provided select options
+                    query.populate({
+                        path: field,
+                        select: populate_options[field],
+                    });
+                }   
             }
         }
         return await query.exec();
@@ -48,7 +60,7 @@ const BookingService = {
                 },
             },
             {
-              $sort: { count: -1 },
+                $sort: { count: -1 },
             },
             {
                 $limit: 5,
