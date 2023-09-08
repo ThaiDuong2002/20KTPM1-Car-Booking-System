@@ -13,7 +13,7 @@ class SocketService with ChangeNotifier {
 
   _connect() {
     socket =
-        IO.io('https://75e6-14-161-23-204.ngrok-free.app/', <String, dynamic>{
+        IO.io('https://24a2-42-115-94-181.ngrok-free.app', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
@@ -22,10 +22,10 @@ class SocketService with ChangeNotifier {
       print('Connected');
     });
 
-    socket!.on('coordinate', (data) {
-      _message = data.toString();
-      notifyListeners(); // Notify listeners when a new message arrives
-    });
+    // socket!.on('coordinate', (data) {
+    //   _message = data.toString();
+    //   notifyListeners(); // Notify listeners when a new message arrives
+    // });
 
     socket!.connect();
   }

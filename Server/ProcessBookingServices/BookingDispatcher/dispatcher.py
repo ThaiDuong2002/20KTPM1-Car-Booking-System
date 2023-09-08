@@ -98,6 +98,8 @@ def find_drivers():
     customer_lng = request.json.get('lng')
     trip_type = request.json.get('trip_type')
 
+
+   
     # Kiểm tra xem toạ độ của khách hàng có được cung cấp không
     if not customer_lat or not customer_lng:
         return jsonify({"error": "Customer coordinates not provided!"}), 400
@@ -133,7 +135,10 @@ def find_drivers():
     if len(drivers_inside_polygon) <= 0:
         # Trả về tài xế gần nhất
         return jsonify({
-            'driver': [],
+            'driver': [
+                {"id": "123", "lat": 10.7629,
+                 "lng": 106.682, "trip_type": "motorbike"},
+            ],
             'message': 'No drivers found!'
 
         })

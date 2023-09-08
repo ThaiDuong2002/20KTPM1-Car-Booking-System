@@ -12,9 +12,19 @@ import 'confirm_booking_state.dart';
 class ConfirmBookingBloc
     extends Bloc<ConfirmBookingEvent, ConfirmBookingState> {
   ConfirmBookingBloc() : super(ConfirmBookingInitial()) {
-    on<ConfirmBookinggetData>(getData);
+     on<ConfirmBookinggetData>(getData);
+     on<ConfirmBookingRequestTrip>(requestTrip);
   }
 
+  Future<void> requestTrip(
+      ConfirmBookingRequestTrip event, Emitter<ConfirmBookingState> emit) async {
+    emit(ConfirmBookingWattingDriver());
+    await Future.delayed(Duration(seconds: 5));
+    // gọi api request 1 booking mới
+    emit(ConfirmBookingHaveDriver());
+  }
+
+  
   Future<void> getData(
       ConfirmBookinggetData event, Emitter<ConfirmBookingState> emit) async {
     try {
@@ -34,8 +44,8 @@ class ConfirmBookingBloc
       final data_vihcle = jsonDecode(vihcles.toString());
 
       List<ItemConfirmBooking> data = [];
-      print("Distnace"+ event.distance.toString());
-      if (event.distance > 100){
+      print("Distnace" + event.distance.toString());
+      if (event.distance > 100) {
         event.distance /= 1000;
       }
       for (var element in data_vihcle['data']) {
@@ -46,8 +56,8 @@ class ConfirmBookingBloc
           "tripType": element['name'],
         });
         final prices_data = jsonDecode(prices.toString());
-        var path = "";
-        if (element['name'] == "Car") {
+        var path = "assets/images/home/car.png";
+        if (element['name'] == "Car 4" || element['name'] == "Car 7") {
           path = "assets/images/home/car.png";
         }
         if (element['name'] == "Motorbike") {
@@ -57,7 +67,7 @@ class ConfirmBookingBloc
         data.add(ItemConfirmBooking(
             pathIamge: path,
             nameVihcle: element['name'],
-            priceVihcle: prices_data['data'].toString(),
+            priceVihcle: prices_data['data']['totalFare'].toString(),
             descriptionVihcle: "123"));
       }
       data.sort((a, b) => a.priceVihcle.compareTo(b.priceVihcle));

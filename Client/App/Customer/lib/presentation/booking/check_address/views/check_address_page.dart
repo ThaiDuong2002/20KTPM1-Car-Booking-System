@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -24,6 +25,9 @@ class CheckAddressPage extends StatefulWidget {
   _CheckAddressPageState createState() => _CheckAddressPageState();
 }
 
+
+
+
 class _CheckAddressPageState extends State<CheckAddressPage> {
   List<Marker> _markers = <Marker>[];
   late LatLng currentPosition;
@@ -38,6 +42,7 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
         widget.currentLocation.latitude!, widget.currentLocation.longitude!);
     getIcons();
   }
+  
 
   // Cargar imagen del Marker
   Future<void> getIcons() async {
@@ -93,7 +98,15 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
               duration: const Duration(milliseconds: 500),
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               curve: Curves.easeInOut,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15), // Màu shadow
+                    spreadRadius: 0.05, // Bán kính của shadow
+                    blurRadius: 0.05, // Độ mờ của shadow
+                    offset: Offset(0, -4), // Vị trí của shadow (phía trên)
+                  )
+                ],
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),

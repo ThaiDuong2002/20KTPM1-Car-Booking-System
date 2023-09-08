@@ -19,3 +19,14 @@ class ConfirmBookingFailure extends ConfirmBookingState {
   final String message;
   ConfirmBookingFailure({required this.message});
 }
+
+class ConfirmBookingHaveDriver extends ConfirmBookingState {
+  
+}
+class ConfirmBookingNoDriver extends ConfirmBookingState {
+
+}
+class ConfirmBookingWattingDriver extends ConfirmBookingState {
+
+  
+}

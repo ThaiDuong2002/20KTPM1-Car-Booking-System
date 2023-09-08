@@ -1,24 +1,43 @@
-
 const SocketListener = {
     start: function (io) {
-        console.log("Vô đây không");
+
+
         io.on('connect', function (socket) {
-            // console.log(req.app.io);
-            //implement with category ,product, confirm order
             console.log('a user connected 123');
 
+            socket.on('registerClientId', function (clientId) {
+                if (Object.keys(userActive).length < 2) {
+                    userActive[clientId] = socket.id;
+                    console.log(`Client ${clientId} has connected.`);
+                } else {
+                    console.log('More than two clients trying to connect!');
+                }
+            });
+
+            socket.on('messageToOtherClient', function (data) {
+                const { clientId, message } = data;
+
+                if (userActive[clientId]) {
+
+                    io.to(userActive[clientId]).emit('messageFromOtherClient', message);
+                    console.log(`Message from client ${clientId} forwarded.`);
+                } else {
+                    console.log(`Client ${clientId} not allowed.`);
+                }
+            });
+
             socket.on('disconnect', function () {
-                const disconnectedUserId = Object.keys(global.userActive).find(
-                    (key) => global.userActive[key] === socket.id
+                console.log('user disconnected');
+                const disconnectedClientId = Object.keys(userActive).find(
+                    key => userActive[key] === socket.id
                 );
-                if (disconnectedUserId) {
-                    delete global.userActive[disconnectedUserId];
-                    console.log(`User ${disconnectedUserId} has disconnected.`);
-                    console.log(global.userActive);
+                if (disconnectedClientId) {
+                    delete userActive[disconnectedClientId];
+                    console.log(`Client ${disconnectedClientId} has disconnected.`);
                 }
             });
         });
     },
 };
-// config socket
+
 export default SocketListener;
