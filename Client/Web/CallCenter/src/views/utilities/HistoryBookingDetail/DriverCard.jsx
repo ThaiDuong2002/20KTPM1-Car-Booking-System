@@ -36,7 +36,7 @@ const DriverCard = (props) => {
         {bookingInfo.driverId.firstname}
       </Typography>
       <Typography align="center" variant="h5">
-        Vehicle ID:
+        Vehicle ID: {bookingInfo.driverId.vehicleId.licensePlate}
       </Typography>
       <Typography align="center" variant="h5">
         Phone Number: {bookingInfo.driverId.phone}

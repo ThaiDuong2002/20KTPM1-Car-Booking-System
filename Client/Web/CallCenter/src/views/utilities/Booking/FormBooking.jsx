@@ -86,7 +86,7 @@ const FormBooking = () => {
       lng: object.coordinate.lng,
     });
   };
-  const handleDestinationalBtnClick = (object) => {
+  const handleDestinationBtnClick = (object) => {
     formikRef.current.setFieldValue("dropOffLocation", object.address);
     setDropOffLocationCoordinate({
       lat: object.coordinate.lat,
@@ -396,7 +396,7 @@ const FormBooking = () => {
                             </IconButton>
                             <IconButton
                               onClick={() =>
-                                handleDestinationalBtnClick(
+                                handleDestinationBtnClick(
                                   booking.destinationLocation
                                 )
                               }
@@ -436,7 +436,7 @@ const FormBooking = () => {
                             <IconButton
                               hover
                               onClick={() =>
-                                handleDestinationalBtnClick(
+                                handleDestinationBtnClick(
                                   booking.destinationLocation
                                 )
                               }
@@ -476,7 +476,86 @@ const FormBooking = () => {
           </Card>
         </Grid>
         <Grid item lg={5}>
-          <MostlyVistedLocation mostlyLocationList={mostlyLocationList} />
+          {/* <MostlyVistedLocation mostlyLocationList={mostlyLocationList} /> */}
+          <Card>
+            <Typography
+              variant="h3"
+              ml="5"
+              mt="5"
+              mb="5"
+              color={theme.palette.secondary.main}
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              Mostly Visted Location
+            </Typography>
+            <ScrollBar>
+              <Box sx={{ minWidth: 400 }}>
+                <Table>
+                  <TableHead
+                    sx={{
+                      backgroundColor: theme.palette.primary.light,
+                    }}
+                  >
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ID
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Mostly Vesited Location
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Action
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {mostlyLocationList.map((location, index) => {
+                      return (
+                        <TableRow hover key={index}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{location.address}</TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() => handlePickUpBtnClick(location)}
+                              variant="contained"
+                              startIcon={<CheckIcon />}
+                              size="small"
+                            >
+                              Pick Up
+                            </Button>
+                            <Button
+                              onClick={() =>
+                                handleDestinationBtnClick(location)
+                              }
+                              variant="contained"
+                              startIcon={<CheckIcon />}
+                              size="small"
+                            >
+                              Drop Off
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </Box>
+            </ScrollBar>
+          </Card>
         </Grid>
       </Grid>
     </>
