@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 
 def retrieve_drivers_location():
-    all_keys = redis_client.keys('driver*')
+    all_keys = redis_client.keys('driver-*')
 
     if not all_keys:
         return []
@@ -182,7 +182,7 @@ def check_redis():
 def get_driver_locations():
     try:
         # Use the KEYS command to get all keys that match the pattern (e.g., all keys)
-        all_keys = redis_client.keys('driver*')
+        all_keys = redis_client.keys('driver-*')
 
         if not all_keys:
             return {'data': []}
