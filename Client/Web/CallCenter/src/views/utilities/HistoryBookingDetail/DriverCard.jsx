@@ -6,7 +6,8 @@ import { Box, Typography, Avatar } from "@mui/material";
 // component import
 import MainCard from "ui-component/cards/MainCard";
 
-const DriverCard = () => {
+const DriverCard = (props) => {
+  const bookingInfo = props.bookingInfo;
   return (
     <MainCard>
       <Typography align="left" gutterBottom variant="h2">
@@ -21,7 +22,7 @@ const DriverCard = () => {
         }}
       >
         <Avatar
-          src=""
+          src={bookingInfo.driverId.avatar}
           sx={{
             height: 80,
             mb: 2,
@@ -31,16 +32,14 @@ const DriverCard = () => {
       </Box>
 
       <Typography align="center" variant="h5">
-        Fullname: Nguyen Van A
+        Fullname: {bookingInfo.driverId.lastname}{" "}
+        {bookingInfo.driverId.firstname}
       </Typography>
       <Typography align="center" variant="h5">
-        Vehicle ID: 59A - 12345
+        Vehicle ID: {bookingInfo.driverId.vehicleId.licensePlate}
       </Typography>
       <Typography align="center" variant="h5">
-        Phone Number: 0123456789
-      </Typography>
-      <Typography align="center" variant="h5">
-        Age: 40
+        Phone Number: {bookingInfo.driverId.phone}
       </Typography>
     </MainCard>
   );

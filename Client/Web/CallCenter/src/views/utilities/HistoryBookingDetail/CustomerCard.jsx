@@ -6,7 +6,8 @@ import { Box, Typography, Avatar } from "@mui/material";
 // component import
 import MainCard from "ui-component/cards/MainCard";
 
-const CustomerCard = () => {
+const CustomerCard = (props) => {
+  const bookingInfo = props.bookingInfo;
   return (
     <MainCard>
       <Typography align="left" gutterBottom variant="h2">
@@ -31,16 +32,10 @@ const CustomerCard = () => {
       </Box>
 
       <Typography align="center" variant="h5">
-        Fullname: Nguyen Vo Minh Tri
+        Fullname: {bookingInfo.customerName}
       </Typography>
       <Typography align="center" variant="h5">
-        Gender: Male
-      </Typography>
-      <Typography align="center" variant="h5">
-        Phone Number: 0111111111
-      </Typography>
-      <Typography align="center" variant="h5">
-        Age: 22
+        Phone Number: {bookingInfo.customerPhone}
       </Typography>
     </MainCard>
   );

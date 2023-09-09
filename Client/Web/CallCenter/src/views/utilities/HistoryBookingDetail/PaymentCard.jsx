@@ -17,8 +17,9 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   justifyContent: "center",
 }));
 
-const PaymentCard = () => {
+const PaymentCard = (props) => {
   const theme = useTheme();
+  const bookingInfo = props.bookingInfo;
   return (
     <MainCard>
       <Typography
@@ -42,7 +43,19 @@ const PaymentCard = () => {
         >
           Pick Up Time
         </Typography>
-        <CardWrapper></CardWrapper>
+        <Card
+          variant="outlined"
+          sx={{
+            width: "100%",
+            height: "40px",
+            alignItems: "center",
+            justifyContent: "left",
+            display: "flex",
+            pl: "10px",
+          }}
+        >
+          {bookingInfo.pickupTime}
+        </Card>
         <Typography
           align="left"
           variant="h5"
@@ -51,9 +64,21 @@ const PaymentCard = () => {
             fontWeight: "bold",
           }}
         >
-          Pick Up Time
+          Drop Off Time
         </Typography>
-        <CardWrapper></CardWrapper>
+        <Card
+          variant="outlined"
+          sx={{
+            width: "100%",
+            height: "40px",
+            alignItems: "center",
+            justifyContent: "left",
+            display: "flex",
+            pl: "10px",
+          }}
+        >
+          {bookingInfo.dropOffTime}
+        </Card>
       </Box>
       <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
       <Box mt={3}>
@@ -81,7 +106,7 @@ const PaymentCard = () => {
                     variant="h4"
                     sx={{ color: theme.palette.grey[800] }}
                   >
-                    $1839.00
+                    VND {bookingInfo.preTotal}
                   </Typography>
                 </Grid>
               </Grid>
@@ -108,7 +133,7 @@ const PaymentCard = () => {
                     variant="h4"
                     sx={{ color: theme.palette.grey[800] }}
                   >
-                    -$9.00
+                    -VND 20000
                   </Typography>
                 </Grid>
               </Grid>
@@ -135,7 +160,7 @@ const PaymentCard = () => {
                     variant="h4"
                     sx={{ color: theme.palette.grey[800] }}
                   >
-                    $1830.00
+                    VND {bookingInfo.total}
                   </Typography>
                 </Grid>
               </Grid>
@@ -162,7 +187,7 @@ const PaymentCard = () => {
                     variant="h4"
                     sx={{ color: theme.palette.grey[800] }}
                   >
-                    Momo
+                    {bookingInfo.paymentMethodId.name}
                   </Typography>
                 </Grid>
               </Grid>
