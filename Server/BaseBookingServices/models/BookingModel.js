@@ -101,6 +101,56 @@ const BookingSchema = new Schema(
     },
     {
         timestamps: true,
-    });
+    }
+);
+
+const PreBookingSchema = new Schema(
+    {
+        customerName: {
+            type: String,
+            required: true,
+        },
+        customerPhone: {
+            type: String,
+            required: true,
+        },
+        pickupLocation: {
+            address: {
+                type: String,
+                required: true,
+            },
+            coordinate: {
+                lat: { // x
+                    type: Number,
+                },
+                lng: { // y
+                    type: Number,
+                },
+            },
+        },
+        destinationLocation: {
+            address: {
+                type: String,
+                required: true,
+            },
+            coordinate: {
+                lat: { // x
+                    type: Number,
+                },
+                lng: { // y
+                    type: Number,
+                },
+            },
+        },
+        type: {
+            type: String,
+            required: true,
+        }
+    },
+    {
+        timestamps: true,
+    }
+);
 
 export const Booking = mongoose.model('Booking', BookingSchema, "bookings");
+export const PreBooking = mongoose.model('PreBooking', PreBookingSchema, "preBookings");

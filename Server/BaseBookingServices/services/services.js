@@ -1,4 +1,4 @@
-import {Booking} from "../models/BookingModel.js";
+import {Booking, PreBooking} from "../models/BookingModel.js";
 import {User} from "../models/UserModel.js";
 import {Vehicle} from "../models/VehicleModel.js";
 import {Promotion} from "../models/PromotionModel.js";
@@ -12,6 +12,54 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const config = process.env;
+
+const PreBookingService = {
+    async getPreBookingList(filter, projection) {
+        return PreBooking.find(filter).select(projection);
+    },
+    async getPreBookingDetails(preBookingId, populate_options) {
+        const query = PreBooking.findById(preBookingId);
+        if (populate_options) {
+            for (const field in populate_options) {
+                // For other fields, apply the provided select options
+                query.populate({
+                    path: field,
+                    select: populate_options[field],
+                });
+            }
+        }
+        return await query.exec();
+    },
+    async createPreBooking(preBookingData) {
+        try {
+            const preBooking = new PreBooking(preBookingData);
+            await preBooking.save();
+            return preBooking;
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    },
+    async updatePreBooking(preBookingId, updateFields) {
+        try {
+            return await PreBooking.findByIdAndUpdate(
+                preBookingId,
+                updateFields,
+                {
+                    new: true,
+                }
+            );
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    },
+    async deletePreBooking(preBookingId) {
+        try {
+            return await PreBooking.findByIdAndDelete(preBookingId);
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    },
+};
 
 const BookingService = {
     async get_booking_list(filter, projection) {
@@ -156,4 +204,4 @@ const MapService = {
     },
 };
 
-export {BookingService, UserService, MapService};
+export {PreBookingService, BookingService, UserService, MapService};

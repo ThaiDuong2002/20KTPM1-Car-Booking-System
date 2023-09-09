@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { notFound, errorHandler } from "./helper/errorHandler.js";
 import db from "./configs/db.js";
+import preBookingRouter from "./routes/preBooking.route.js";
 import bookingRouter from "./routes/booking.route.js";
 import placeRouter from "./routes/place.route.js";
 
@@ -19,6 +20,7 @@ const initializeExpress = (app) => {
 };
 db();
 initializeExpress(app);
+app.use("/pre_booking", preBookingRouter);
 app.use("/booking", bookingRouter);
 app.use("/place", placeRouter);
 app.use(errorHandler);

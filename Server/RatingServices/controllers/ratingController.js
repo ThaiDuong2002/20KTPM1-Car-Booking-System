@@ -1,5 +1,5 @@
 import createError from 'http-errors'
-import {RatingService} from '../services/services.js';
+import {UserService, RatingService} from '../services/services.js';
 
 const RatingController = {
     getAllRatings: async (req, res, next) => {
@@ -21,7 +21,7 @@ const RatingController = {
     getdriverRatings: async (req, res, next) => {
         try {
             const driverId = req.params.driverId;
-            const driver = await UserService.getUserById(driverId, {});
+            const driver = await UserService.getUserById(driverId, '-_id -password -refreshToken');
             if (!driver) {
                 return next(createError.NotFound(404, 'Driver not found'));
             }
