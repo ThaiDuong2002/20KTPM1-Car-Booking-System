@@ -34,9 +34,11 @@ const LocatingProcess = () => {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState("");
   const [duration, setDuration] = useState("");
+  const [pickUpCoordinate, setPickUpCoordinate] = useState(null);
+  const [dropOffCoordinate, setDropOffCoordinate] = useState(null);
 
   const { isLoaded } = useLoadScript({
-    // googleMapsApiKey: "AIzaSyDFoSXIW5NU-Znq3muefbeV96tCzzm9YVI",
+    googleMapsApiKey: "AIzaSyDFoSXIW5NU-Znq3muefbeV96tCzzm9YVI",
   });
 
   async function calculateRoute() {
@@ -44,13 +46,43 @@ const LocatingProcess = () => {
     //   return;
     // }
     try {
+      const origin = objectBooking.pickupLocation.address;
+      const destination = objectBooking.destinationLocation.address;
+
+      // Lấy tọa độ của vị trí bắt đầu (origin)
+      // eslint-disable-next-line no-undef
+      const originGeocodeResult = await new google.maps.Geocoder().geocode({
+        address: "Đại học Khoa học Tự nhiên",
+      });
+      if (!originGeocodeResult || originGeocodeResult.length === 0) {
+        throw new Error("Không thể tìm thấy tọa độ cho vị trí bắt đầu.");
+      }
+      const originCoordinate = originGeocodeResult.results[0].geometry.location;
+      setPickUpCoordinate({
+        lat: originCoordinate.lat,
+        lng: originCoordinate.lng,
+      });
+
+      // Lấy tọa độ của vị trí đích (destination)
+      // eslint-disable-next-line no-undef
+      const destinationGeocodeResult = await new google.maps.Geocoder().geocode(
+        { address: destination }
+      );
+      if (!destinationGeocodeResult || destinationGeocodeResult.length === 0) {
+        throw new Error("Không thể tìm thấy tọa độ cho vị trí đích.");
+      }
+      const destinationCoordinate =
+        destinationGeocodeResult.results[0].geometry.location;
+      setDropOffCoordinate({
+        lat: destinationCoordinate.lat,
+        lng: destinationCoordinate.lng,
+      });
+
       // eslint-disable-next-line no-undef
       const directionsService = new google.maps.DirectionsService();
       const results = await directionsService.route({
-        // origin: originRef.current.value,
-        // destination: destinationRef.current.value,
-        origin: "vincom Đồng Khởi",
-        destination: "Landmark 81",
+        origin: objectBooking.pickupLocation.address,
+        destination: objectBooking.destinationLocation.address,
         // eslint-disable-next-line no-undef
         travelMode: google.maps.TravelMode.DRIVING,
       });
@@ -62,6 +94,24 @@ const LocatingProcess = () => {
       console.error("Error calculating route:", error);
     }
   }
+
+  const handleSubmitClick = () => {
+    const postBody = {
+      customerName: objectBooking.customerName,
+      customerPhone: objectBooking.customerPhone,
+      pickupLocation: {
+        address: objectBooking.pickupLocation.address,
+        coordinate: pickUpCoordinate,
+      },
+      destinationLocation: {
+        address: objectBooking.destinationLocation.address,
+        cooordinate: dropOffCoordinate,
+      },
+      type: objectBooking.type,
+    };
+
+    console.log("Post Body: ", postBody);
+  };
 
   return (
     <MainCard title="Locating Process">
@@ -93,7 +143,7 @@ const LocatingProcess = () => {
                 <SvgIcon color="primary" fontSize="small">
                   <PlaceIcon />
                 </SvgIcon>
-                abc
+                {objectBooking.pickupLocation.address}
               </Card>
             </Grid>
             <Grid item lg={12}>
@@ -113,7 +163,7 @@ const LocatingProcess = () => {
                 <SvgIcon color="primary" fontSize="small">
                   <PlaceIcon />
                 </SvgIcon>
-                abc
+                {objectBooking.destinationLocation.address}
               </Card>
             </Grid>
             {distance ? (
@@ -196,7 +246,7 @@ const LocatingProcess = () => {
                     disableElevation
                     fullWidth
                     size="large"
-                    onClick={calculateRoute}
+                    onClick={handleSubmitClick}
                     variant="contained"
                     color="secondary"
                   >
