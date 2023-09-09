@@ -55,6 +55,20 @@ const initialValues = {
   vehicleType: "",
 };
 
+const submit = {
+  customerName: "Nguyen Van A",
+  customerPhone: "0123456789",
+  pickupLocation: {
+    coordinate: null,
+    address: "ABC",
+  },
+  dropOffLocation: {
+    coordinate: null,
+    address: "DEF",
+  },
+  type: "Motorbike",
+};
+
 const initialCoordinateValue = {
   lat: null,
   log: null,
@@ -69,12 +83,10 @@ const FormBooking = () => {
   const [historyList, setHistoryList] = useState([]);
   const [mostlyLocationList, setMostlyLocationList] = useState([]);
   const [formValue, setFormValue] = useState(initialValues);
-  const [pickUpLocationCoordinate, setPickUpLocationCoordinate] = useState(
-    initialCoordinateValue
-  );
-  const [dropOffLocationCoordinate, setDropOffLocationCoordinate] = useState(
-    initialCoordinateValue
-  );
+  const [pickUpLocationCoordinate, setPickUpLocationCoordinate] =
+    useState(null);
+  const [dropOffLocationCoordinate, setDropOffLocationCoordinate] =
+    useState(null);
 
   const formikRef = useRef();
   const handlePickUpBtnClick = (object) => {
@@ -103,19 +115,19 @@ const FormBooking = () => {
       object.destinationLocation.address
     );
     setPickUpLocationCoordinate({
-      lat: object.coordinate.lat,
-      lng: object.coordinate.lng,
+      lat: object.pickupLocation.coordinate.lat,
+      lng: object.pickupLocation.coordinate.lng,
     });
     setDropOffLocationCoordinate({
-      lat: object.coordinate.lat,
-      lng: object.coordinate.lng,
+      lat: object.destinationLocation.coordinate.lat,
+      lng: object.destinationLocation.coordinate.lng,
     });
   };
 
   const handleFormSubmit = async (values) => {
     const postBody = {
       customerName: values.customerName,
-      phoneNumber: values.phoneNumber,
+      customerPhone: values.phoneNumber,
       pickupLocation: {
         coordinate: pickUpLocationCoordinate,
         address: values.pickUpLocation,
@@ -124,7 +136,7 @@ const FormBooking = () => {
         coordinate: dropOffLocationCoordinate,
         address: values.dropOffLocation,
       },
-      vehicleType: values.vehicleType,
+      type: values.vehicleType,
     };
     console.log("Pick Up Coordinate: ", { pickUpLocationCoordinate });
     console.log("Form values: ", postBody);
