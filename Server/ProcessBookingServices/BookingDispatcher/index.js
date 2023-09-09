@@ -118,7 +118,6 @@ process.on('SIGINT', async () => {
 
         // Health check
         app.get('/health_check', (req, res) => {
-            req.io.emit('newMessage', 'A message from /send route 123');
             res.status(200).json({ status: 'OK' });
         });
 
@@ -126,58 +125,18 @@ process.on('SIGINT', async () => {
         app.get('/requestTripFromCustomer', async (req, res) => {
             try {
 
-
-                // const trip = {
-                //     sourceLocation: { lat: 10.763067461221109, lng: 106.68250385945508 }, // Vị trí San Francisco, California
-                //     destinationLocation: { lat: 10.75539299045719, lng: 106.68182394229112 }, // Vị trí Los Angeles, California
-                //     sourceName: "Trường Đại học Khoa học Tự nhiên,Quận 5",
-                //     destinationName: "Cà phê Three O'Clock",
-                //     distance: 758.20, // Khoảng cách (km) giữa San Francisco và Los Angeles
-                //     price: 84.60,   // Giá tiền
-                //     customerName: "Thanh Bui",
-                //     customerPhone: "123-456-7890",
-                //     customerImage: "https://khoinguonsangtao.vn/wp-content/uploads/2022/08/hinh-anh-avatar-sadboiz.jpg"
-                // };
-
-
-                const trip = {
-                    sourceLocation: req.body.sourceLocation,
-                    destinationLocation: req.body.destinationLocation,
-                    sourceName: req.body.sourceName,
-                    destinationName: req.body.destinationName,
-                    distance: req.body.distance,
-                    price: req.body.price,
-                    customerName: req.body.customerName,
-                    customerPhone: req.body.customerPhone,
-                    customerImage: req.body.customerImage
-                };
-
+                const trip = req.body;
                 const payload = {
                     "lat": trip.sourceLocation.lat,
                     "lng": trip.sourceLocation.lng,
-                    "trip_type": req.body.trip_type,
+                    "trip_type": req.body.type,
                 };
                 // Call the /find-drivers API
-                const response = await axios.post('http://localhost:3011/find_drivers', payload);
-
+                const response = await axios.post('http://python-dispatcher-services:3014/find_drivers', payload);
                 // tài xế tiềm năng
                 // response = [driver01,driver02]
 
-              
-
-                // io.on('accept_trip', function (data) {
-
-
-                //     // create booking schema
-
-                //     console.log(data);
-                // });
-                // io.on('reject_trip', function (data) {
-                //     //loop to last driver to send emit   
-                //     console.log(data);
-                // });
-
-
+                // tạo room cho driver và customer 
                 // Send booking info to the driver
                 if (userActive[response.data.driver[0].id.toString()]) {
 
@@ -186,8 +145,6 @@ process.on('SIGINT', async () => {
                 } else {
                     console.log(`Client ${response.data.driver[0].id.toString()} not allowed.`);
                 }
-
-
 
                 // // Send response back to the client
                 res.status(200).json({ status: 'OK', driversData: response.data });
