@@ -1,14 +1,14 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-abstract class BookingEvent {
-  const BookingEvent();
+abstract class BookingState {
+  const BookingState();
 }
 
-class BookingWaitingEvent extends BookingEvent {
-  const BookingWaitingEvent();
+class BookingInitialState extends BookingState {
+  const BookingInitialState();
 }
 
-class BookingRequestingEvent extends BookingEvent {
+class BookingRequestedState extends BookingState {
   LatLng sourceLocation;
   LatLng destinationLocation;
   String sourceName;
@@ -17,8 +17,12 @@ class BookingRequestingEvent extends BookingEvent {
   double price;
   String customerName;
   String customerPhone;
+  String userId;
   String customerImage;
-  BookingRequestingEvent({
+  String type;
+  String promotionId;
+  String paymentMethodId;
+  BookingRequestedState({
     required this.sourceLocation,
     required this.destinationLocation,
     required this.sourceName,
@@ -27,11 +31,16 @@ class BookingRequestingEvent extends BookingEvent {
     required this.price,
     required this.customerName,
     required this.customerPhone,
+    required this.userId,
     required this.customerImage,
+    required this.type,
+    required this.promotionId,
+    required this.paymentMethodId,
+
   });
 }
 
-class BookingAcceptingEvent extends BookingEvent {
+class BookingAcceptedState extends BookingState {
   LatLng sourceLocation;
   LatLng destinationLocation;
   String sourceName;
@@ -40,8 +49,12 @@ class BookingAcceptingEvent extends BookingEvent {
   double price;
   String customerName;
   String customerPhone;
+  String userId;
   String customerImage;
-  BookingAcceptingEvent({
+  String type;
+  String promotionId;
+  String paymentMethodId;
+  BookingAcceptedState({
     required this.sourceLocation,
     required this.destinationLocation,
     required this.sourceName,
@@ -50,21 +63,24 @@ class BookingAcceptingEvent extends BookingEvent {
     required this.price,
     required this.customerName,
     required this.customerPhone,
+    required this.userId,
     required this.customerImage,
+    required this.type,
+    required this.promotionId,
+    required this.paymentMethodId,
   });
 }
 
-class BookingRejectingEvent extends BookingEvent {
-  const BookingRejectingEvent();
+class BookingRejectedState extends BookingState {
+  const BookingRejectedState();
 }
 
-class BookingInProgressEvent extends BookingEvent {
-  
+class BookingStartRidingState extends BookingState {
   LatLng sourceLocation;
   LatLng destinationLocation;
   String sourceName;
   String destinationName;
-  BookingInProgressEvent({
+  BookingStartRidingState({
     required this.sourceLocation,
     required this.destinationLocation,
     required this.sourceName,
@@ -72,6 +88,10 @@ class BookingInProgressEvent extends BookingEvent {
   });
 }
 
-class BookingFinishEvent extends BookingEvent {
-  const BookingFinishEvent();
+class BookingFinishRidingState extends BookingState {
+  const BookingFinishRidingState();
+}
+
+class BookingLoadingState extends BookingState {
+  const BookingLoadingState();
 }

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:driver/global/services/booking/bloc/booking_event.dart';
-import 'package:driver/global/services/booking/bloc/booking_state.dart';
+import 'package:driver/global/services/bloc/booking/booking_event.dart';
+import 'package:driver/global/services/bloc/booking/booking_state.dart';
 import 'package:driver/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -26,8 +26,21 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           price: data['price'],
           customerName: data['customerName'],
           customerPhone: data['customerPhone'],
+          userId: data['userId'],
           customerImage: data['customerImage'],
+          type: data['type'],
+          promotionId: data['promotionId'],
+          paymentMethodId: data['paymentMethodId'],
         ));
+      });
+
+      bookingSocket.socket.on('bookingId', (data) {
+        debugPrint('bookingId: $data');
+        bookingSocket.setBookingId(data);
+      });
+
+      bookingSocket.socket.on('chat', (data) {
+        debugPrint('chat: $data');
       });
 
       on<BookingWaitingEvent>((event, emit) {
@@ -43,6 +56,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           distance: event.distance,
           price: event.price,
           customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
           customerPhone: event.customerPhone,
           customerImage: event.customerImage,
         ));
@@ -57,6 +74,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           distance: event.distance,
           price: event.price,
           customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
           customerPhone: event.customerPhone,
           customerImage: event.customerImage,
         ));

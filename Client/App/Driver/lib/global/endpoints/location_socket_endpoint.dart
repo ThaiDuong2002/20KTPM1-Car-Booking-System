@@ -1,7 +1,7 @@
 import 'package:network_info_plus/network_info_plus.dart';
 
 // const String socketHardUrl = 'http://10.123.0.77:3000';
-const String socketHardUrl = 'https://f66e-113-161-84-248.ngrok-free.app';
+const String socketHardUrl = 'https://6ce0-42-115-94-181.ngrok-free.app';
 const String socketListenUrl = 'http://172.18.0.1:3100';
 
 class IpAddress {
