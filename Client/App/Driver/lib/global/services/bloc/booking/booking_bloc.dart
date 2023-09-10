@@ -35,12 +35,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       });
 
       bookingSocket.socket.on('bookingId', (data) {
-        debugPrint('bookingId: $data');
         bookingSocket.setBookingId(data);
-      });
-
-      bookingSocket.socket.on('chat', (data) {
-        debugPrint('chat: $data');
       });
 
       on<BookingWaitingEvent>((event, emit) {
@@ -93,11 +88,34 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           destinationLocation: event.destinationLocation,
           sourceName: event.sourceName,
           destinationName: event.destinationName,
+          distance: event.distance,
+          price: event.price,
+          customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
+          customerPhone: event.customerPhone,
+          customerImage: event.customerImage,
         ));
       });
 
       on<BookingFinishEvent>((event, emit) {
-        emit(const BookingFinishRidingState());
+        emit(BookingFinishRidingState(
+          sourceLocation: event.sourceLocation,
+          destinationLocation: event.destinationLocation,
+          sourceName: event.sourceName,
+          destinationName: event.destinationName,
+          distance: event.distance,
+          price: event.price,
+          customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
+          customerPhone: event.customerPhone,
+          customerImage: event.customerImage,
+        ));
       });
     } catch (e) {
       debugPrint(e.toString());

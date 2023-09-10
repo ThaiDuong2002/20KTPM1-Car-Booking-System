@@ -92,7 +92,7 @@ class LocationService extends ChangeNotifier {
 
   void _startLocationUpdatess(SendPort sendPortToIsolate) async {
     final location = GeolocationService();
-    Timer.periodic(const Duration(seconds: 3), (timer) async {
+    Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
       final position = await location.getCurrentLocation();
       final locationData = {
         'lat': position.latitude,

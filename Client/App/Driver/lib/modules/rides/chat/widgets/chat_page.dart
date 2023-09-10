@@ -23,8 +23,6 @@ class _ChatSocketPageState extends State<ChatSocketPage> {
           _textEditingController.clear();
         } else if (state is ChatMessageReceived) {
           BlocProvider.of<ChatBloc>(context).add(const ChatLoading());
-        } else if (state is ChatInitial) {
-          debugPrint('chat: ${chat.messages}');
         }
       },
       child: BlocBuilder<ChatBloc, ChatState>(

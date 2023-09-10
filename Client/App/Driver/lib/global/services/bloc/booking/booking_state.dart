@@ -36,7 +36,6 @@ class BookingRequestedState extends BookingState {
     required this.type,
     required this.promotionId,
     required this.paymentMethodId,
-
   });
 }
 
@@ -80,16 +79,61 @@ class BookingStartRidingState extends BookingState {
   LatLng destinationLocation;
   String sourceName;
   String destinationName;
+  double distance;
+  double price;
+  String customerName;
+  String customerPhone;
+  String userId;
+  String customerImage;
+  String type;
+  String promotionId;
+  String paymentMethodId;
   BookingStartRidingState({
     required this.sourceLocation,
     required this.destinationLocation,
     required this.sourceName,
     required this.destinationName,
+    required this.distance,
+    required this.price,
+    required this.customerName,
+    required this.customerPhone,
+    required this.userId,
+    required this.customerImage,
+    required this.type,
+    required this.promotionId,
+    required this.paymentMethodId,
   });
 }
 
 class BookingFinishRidingState extends BookingState {
-  const BookingFinishRidingState();
+  LatLng sourceLocation;
+  LatLng destinationLocation;
+  String sourceName;
+  String destinationName;
+  double distance;
+  double price;
+  String customerName;
+  String customerPhone;
+  String userId;
+  String customerImage;
+  String type;
+  String promotionId;
+  String paymentMethodId;
+  BookingFinishRidingState({
+    required this.sourceLocation,
+    required this.destinationLocation,
+    required this.sourceName,
+    required this.destinationName,
+    required this.distance,
+    required this.price,
+    required this.customerName,
+    required this.customerPhone,
+    required this.userId,
+    required this.customerImage,
+    required this.type,
+    required this.promotionId,
+    required this.paymentMethodId,
+  });
 }
 
 class BookingLoadingState extends BookingState {

@@ -10,6 +10,7 @@ import 'package:driver/global/services/bloc/booking/booking_state.dart';
 import 'package:driver/global/services/general/location/location_service.dart';
 import 'package:driver/global/utils/constants/colors.dart';
 import 'package:driver/global/utils/constants/size.dart';
+import 'package:driver/global/utils/extensions/string_extension.dart';
 import 'package:driver/global/utils/helpers/dialogs/confirm_dialog.dart';
 import 'package:driver/global/utils/helpers/navigation/launch_screen.dart';
 import 'package:driver/global/utils/style/common_style.dart';
@@ -25,6 +26,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -37,21 +39,20 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  // final _googleMapsApi = dotenv.get('GOOGLE_MAPS_API_KEY', fallback: '');
   final _hereWeGoApi = dotenv.get('API_HERE_WE_GO', fallback: '');
   Uint8List? icon;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GoogleMapController? _mapController;
   final LocationService locationService = LocationService();
-  Set<Polyline> polylines = {};
+  static final Set<Polyline> _polylines = {};
 
   final Set<Marker> _markers = {};
-  // final List<LatLng> _polylineCoordinates = [];
 
   bool _isOffline = false;
-  bool _isBookingAccepted = false;
-  bool _isStartRiding = false;
+  static bool _isBookingAccepted = false;
+  static bool _isStartRiding = false;
+  static bool _isFinishedRiding = false;
 
   LatLng? _driverLocation;
   late LatLng? _sourceLocation;
@@ -63,7 +64,6 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     Future.delayed(const Duration(seconds: 1));
     _driverLocationUpdate();
-    // getPolyPoints();
     super.initState();
     FlutterCompass.events!.listen((event) {
       setState(() {
@@ -186,16 +186,22 @@ class _HomeViewState extends State<HomeView> {
   //   }
   // }
 
-  Future<void> drawPolyliness(LatLng sourceLocation, LatLng destinationLocation) async {
+  Future<void> drawPolyliness(LatLng? sourceLocation, LatLng? destinationLocation) async {
+    if (sourceLocation == null || destinationLocation == null) {
+      _polylines.clear();
+      setState(() {});
+      return;
+    }
     List<LatLng> routePoints =
         await fetchRouteCoordinates(sourceLocation, destinationLocation, _hereWeGoApi);
-    polylines.add(Polyline(
+    _polylines.clear();
+    _polylines.add(Polyline(
       polylineId: PolylineId(sourceLocation.toString()),
       visible: true,
 
       width: 8, //width of polyline
       points: routePoints,
-      color: Colors.deepOrangeAccent, //color of polyline
+      color: Colors.lightBlue, //color of polyline
     ));
     setState(() {});
   }
@@ -288,6 +294,9 @@ class _HomeViewState extends State<HomeView> {
                     Consumer<LocationService>(
                       builder: (context, value, child) {
                         try {
+                          if (_isFinishedRiding) {
+                            drawPolyliness(null, null);
+                          }
                           if (value.currentPosition != null && _isBookingAccepted) {
                             _updateDriverMarker(LatLng(
                               value.currentPosition!.latitude,
@@ -332,7 +341,7 @@ class _HomeViewState extends State<HomeView> {
                             onMapCreated: (mapController) {
                               _mapController = mapController;
                             },
-                            polylines: polylines,
+                            polylines: _polylines,
                           );
                         } catch (e) {
                           debugPrint('error: $e');
@@ -383,11 +392,25 @@ class _HomeViewState extends State<HomeView> {
                     ),
                     BlocListener<BookingBloc, BookingState>(
                       listener: (context, state) async {
-                        polylines.clear();
-                        setState(() {});
-                        if (state is BookingRequestedState) {
-                          // polylines.clear();
-                          // setState(() {});
+                        if (state is BookingInitialState) {
+                          _isBookingAccepted = false;
+                          _isStartRiding = false;
+                          _isFinishedRiding = false;
+                          _sourceLocation = null;
+                          _destinationLocation = null;
+                          _markers.clear();
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon: BitmapDescriptor.fromBytes(icon!),
+                            ),
+                          );
+                          _updateDriverMarker(LatLng(
+                            _driverLocation!.latitude,
+                            _driverLocation!.longitude,
+                          ));
+                        } else if (state is BookingRequestedState) {
                           _sourceLocation = state.sourceLocation;
                           _destinationLocation = state.destinationLocation;
                           _markers.add(
@@ -411,22 +434,21 @@ class _HomeViewState extends State<HomeView> {
                             (state.sourceLocation.longitude + state.destinationLocation.longitude) /
                                 2,
                           ));
-                          // _driverLocationUpdate();
-                          // getPolyPoints();
-                          await drawPolyliness(_sourceLocation!, _destinationLocation!);
+                          await drawPolyliness(
+                            state.sourceLocation,
+                            state.destinationLocation,
+                          );
                         } else if (state is BookingAcceptedState) {
                           _isBookingAccepted = true;
-                          // polylines.clear();
                           _markers.clear();
                           _sourceLocation = state.sourceLocation;
                           _destinationLocation = state.destinationLocation;
-                          _updateDriverMarker(
-                            LatLng(
-                              (state.sourceLocation.latitude + state.destinationLocation.latitude) /
-                                  2,
-                              (state.sourceLocation.longitude +
-                                      state.destinationLocation.longitude) /
-                                  2,
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
                             ),
                           );
                           _markers.add(
@@ -437,47 +459,54 @@ class _HomeViewState extends State<HomeView> {
                                   BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
                             ),
                           );
-                          // _driverLocationUpdate();
-                          // setState(() {});
                         } else if (state is BookingRejectedState) {
                           _isBookingAccepted = false;
+                          _isStartRiding = false;
                           _sourceLocation = null;
                           _destinationLocation = null;
                           _markers.clear();
-                          // polylines.clear();
                           _updateDriverMarker(
                             LatLng(
                               _driverLocation!.latitude,
                               _driverLocation!.longitude,
                             ),
                           );
-                          // _driverLocationUpdate();
-                          // setState(() {});
-                          // getPolyPoints();
+                          BlocProvider.of<BookingBloc>(context).add(
+                            const BookingWaitingEvent(),
+                          );
                         } else if (state is BookingFinishRidingState) {
                           _isBookingAccepted = false;
+                          _isStartRiding = false;
+                          _isFinishedRiding = true;
                           _sourceLocation = null;
                           _destinationLocation = null;
                           _markers.clear();
-                          polylines.clear();
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon: BitmapDescriptor.fromBytes(icon!),
+                            ),
+                          );
                           _updateDriverMarker(LatLng(
                             _driverLocation!.latitude,
                             _driverLocation!.longitude,
                           ));
-                          // _driverLocationUpdate();
-                          // setState(() {});
-                          // getPolyPoints();
                           chat.messages.clear();
-                          BlocProvider.of<BookingBloc>(context).add(
-                            const BookingWaitingEvent(),
-                          );
                         } else if (state is BookingStartRidingState) {
-                          // polylines.clear();
                           _markers.clear();
                           _isBookingAccepted = true;
                           _isStartRiding = true;
                           _sourceLocation = state.sourceLocation;
                           _destinationLocation = state.destinationLocation;
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
                           _markers.add(
                             Marker(
                               markerId: const MarkerId('source'),
@@ -493,21 +522,168 @@ class _HomeViewState extends State<HomeView> {
                               icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
                             ),
                           );
-                          // _driverLocationUpdate();
-                          _updateDriverMarker(
-                            LatLng(
-                              state.sourceLocation.latitude,
-                              state.sourceLocation.longitude,
-                            ),
-                          );
-
-                          // setState(() {});
                         }
                       },
                       child: BlocBuilder<BookingBloc, BookingState>(
                         builder: (context, state) {
-                          if (state is BookingInitialState || state is BookingFinishRidingState) {
-                            return const SizedBox();
+                          if (state is BookingFinishRidingState) {
+                            return Positioned(
+                              bottom: 0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(16),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(defaultRadius),
+                                    topRight: Radius.circular(defaultRadius),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: primaryColor.withOpacity(0.05),
+                                        borderRadius: radius(),
+                                      ),
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Trip detail'.capitalizeFirstLetter(),
+                                            style: boldTextStyle(),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              const Column(
+                                                children: [
+                                                  Icon(Icons.near_me, color: Colors.green),
+                                                  SizedBox(height: 4),
+                                                  SizedBox(
+                                                    height: 50,
+                                                    child: DottedLine(
+                                                      direction: Axis.vertical,
+                                                      lineLength: double.infinity,
+                                                      lineThickness: 1,
+                                                      dashLength: 2,
+                                                      dashColor: primaryColor,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 2),
+                                                  Icon(Icons.location_on, color: Colors.red),
+                                                ],
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      state.sourceName,
+                                                      style: primaryTextStyle(size: 14),
+                                                    ),
+                                                    const SizedBox(height: 35),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      state.destinationName,
+                                                      style: primaryTextStyle(size: 14),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: primaryColor.withOpacity(0.05),
+                                        borderRadius: radius(),
+                                      ),
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Customer Information'.capitalizeFirstLetter(),
+                                            style: boldTextStyle(),
+                                          ),
+                                          const Divider(height: 30, thickness: 1),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                FontAwesome.user,
+                                                size: 18,
+                                                color: textSecondaryColor,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                state.customerName,
+                                                style: primaryTextStyle(),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(2),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.green, borderRadius: radius(6)),
+                                                child: const Icon(Icons.call_sharp,
+                                                    color: Colors.white, size: 16),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                state.customerPhone,
+                                                style: primaryTextStyle(),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: primaryColor.withOpacity(0.05),
+                                          borderRadius: BorderRadius.circular(8)),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          totalCount(
+                                            title: 'Total',
+                                            description: '',
+                                            subTitle: state.price.toString(),
+                                            isTotal: true,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider(height: 30, thickness: 1),
+                                    AppButtonWidget(
+                                      width: MediaQuery.of(context).size.width,
+                                      text: 'Close',
+                                      color: primaryColor,
+                                      textStyle: boldTextStyle(color: Colors.white),
+                                      onTap: () {
+                                        BlocProvider.of<BookingBloc>(context).add(
+                                          const BookingWaitingEvent(),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           }
                           if (state is BookingStartRidingState) {
                             return Positioned(
@@ -589,7 +765,21 @@ class _HomeViewState extends State<HomeView> {
                                           'tripId': '123',
                                         });
                                         BlocProvider.of<BookingBloc>(context).add(
-                                          const BookingFinishEvent(),
+                                          BookingFinishEvent(
+                                            sourceLocation: state.sourceLocation,
+                                            destinationLocation: state.destinationLocation,
+                                            sourceName: state.sourceName,
+                                            destinationName: state.destinationName,
+                                            distance: state.distance,
+                                            price: state.price,
+                                            customerName: state.customerName,
+                                            userId: state.userId,
+                                            type: state.type,
+                                            promotionId: state.promotionId,
+                                            paymentMethodId: state.paymentMethodId,
+                                            customerPhone: state.customerPhone,
+                                            customerImage: state.customerImage,
+                                          ),
                                         );
                                       },
                                     ),
@@ -805,6 +995,15 @@ class _HomeViewState extends State<HomeView> {
                                             destinationLocation: state.destinationLocation,
                                             sourceName: state.sourceName,
                                             destinationName: state.destinationName,
+                                            distance: state.distance,
+                                            price: state.price,
+                                            customerName: state.customerName,
+                                            userId: state.userId,
+                                            type: state.type,
+                                            promotionId: state.promotionId,
+                                            paymentMethodId: state.paymentMethodId,
+                                            customerPhone: state.customerPhone,
+                                            customerImage: state.customerImage,
                                           ),
                                         );
                                       },
@@ -818,7 +1017,6 @@ class _HomeViewState extends State<HomeView> {
                           if (state is BookingRequestedState) {
                             _destinationLocation = state.destinationLocation;
                             _sourceLocation = state.sourceLocation;
-
                             return SizedBox.expand(
                               child: Stack(
                                 children: [

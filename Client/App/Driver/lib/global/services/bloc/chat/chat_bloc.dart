@@ -1,13 +1,11 @@
 import 'package:driver/global/services/bloc/chat/chat_event.dart';
 import 'package:driver/global/services/bloc/chat/chat_state.dart';
 import 'package:driver/main.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  ChatBloc() :super(const ChatInitial()) {
+  ChatBloc() : super(const ChatInitial()) {
     bookingSocket.socket.on('chat', (data) {
-      debugPrint('chat: $data');
       add(ChatMessageReceiving(
         roomId: data['roomId'],
         role: data['role'],
