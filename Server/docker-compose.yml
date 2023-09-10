@@ -123,7 +123,7 @@ services:
 
   # Socket Service
   socker-services:
-    build: ./SockerServer
+    build: ./SockerServices
     ports:
       - 5000:5000
   #   env_file:
