@@ -16,7 +16,7 @@ services:
       - 3001:3001
     env_file:
       - ./AdminServices/.env
-  
+
   # Authen services
   authen-services:
     build: ./AuthenServices
@@ -24,7 +24,7 @@ services:
       - 3008:3008
     env_file:
       - ./AuthenServices/.env
-  
+
   # Booking services
   booking-services:
     build: ./BaseBookingServices
@@ -120,3 +120,11 @@ services:
       - 3014:3014
     env_file:
       - ./ProcessBookingServices/PythonDispatcher/.env
+
+  # Socket Service
+  socker-services:
+    build: ./SockerServer
+    ports:
+      - 5000:5000
+  #   env_file:
+  #

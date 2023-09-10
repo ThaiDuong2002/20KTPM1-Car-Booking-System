@@ -11,7 +11,12 @@ dotenv.config();
 
 const app = express();
 var corsOptions = {
-  origin: "http://localhost:" + process.env.CLIENT_PORT,
+  origin: [
+    "http://localhost:4000",
+    "http://localhost:4001",
+    "http://localhost:4002",
+  ],
+  // origin: "http://localhost:52090" + process.env.CLIENT_PORT,
 };
 const initializeExpress = (app) => {
   app.use(cors(corsOptions));
