@@ -16,6 +16,7 @@ class GoogleService {
                         key: config.GOOGLE_MAPS_API_KEY,
                     },
                 });
+            console.log(coordinates.data.results);
             return coordinates.data.results;
         } catch (error) {
             throw new Error(error);

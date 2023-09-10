@@ -29,11 +29,13 @@ app.use((req, res, next) => {
 // Dùng body-parser (nếu bạn sử dụng Express < 4.16.0)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+let connection = null;
 let channel = null;
 
 async function dispatcher() {
     try {
-        const connection = await amqp.connect(config.AMQP_URL);
+        connection = await amqp.connect(config.AMQP_URL);
         channel = await connection.createChannel();
         const exchangeName = config.EXCHANGE_NAME;
         const queueName = config.QUEUE_NAME;
@@ -41,13 +43,13 @@ async function dispatcher() {
         await channel.assertExchange(exchangeName, 'direct', { durable: false });
         const assertQueueResponse = await channel.assertQueue(queueName);
         const queue = assertQueueResponse.queue;
-        await channel.bindQueue(queue, exchangeName, routingKey);
-        console.log(`[*] Booking reception.`);
+        channel.bindQueue(queue, exchangeName, routingKey);
+        console.log(`[*] Booking dispatcher.`);
         console.log(`[*] Waiting for booking info.`);
 
         // Consume message
-        await channel.consume(queue, async (msg) => {
-            try {
+        channel.consume(queue, (msg) => {
+            if (msg !== null) {
                 const bookingInfo = JSON.parse(msg.content.toString());
                 console.log(`[x] Received booking info:`, bookingInfo);
 
@@ -85,12 +87,12 @@ async function dispatcher() {
                 // await channel.publish(driverExchangeName, driverRoutingKey, Buffer.from(JSON.stringify(bookingInfo)));
 
                 channel.ack(msg); // Acknowledge the message
-            } catch (error) {
-                console.error('Error processing booking info:', error);
+            } else {
+                console.log("Dispatcher Error: No message received");
             }
         });
     } catch (error) {
-        console.error('Error receiving booking info:', error);
+        console.log("Error receiving booking info:", error.message);
     }
 }
 
@@ -100,6 +102,9 @@ process.on('SIGINT', async () => {
         console.log('Shutting down...');
         if (channel) {
             await channel.close(); // Close the channel
+        }
+        if (connection) {
+            await connection.close(); // Close the connection
         }
         process.exit(0);
     } catch (error) {
@@ -160,8 +165,6 @@ process.on('SIGINT', async () => {
 
                 // tài xế tiềm năng
                 // response = [driver01,driver02]
-
-              
 
                 // io.on('accept_trip', function (data) {
 
