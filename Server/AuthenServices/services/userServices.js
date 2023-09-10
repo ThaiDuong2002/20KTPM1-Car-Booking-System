@@ -1,7 +1,14 @@
 import createError from 'http-errors';
 import bcryptjs from 'bcryptjs';
-import {Consultant, Customer, Driver, User} from '../models/UserModel.js'
-import vehicleServices from "./vehicleServices.js";
+import { 
+    AdminFactory,
+    CustomerFactory,
+    DriverFactory,
+    ConsultantFactory, 
+} from '../models/UserFactory.js';
+import { UserModel } from '../schemas/UserSchema.js'
+import VehicleServices from './vehicleServices.js';
+
 
 const projection = {
     password: 0,
@@ -11,7 +18,7 @@ const projection = {
 
 const UserService = {
     async getUserByIdentifier(email, phone) {
-        const result = await User.findOne({
+        const result = await UserModel.findOne({
             $or: [
                 {email: email},
                 {phone: phone}
@@ -20,54 +27,52 @@ const UserService = {
         return result
     },
     async getUserById(user_id, filter) {
-        const result = await User.findOne({
+        const result = await UserModel.findOne({
             _id: user_id,
             ...filter
         });
         return result
     },
     async updateUser(user_id, data) {
-        const result = await User.findOneAndUpdate(
+        const result = await UserModel.findOneAndUpdate(
             {_id: user_id},
             data,
             {new: true}
         ).select(projection)
         return result
     },
-    async createUser(userRole, data) {
+    async createUser(userInfo) {
         // Hash password
         const salt = bcryptjs.genSaltSync(10)
-        data.password = bcryptjs.hashSync(data.password, salt)
+        userInfo.password = bcryptjs.hashSync(userInfo.password, salt)
 
-        // Create new user
-        let newUser
-        switch (userRole) {
-            case "customer":
-                data.userRole = "customer"
-                newUser = new Customer(data)
-                break
-            case "consultant":
-                data.userRole = "consultant"
-                newUser = new Consultant(data)
-                break
-            case "driver":
-                // Create new vehicle
-                const newVehicleId = await vehicleServices.createVehicle(data.vehicle)
+        let newUser;
 
-                // Create new driver
-                data.userRole = "driver"
-                data.vehicleId = newVehicleId
-                newUser = new Driver(data)
-                break
+        switch (userInfo.userRole) {
+            case 'admin':
+                newUser = new AdminFactory().createUser(userInfo)
+                break;
+            case 'customer':
+                newUser = new CustomerFactory().createUser(userInfo)
+                break;
+            case 'driver':
+                // Create vehicle
+                const newVehicle = await VehicleServices.createVehicle(userInfo.vehicle)
+                // Add vehicle id to user info
+                userInfo.vehicleId = newVehicle._id
+                // Create driver
+                newUser = new DriverFactory().createUser(userInfo);
+                break;
+            case 'consultant':
+                newUser = new ConsultantFactory().createUser(userInfo);
+                break;
             default:
-                throw createError.BadRequest("Invalid role")
+                throw new Error(`Invalid user role: ${userInfo.userRole}`);
         }
-        const result = await newUser.save()
-        if (!result) {
-            throw createError.BadRequest("Failed to save new user to the database");
-        }
-        return result
-    }
+        
+        // Save to DB
+        return await newUser.saveToDB();
+    },
 }
 
 export default UserService
