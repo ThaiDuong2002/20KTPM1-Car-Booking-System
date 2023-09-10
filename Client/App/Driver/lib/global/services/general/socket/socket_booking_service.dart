@@ -1,5 +1,4 @@
 import 'package:driver/global/endpoints/location_socket_endpoint.dart';
-import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class BookingSocket {
@@ -8,8 +7,14 @@ class BookingSocket {
     'autoConnect': false,
   });
 
+  static var _bookingId = '';
+
   void dispose() {
     _socket.disconnect();
+  }
+
+  void setBookingId(String id) {
+    _bookingId = id;
   }
 
   void toggleSwitch(bool value) {
@@ -21,16 +26,29 @@ class BookingSocket {
   }
 
   get socket => _socket;
+  get bookingId => _bookingId;
 
   void startListening() {
     _socket.connect();
-    _socket.on('driver-listening', (data) {
-      debugPrint(data.toString());
-    });
-    _socket.on('newTrip', (data) {});
   }
 
   void sendFirstRegister(String socketName) {
     _socket.emit(socketName, '123');
+  }
+
+  void acceptedTrip(String socketName, dynamic data) {
+    _socket.emit(socketName, data);
+  }
+
+  void rejectedTrip(String socketName, dynamic data) {
+    _socket.emit(socketName, data);
+  }
+
+  void startTrip(String socketName, dynamic data) {
+    _socket.emit(socketName, data);
+  }
+
+  void endTrip(String socketName, dynamic data) {
+    _socket.emit(socketName, data);
   }
 }

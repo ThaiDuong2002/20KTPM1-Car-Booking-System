@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:driver/global/services/booking/bloc/booking_event.dart';
-import 'package:driver/global/services/booking/bloc/booking_state.dart';
+import 'package:driver/global/services/bloc/booking/booking_event.dart';
+import 'package:driver/global/services/bloc/booking/booking_state.dart';
 import 'package:driver/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,7 +9,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   BookingBloc() : super(const BookingInitialState()) {
     try {
       bookingSocket.socket.on('newTrip', (data) {
-        debugPrint("test " + data.toString());
         final source = LatLng(
           data['sourceLocation']['lat'],
           data['sourceLocation']['lng'],
@@ -27,8 +26,16 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           price: data['price'],
           customerName: data['customerName'],
           customerPhone: data['customerPhone'],
+          userId: data['userId'],
           customerImage: data['customerImage'],
+          type: data['type'],
+          promotionId: data['promotionId'],
+          paymentMethodId: data['paymentMethodId'],
         ));
+      });
+
+      bookingSocket.socket.on('bookingId', (data) {
+        bookingSocket.setBookingId(data);
       });
 
       on<BookingWaitingEvent>((event, emit) {
@@ -36,7 +43,6 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
       });
 
       on<BookingRequestingEvent>((event, emit) {
-        debugPrint("test " + event.toString());
         emit(BookingRequestedState(
           sourceLocation: event.sourceLocation,
           destinationLocation: event.destinationLocation,
@@ -45,6 +51,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           distance: event.distance,
           price: event.price,
           customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
           customerPhone: event.customerPhone,
           customerImage: event.customerImage,
         ));
@@ -59,6 +69,10 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           distance: event.distance,
           price: event.price,
           customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
           customerPhone: event.customerPhone,
           customerImage: event.customerImage,
         ));
@@ -74,11 +88,34 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
           destinationLocation: event.destinationLocation,
           sourceName: event.sourceName,
           destinationName: event.destinationName,
+          distance: event.distance,
+          price: event.price,
+          customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
+          customerPhone: event.customerPhone,
+          customerImage: event.customerImage,
         ));
       });
 
       on<BookingFinishEvent>((event, emit) {
-        emit(const BookingFinishRidingState());
+        emit(BookingFinishRidingState(
+          sourceLocation: event.sourceLocation,
+          destinationLocation: event.destinationLocation,
+          sourceName: event.sourceName,
+          destinationName: event.destinationName,
+          distance: event.distance,
+          price: event.price,
+          customerName: event.customerName,
+          userId: event.userId,
+          type: event.type,
+          promotionId: event.promotionId,
+          paymentMethodId: event.paymentMethodId,
+          customerPhone: event.customerPhone,
+          customerImage: event.customerImage,
+        ));
       });
     } catch (e) {
       debugPrint(e.toString());

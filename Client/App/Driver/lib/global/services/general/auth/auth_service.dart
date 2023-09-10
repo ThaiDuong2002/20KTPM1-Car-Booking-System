@@ -1,7 +1,15 @@
-import 'package:driver/global/services/auth/auth_provider.dart';
-import 'package:driver/global/services/auth/auth_user.dart';
 
-class DatabaseAuthProvider implements AuthProvider {
+import 'package:driver/global/services/general/auth/auth_provider.dart';
+import 'package:driver/global/services/general/auth/auth_user.dart';
+import 'package:driver/global/services/general/auth/database_auth_provider.dart';
+
+class AuthService implements AuthProvider {
+  final AuthProvider _provider;
+
+  AuthService(this._provider);
+
+  factory AuthService.initialize() => AuthService(DatabaseAuthProvider());
+
   @override
   // TODO: implement currentUser
   AuthUser? get currentUser => throw UnimplementedError();
