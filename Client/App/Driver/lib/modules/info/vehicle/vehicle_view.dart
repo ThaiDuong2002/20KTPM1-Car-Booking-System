@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:driver/global/services/exceptions/dio_service_exception.dart';
+import 'package:driver/global/services/general/vehicle.type/vehicle_type_service.dart';
 import 'package:driver/global/utils/constants/colors.dart';
 import 'package:driver/global/utils/style/common_style.dart';
 import 'package:driver/global/widgets/app_button.dart';
@@ -22,25 +24,47 @@ class _VehicleDetailViewState extends State<VehicleDetailView> {
   TextEditingController vehicleColorController = TextEditingController();
   TextEditingController vehicleLicenseController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    fetchVehicleType();
+  }
+
   String _vehicleType = 'Choose Type';
+  String _capacity = 'Capacity';
+
+  VehicleTypeService vehicleTypeService = VehicleTypeService();
+
+  Future<void> fetchVehicleType() async {
+    try {
+      final vehicleType = await vehicleTypeService.getVehicleType('64f88ac29204a820b98c12fe');
+      setState(() {
+        _vehicleType = vehicleType.name;
+        _capacity = vehicleType.capacity.toString();
+      });
+      final dataList = await vehicleTypeService.getlistVehicleType();
+      final vehicleSet = dataList.toSet();
+      for (var element in vehicleSet) {
+        _vehicleList.add(element.name);
+        if (element.capacity != 0) {
+          _capacityList.add(element.capacity.toString());
+        }
+      }
+    } catch (e) {
+      if (e is UnknowFetchingDataException) {
+        debugPrint('DioServiceException');
+      } else {
+        debugPrint('Exception: $e');
+      }
+    }
+  }
 
   final _vehicleList = [
     'Choose Type',
-    'Bike',
-    'Car',
   ];
-
-  String _capacity = 'Capacity';
 
   final _capacityList = [
     'Capacity',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
   ];
 
   XFile? vehicleImage;

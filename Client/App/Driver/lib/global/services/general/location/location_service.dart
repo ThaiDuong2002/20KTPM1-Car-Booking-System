@@ -4,7 +4,6 @@ import 'dart:isolate';
 import 'package:driver/global/endpoints/location_socket_endpoint.dart';
 import 'package:driver/global/services/general/location/location_permission.dart';
 import 'package:driver/global/services/general/socket/socket_service.dart';
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -20,7 +19,7 @@ class GeolocationService {
   }
 }
 
-class LocationService extends ChangeNotifier {
+class LocationService {
   late SocketService _socketService;
   late Isolate _isolate;
   LatLng? _currentPosition;
@@ -32,7 +31,6 @@ class LocationService extends ChangeNotifier {
     _socketService.initilize();
   }
 
-  
   void disposeService() {
     _isolate.kill();
     _socketService.disconnect();
@@ -78,7 +76,7 @@ class LocationService extends ChangeNotifier {
           locationData['lat'],
           locationData['lng'],
         );
-        notifyListeners();
+        // notifyListeners();
         // Gửi dữ liệu vị trí qua socket
         _socketService.emit('driver-location', locationData);
       } else if (message is SendPort) {

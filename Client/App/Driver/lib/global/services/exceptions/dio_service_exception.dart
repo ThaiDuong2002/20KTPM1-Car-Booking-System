@@ -1,0 +1,1 @@
+class UnknowFetchingDataException implements Exception {}

@@ -51,4 +51,8 @@ class BookingSocket {
   void endTrip(String socketName, dynamic data) {
     _socket.emit(socketName, data);
   }
+
+  void trackingLocation(String socketName, dynamic data) {
+    _socket.emit(socketName, data);
+  }
 }

@@ -2,7 +2,7 @@ import 'package:driver/global/utils/constants/colors.dart';
 import 'package:driver/global/utils/constants/my_rides_status.dart';
 import 'package:driver/global/utils/style/common_style.dart';
 import 'package:driver/global/widgets/common_widget.dart';
-import 'package:driver/global/widgets/create_tab_screen.dart';
+import 'package:driver/modules/rides/list/widgets/create_tab_screen.dart';
 import 'package:flutter/material.dart';
 
 class RideListView extends StatefulWidget {

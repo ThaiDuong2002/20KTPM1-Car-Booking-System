@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:driver/global/decode/flexible_polyline.dart';
+import 'package:driver/global/models/tracking/tracking.dart';
 import 'package:driver/global/services/bloc/booking/booking_bloc.dart';
 import 'package:driver/global/services/bloc/booking/booking_event.dart';
 import 'package:driver/global/services/bloc/booking/booking_state.dart';
@@ -20,6 +21,7 @@ import 'package:driver/global/widgets/loader.dart';
 import 'package:driver/main.dart';
 import 'package:driver/modules/home/widgets/drawer_view.dart';
 import 'package:driver/modules/rides/chat/chat_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +47,7 @@ class _HomeViewState extends State<HomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GoogleMapController? _mapController;
   final LocationService locationService = LocationService();
+  final Tracking tracking = Tracking();
   static final Set<Polyline> _polylines = {};
 
   final Set<Marker> _markers = {};
@@ -57,14 +60,17 @@ class _HomeViewState extends State<HomeView> {
   LatLng? _driverLocation;
   late LatLng? _sourceLocation;
   late LatLng? _destinationLocation;
+  late LocationSettings locationSettings;
 
   double _currentHeading = 0.0;
+  String? userId;
 
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 1));
     _driverLocationUpdate();
     super.initState();
+    liveTracking();
     FlutterCompass.events!.listen((event) {
       setState(() {
         _currentHeading = event.heading!;
@@ -76,6 +82,48 @@ class _HomeViewState extends State<HomeView> {
   void dispose() {
     super.dispose();
   }
+
+  // Start -  Thai Duong modify -
+
+  void liveTracking() {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      locationSettings = AndroidSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 5,
+          forceLocationManager: true,
+          intervalDuration: const Duration(seconds: 2),
+          //(Optional) Set foreground notification config to keep the app alive
+          //when going to the background
+          foregroundNotificationConfig: const ForegroundNotificationConfig(
+            notificationText:
+                "Example app will continue to receive your location even when you aren't using it",
+            notificationTitle: "Running in Background",
+            enableWakeLock: true,
+          ));
+    } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      locationSettings = AppleSettings(
+        accuracy: LocationAccuracy.high,
+        activityType: ActivityType.fitness,
+        distanceFilter: 100,
+        pauseLocationUpdatesAutomatically: true,
+        // Only set to true if our app will be started up in the background.
+        showBackgroundLocationIndicator: false,
+      );
+    } else {
+      locationSettings = const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      );
+    }
+
+    Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position? position) {
+      tracking.setCurrentPosition = LatLng(position!.latitude, position.longitude);
+      tracking.updateTracking(true);
+    });
+  }
+
+  // End -  Thai Duong modify
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -146,45 +194,8 @@ class _HomeViewState extends State<HomeView> {
           icon: BitmapDescriptor.fromBytes(icon!),
         ),
       );
-      // if (_sourceLocation != null && _destinationLocation != null) {
-      //   _markers.add(
-      //     Marker(
-      //       markerId: const MarkerId('source'),
-      //       position: _sourceLocation!,
-      //       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-      //     ),
-      //   );
-      //   _markers.add(
-      //     Marker(
-      //       markerId: const MarkerId('destination'),
-      //       position: _destinationLocation!,
-      //       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      //     ),
-      //   );
-      // }
     });
   }
-
-  // Future<void> getPolyPoints() async {
-  //   PolylinePoints polylinePoints = PolylinePoints();
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //     _googleMapsApi, // Your Google Map Key
-  //     PointLatLng(_sourceLocation!.latitude, _sourceLocation!.longitude),
-  //     PointLatLng(_destinationLocation!.latitude, _destinationLocation!.longitude),
-  //   );
-
-  //   if (result.points.isNotEmpty) {
-  //     for (var point in result.points) {
-  //       _polylineCoordinates.add(
-  //         LatLng(point.latitude, point.longitude),
-  //       );
-  //       _polylineCoordinates.add(
-  //         LatLng(point.latitude, point.longitude),
-  //       );
-  //     }
-  //     setState(() {});
-  //   }
-  // }
 
   Future<void> drawPolyliness(LatLng? sourceLocation, LatLng? destinationLocation) async {
     if (sourceLocation == null || destinationLocation == null) {
@@ -240,7 +251,7 @@ class _HomeViewState extends State<HomeView> {
         return true;
       },
       child: ChangeNotifierProvider(
-        create: (_) => locationService,
+        create: (_) => tracking,
         child: Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: false,
@@ -291,18 +302,26 @@ class _HomeViewState extends State<HomeView> {
           body: _driverLocation != null
               ? Stack(
                   children: [
-                    Consumer<LocationService>(
+                    Consumer<Tracking>(
                       builder: (context, value, child) {
+                        debugPrint('value-test: ${value.currentPosition}');
                         try {
                           if (_isFinishedRiding) {
                             drawPolyliness(null, null);
                           }
                           if (value.currentPosition != null && _isBookingAccepted) {
+                            bookingSocket.trackingLocation('tracking-driver', {
+                              'driverId': '123',
+                              'userId': '456',
+                              'lat': value.currentPosition!.latitude,
+                              'lng': value.currentPosition!.longitude,
+                            });
                             _updateDriverMarker(LatLng(
                               value.currentPosition!.latitude,
                               value.currentPosition!.longitude,
                             ));
 
+                            _markers.clear();
                             _markers.add(
                               Marker(
                                 markerId: const MarkerId('driver'),
@@ -313,6 +332,8 @@ class _HomeViewState extends State<HomeView> {
                                 icon: BitmapDescriptor.fromBytes(icon!),
                               ),
                             );
+
+                            debugPrint('value-test: ${_markers.length}');
                             if (_isStartRiding) {
                               drawPolyliness(
                                 _destinationLocation!,
@@ -395,7 +416,7 @@ class _HomeViewState extends State<HomeView> {
                         if (state is BookingInitialState) {
                           _isBookingAccepted = false;
                           _isStartRiding = false;
-                          _isFinishedRiding = false;
+                          _isFinishedRiding = true;
                           _sourceLocation = null;
                           _destinationLocation = null;
                           _markers.clear();
@@ -439,7 +460,9 @@ class _HomeViewState extends State<HomeView> {
                             state.destinationLocation,
                           );
                         } else if (state is BookingAcceptedState) {
+                          userId = state.userId;
                           _isBookingAccepted = true;
+                          _isFinishedRiding = false;
                           _markers.clear();
                           _sourceLocation = state.sourceLocation;
                           _destinationLocation = state.destinationLocation;
@@ -480,6 +503,7 @@ class _HomeViewState extends State<HomeView> {
                           _isFinishedRiding = true;
                           _sourceLocation = null;
                           _destinationLocation = null;
+                          userId = null;
                           _markers.clear();
                           _markers.add(
                             Marker(
@@ -492,6 +516,7 @@ class _HomeViewState extends State<HomeView> {
                             _driverLocation!.latitude,
                             _driverLocation!.longitude,
                           ));
+                          
                           chat.messages.clear();
                         } else if (state is BookingStartRidingState) {
                           _markers.clear();
