@@ -2,42 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketService with ChangeNotifier {
+  static final SocketService _instance = SocketService._internal();
+
+  factory SocketService() {
+    return _instance;
+  }
+
+  SocketService._internal() {
+    _connect();
+  }
+
   IO.Socket? socket;
   String? _message;
 
   String? get message => _message;
 
-  SocketService() {
-    _connect();
-  }
+  void _connect() {
+    if (socket != null) return;
 
-  _connect() {
     socket =
-        IO.io('https://f66e-113-161-84-248.ngrok-free.app', <String, dynamic>{
+        IO.io('https://2955-115-73-217-121.ngrok-free.app', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
+    ;
 
     socket!.on('connect', (_) {
       print('Connected');
     });
 
-    // socket!.on('coordinate', (data) {
-    //   _message = data.toString();
-    //   notifyListeners(); // Notify listeners when a new message arrives
-    // });
+    socket!.emit("registerClientId", "456");
 
     socket!.connect();
   }
 
-  disconnect() {
+  void disconnect() {
     socket?.disconnect();
   }
 
   void sendMessage(String message, dynamic data) {
-    socket?.emit(message, {
-      'data': data,
-    }); // This sends a signal named 'accept' to the server
+    socket?.emit(message, {'data': data});
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:equatable/equatable.dart';
 import 'package:user/presentation/booking/confirm_booking/model/item_confirm_booking.dart';
 
@@ -13,6 +15,13 @@ class ConfirmBookingSuccess extends ConfirmBookingState {
   List<ItemConfirmBooking> data;
   ConfirmBookingSuccess({
     required this.data,
+  });
+}
+
+class ConfirmBookingSuccessHavePromotion extends ConfirmBookingState {
+  List<ItemConfirmBooking> newData;
+  ConfirmBookingSuccessHavePromotion({
+    required this.newData,
   });
 }
 class ConfirmBookingFailure extends ConfirmBookingState {

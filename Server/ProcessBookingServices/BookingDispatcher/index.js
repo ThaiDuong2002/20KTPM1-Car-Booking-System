@@ -45,16 +45,14 @@ async function dispatcher() {
         console.log(`[*] Booking reception.`);
         console.log(`[*] Waiting for booking info.`);
 
-
-
         // Consume message
         await channel.consume(queue, async (msg) => {
             try {
                 const bookingInfo = JSON.parse(msg.content.toString());
                 console.log(`[x] Received booking info:`, bookingInfo);
 
-                // const pickupLocationCoordination = bookingInfo.trip_pickup_location.coordinate;
-                // const tripType = bookingInfo.trip_type;
+                // const pickupLocationCoordination = bookingInfo.pickupLocation.coordinate;
+                // const tripType = bookingInfo.type;
 
                 // // Get drivers location (db or redis)
                 // const drivers_location = [

@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../model/address.dart';
+
 class FavoritePlaceState extends Equatable{
   @override
   List<Object?> get props => [];
@@ -35,4 +37,11 @@ class FavoritePlaceDeleteFaild extends FavoritePlaceState {
 class FavoritePlaceDeleteSucesss extends FavoritePlaceState {
   final String message;
   FavoritePlaceDeleteSucesss({required this.message});
+}
+class FavoritePlaceFetchData extends FavoritePlaceState {
+  List<Address> addresses;
+  FavoritePlaceFetchData({
+    required this.addresses,
+  });
+  
 }

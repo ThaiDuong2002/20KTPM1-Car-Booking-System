@@ -29,15 +29,15 @@ async function reception() {
       try {
         const bookingInfo = JSON.parse(msg.content.toString());
         console.log(`[x] Received customer info:`, bookingInfo);
-        console.log(bookingInfo.trip_pickup_location.coordinate);
-        console.log(bookingInfo.trip_destination_location.coordinate);
+        // console.log(bookingInfo.pickupLocation.coordinate);
+        // console.log(bookingInfo.destinationLocation.coordinate);
         const channel = await connection.createChannel();
         await channel.assertExchange(exchangeName, "direct", {
           durable: false,
         });
         if (
-          bookingInfo.trip_pickup_location.coordinate != null &&
-          bookingInfo.trip_destination_location.coordinate != null
+          bookingInfo.pickupLocation.coordinate != null &&
+          bookingInfo.destinationLocation.coordinate != null
         ) {
           channel.publish(
             exchangeName,
@@ -53,7 +53,7 @@ async function reception() {
           );
           console.log("Send to booking locator");
         }
-        channel.ack(msg); // Acknowledge the message
+        // channel.ack(msg); // Acknowledge the message
       } catch (error) {
         console.error("Error processing customer info:", error);
       }

@@ -1,6 +1,6 @@
 class Endpoints {
   Endpoints._();
-  static const String baseURL = 'http://192.168.2.110:3000/api';
+  static const String baseURL = 'http://10.123.1.139:3000/api';
   static const Duration receiveTimeout = Duration(milliseconds: 6000);
   static const Duration connectionTimeout = Duration(milliseconds: 5000);
   static const String users = '/users';
@@ -9,7 +9,7 @@ class Endpoints {
   static const String logout = '/logout';
   static const String getList = '/list';
 }
-
+// thư viện 10.123.1.139
 // Đoạn code trên định nghĩa một lớp Endpoints chứa các hằng số và phương thức tĩnh liên quan đến các điểm cuối (endpoints) của một API. Dưới đây là giải thích cho từng phần của mã:
 
 // Endpoints._();: Đây là một constructor riêng tư (private) không cho phép tạo thể hiện mới của lớp Endpoints bên ngoài. Mục đích của constructor này có thể là để ngăn chặn việc tạo đối tượng từ lớp Endpoints và chỉ cho phép sử dụng các phương thức và thuộc tính tĩnh của lớp.

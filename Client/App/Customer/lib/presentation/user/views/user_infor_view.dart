@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user/app/constant/color.dart';
 import 'package:user/app/constant/size.dart';
+import 'package:user/presentation/user/bloc/user_bloc.dart';
+import 'package:user/presentation/user/bloc/user_state.dart';
 import 'package:user/presentation/widget/custom_text.dart';
+
+import '../bloc/user_event.dart';
 
 class UserInforView extends StatelessWidget {
   const UserInforView({super.key});
@@ -49,7 +54,8 @@ class UserInforView extends StatelessWidget {
               return IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                alignment: const Alignment(-0.2, 1), // move icon a bit to the left
+                alignment:
+                    const Alignment(-0.2, 1), // move icon a bit to the left
               );
             },
           ),
@@ -68,61 +74,73 @@ class UserInforView extends StatelessWidget {
               const SizedBox(
                 height: 15,
               ),
-              Row(
-                children: [
-                  Container(
-                      height: 60,
-                      padding: const EdgeInsets.all(5),
-                      width: 60,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child:
-                          Image.asset("assets/images/icons/icon_avatar.png")),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                      flex: 3,
-                      child: Container(
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextCustom(
-                                text: "Bùi Quang Thành",
-                                color: COLOR_TEXT_BLACK,
-                                fontSize: FONT_SIZE_NORMAL,
-                                fontWeight: FontWeight.w500),
-                            SizedBox(
-                              height: 5,
+              BlocBuilder<UserInformation, UserState>(
+                builder: (context, state) {
+                  if (state is UserStateLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is UserStateSuccess) {
+                    return Row(
+                      children: [
+                        Container(
+                            height: 60,
+                            padding: const EdgeInsets.all(5),
+                            width: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                            TextCustom(
-                                text: "buiquangthanh1709@gmail.com",
-                                color: COLOR_TEXT_MAIN,
-                                fontSize: FONT_SIZE_NORMAL,
-                                fontWeight: FontWeight.w500),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            TextCustom(
-                                text: "0368826352",
-                                color: COLOR_TEXT_MAIN,
-                                fontSize: FONT_SIZE_NORMAL,
-                                fontWeight: FontWeight.w500),
-                          ],
+                            child: Image.asset(
+                                "assets/images/icons/icon_avatar.png")),
+                        const SizedBox(
+                          width: 5,
                         ),
-                      )),
-                  Expanded(
-                      child: Container(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/editProfilePage");
-                      },
-                      icon: const Icon(Icons.edit),
-                    ),
-                  ))
-                ],
+                        Expanded(
+                            flex: 3,
+                            child: Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextCustom(
+                                      text: state.information.firstname +
+                                          " " +
+                                          state.information.lastname,
+                                      color: COLOR_TEXT_BLACK,
+                                      fontSize: FONT_SIZE_NORMAL,
+                                      fontWeight: FontWeight.w500),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  TextCustom(
+                                      text: state.information.email,
+                                      color: COLOR_TEXT_MAIN,
+                                      fontSize: FONT_SIZE_NORMAL,
+                                      fontWeight: FontWeight.w500),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  TextCustom(
+                                      text: state.information.phone,
+                                      color: COLOR_TEXT_MAIN,
+                                      fontSize: FONT_SIZE_NORMAL,
+                                      fontWeight: FontWeight.w500),
+                                ],
+                              ),
+                            )),
+                        Expanded(
+                            child: Container(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, "/editProfilePage");
+                            },
+                            icon: const Icon(Icons.edit),
+                          ),
+                        ))
+                      ],
+                    );
+                  }
+                  return Container();
+                },
               ),
               const SizedBox(
                 height: 15,

@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 
 def retrieve_drivers_location():
-    all_keys = redis_client.keys('driver*')
+    all_keys = redis_client.keys('driver-*')
 
     if not all_keys:
         return []
@@ -96,7 +96,7 @@ def find_drivers():
     drivers = retrieve_drivers_location()
     customer_lat = request.json.get('lat')
     customer_lng = request.json.get('lng')
-    trip_type = request.json.get('trip_type')
+    trip_type = request.json.get('tripType')
 
 
    
@@ -124,7 +124,7 @@ def find_drivers():
                 driver['lat'], driver['lng'])
             driver_cell_id = s2sphere.CellId.from_lat_lng(driver_latlng).id()
 
-            if (range_min <= driver_cell_id <= range_max) and driver['trip_type'] == trip_type:
+            if (range_min <= driver_cell_id <= range_max) and driver['tripType'] == trip_type:
                 drivers_inside_polygon.append(driver)
             else:
                 drivers_inside_polygon_outside.append(driver)
@@ -132,40 +132,40 @@ def find_drivers():
         level_of_resolution -= 1
 
     # implement mapping algorithm here
-    if len(drivers_inside_polygon) <= 0:
+    # if len(drivers_inside_polygon) <= 0:
         # Trả về tài xế gần nhất
-        return jsonify({
+    return jsonify({
             'driver': [
                 {"id": "123", "lat": 10.7629,
-                 "lng": 106.682, "trip_type": "motorbike"},
+                 "lng": 106.682, "tripType": "motorbike"},
             ],
             'message': 'No drivers found!'
 
         })
 
-    # mapping algorithm driver for customer using ETA
-    if drivers_inside_polygon:
-        def get_duration_from_customer(driver):
-            destinations = "{},{}".format(driver['lat'], driver['lng'])
-            origins = "{},{}".format(customer_lat, customer_lng)
+    # # mapping algorithm driver for customer using ETA
+    # if drivers_inside_polygon:
+    #     def get_duration_from_customer(driver):
+    #         destinations = "{},{}".format(driver['lat'], driver['lng'])
+    #         origins = "{},{}".format(customer_lat, customer_lng)
 
-            rs = get_distance_and_duration(
-                API_KEY, origins, destinations, trip_type)
+    #         rs = get_distance_and_duration(
+    #             API_KEY, origins, destinations, trip_type)
 
-            # Kiểm tra xem rs có giá trị không và sau đó truy xuất thời gian đi.
-            if rs and 'duration' in rs and 'value' in rs['duration']:
-                return rs['duration']['value']
-            else:
-                return float('inf')
+    #         # Kiểm tra xem rs có giá trị không và sau đó truy xuất thời gian đi.
+    #         if rs and 'duration' in rs and 'value' in rs['duration']:
+    #             return rs['duration']['value']
+    #         else:
+    #             return float('inf')
 
-    # sort by duration
-    drivers_inside_polygon.sort(key=get_duration_from_customer)
+    # # sort by duration
+    # drivers_inside_polygon.sort(key=get_duration_from_customer)
 
-    return jsonify({
-        'drivers_inside_sorted': drivers_inside_polygon,
-        'drivers_outside': drivers_inside_polygon_outside,
-        'cid': level_of_resolution + 1
-    })
+    # return jsonify({
+    #     'drivers_inside_sorted': drivers_inside_polygon,
+    #     'drivers_outside': drivers_inside_polygon_outside,
+    #     'cid': level_of_resolution + 1
+    # })
 
 
 @app.route('/redis_health_check', methods=['GET'])
@@ -182,7 +182,7 @@ def check_redis():
 def get_driver_locations():
     try:
         # Use the KEYS command to get all keys that match the pattern (e.g., all keys)
-        all_keys = redis_client.keys('driver*')
+        all_keys = redis_client.keys('driver-*')
 
         if not all_keys:
             return {'data': []}

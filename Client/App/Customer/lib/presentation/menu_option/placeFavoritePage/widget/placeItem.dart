@@ -3,10 +3,12 @@ import 'package:user/app/constant/color.dart';
 import 'package:user/app/constant/size.dart';
 import 'package:user/presentation/widget/custom_text.dart';
 
-class ExpandableContainer extends StatefulWidget {
-  final Map place;
+import '../model/address.dart';
 
-  const ExpandableContainer({super.key, required this.place});
+class ExpandableContainer extends StatefulWidget {
+  final Address address;
+
+  const ExpandableContainer({super.key, required this.address});
 
   @override
   _ExpandableContainerState createState() => _ExpandableContainerState();
@@ -43,17 +45,21 @@ class _ExpandableContainerState extends State<ExpandableContainer> {
                             // Use your TextCustom
                             // widget here
 
-                            TextCustom(
-                                text: widget.place['name'],
-                                color: COLOR_TEXT_BLACK,
-                                fontSize: FONT_SIZE_NORMAL,
-                                fontWeight: FontWeight.w700)
+                            Expanded(
+                              child: TextCustom(
+                                  text: widget.address.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.clip,
+                                  color: COLOR_TEXT_BLACK,
+                                  fontSize: FONT_SIZE_NORMAL,
+                                  fontWeight: FontWeight.w700),
+                            )
                           ],
                         ),
                         const SizedBox(height: 5),
                         // Use your TextCustom widget here
                         TextCustom(
-                            text: widget.place['address'],
+                            text: widget.address.formattedAddress,
                             color: COLOR_TEXT_MAIN,
                             fontSize: FONT_SIZE_NORMAL,
                             fontWeight: FontWeight.w500)

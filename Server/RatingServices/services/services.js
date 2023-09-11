@@ -1,6 +1,16 @@
 import {Rating} from '../models/RatingModel.js'
 import {User} from '../models/UserModel.js'
 
+const UserService = {
+    getUserById: async (userId, projection) => {
+        try {
+            return await User.findById(userId).select(projection)
+        } catch (err) {
+            throw err
+        }
+    }
+}
+
 const RatingService = {
     getAllRatings: async (filter, projection) => {
         try {
@@ -45,5 +55,6 @@ const RatingService = {
 }
 
 export {
+    UserService,
     RatingService,
 }

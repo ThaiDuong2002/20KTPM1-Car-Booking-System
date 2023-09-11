@@ -24,7 +24,8 @@ import { mockDataMostlyVisitedLocation } from "data/mockData";
 
 const MostlyVistedLocation = (props) => {
   const theme = useTheme();
-  const items = mockDataMostlyVisitedLocation;
+  // const items = mockDataMostlyVisitedLocation;
+  const items = props.mostlyLocationList;
   const handlePickUpBtnClick = () => {};
   const handleDropOffBtnClick = () => {};
   return (
@@ -74,13 +75,11 @@ const MostlyVistedLocation = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((location) => {
+              {items.map((location, index) => {
                 return (
-                  <TableRow hover key={location._id}>
-                    <TableCell>{location._id}</TableCell>
-                    <TableCell>
-                      {location.mostlyVisitedLocation?.location}
-                    </TableCell>
+                  <TableRow hover key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{location.address}</TableCell>
                     <TableCell>
                       <Button
                         onClick={() => handlePickUpBtnClick()}

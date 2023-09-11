@@ -5,9 +5,10 @@ import '../interceptor/logger_interceptor.dart';
 import 'endpoints.dart';
 
 class NetworkModule {
-  static final NetworkModule _singleton = NetworkModule._internal( Dio(),RequestInterceptor());
+  static final NetworkModule _singleton =
+      NetworkModule._internal(Dio(), RequestInterceptor());
 
-   Dio _dio;
+  Dio _dio;
   RequestInterceptor requestInterceptor;
   final LoggerInterceptor loggerInterceptor = LoggerInterceptor();
 
@@ -40,7 +41,7 @@ class NetworkModule {
     };
     opts.connectTimeout = Endpoints.connectionTimeout;
     opts.receiveTimeout = Endpoints.receiveTimeout;
-
+    opts.validateStatus = (_) => true;
     return opts;
   }
 

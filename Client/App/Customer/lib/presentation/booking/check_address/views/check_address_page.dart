@@ -25,15 +25,13 @@ class CheckAddressPage extends StatefulWidget {
   _CheckAddressPageState createState() => _CheckAddressPageState();
 }
 
-
-
-
 class _CheckAddressPageState extends State<CheckAddressPage> {
   List<Marker> _markers = <Marker>[];
   late LatLng currentPosition;
   BitmapDescriptor? customIcon;
+  late GoogleMapController _googleMapController;
   bool checkGestorPosition = false;
-
+  Set<Circle> circles = {};
   @override
   void initState() {
     // TODO: implement initState
@@ -41,12 +39,20 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
     currentPosition = LatLng(
         widget.currentLocation.latitude!, widget.currentLocation.longitude!);
     getIcons();
+
+    circles.add(Circle(
+      circleId: CircleId("1"),
+      center: currentPosition,
+      radius: 100,
+      fillColor: Colors.blueAccent.withOpacity(0.3),
+      strokeColor: Colors.blueAccent.withOpacity(0.8),
+      strokeWidth: 1,
+    ));
   }
-  
 
   // Cargar imagen del Marker
   Future<void> getIcons() async {
-    var custom = await getImages("assets/images/icon_marker.png", 150);
+    var custom = await getImages("assets/images/icon_marker.png", 180);
     customIcon = BitmapDescriptor.fromBytes(custom);
     _markers = <Marker>[
       Marker(
@@ -314,6 +320,12 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
         tiltGesturesEnabled: false,
         trafficEnabled: true,
         myLocationButtonEnabled: true,
+        circles: circles,
+        onMapCreated: (controller) {
+          _googleMapController = controller;
+          _googleMapController.showMarkerInfoWindow(MarkerId("1"));
+        
+        },
         minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
         markers: Set<Marker>.of(_markers),
         onCameraIdle: () {
@@ -342,7 +354,7 @@ class _CheckAddressPageState extends State<CheckAddressPage> {
         myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
           target: currentPosition,
-          zoom: 16,
+          zoom: 17,
           tilt: 30,
           bearing: 30.0,
         ),

@@ -51,7 +51,7 @@ class SearchLocationApiImple implements SearchLocationApi {
       if (response.statusCode == 200) {
         return result;
       }
-      throw BaseException(
+      throw BaseException(  
           message: response.statusMessage.toString(),
           code: response.statusCode);
     } on DioException catch (e) {

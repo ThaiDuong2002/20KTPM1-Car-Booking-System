@@ -14,7 +14,7 @@ const RatingSchema = new Schema(
             ref: 'User',
             required: true,
         },
-        start: {
+        star: {
             type: Number,
             required: true,
         },

@@ -11,11 +11,14 @@ class InProgressState extends Equatable{
 class InProgressInitial extends InProgressState {
 
 }
-class InProgresssStateWaiting extends InProgressState { 
+class InProgresssStateWaiting extends InProgressState {
+  final  Set<Polyline> points;
   final  LatLng markersLatLong ;
-  InProgresssStateWaiting(this.markersLatLong);
-   
-   
+  InProgresssStateWaiting({
+    required this.points,
+    required this.markersLatLong,
+  });
+ 
   
 }
 class InProgressDriverArrivedLocation extends InProgressState {}
@@ -25,4 +28,15 @@ class InpProgressInformationDriver extends InProgressState {
   InpProgressInformationDriver({
     required this.driver,
   });
+}
+
+class InProgressStateStartTrip extends InProgressState {
+
+  Set<Polyline> points ;
+  InProgressStateStartTrip({
+    required this.points,
+  });
+
+}
+class InProgressStateFinishTrip extends InProgressState {
 }

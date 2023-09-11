@@ -1,5 +1,6 @@
 import { Price } from '../models/PriceModel.js'
 import { Promotion } from '../models/PromotionModel.js'
+import { PaymentMethod } from '../models/PaymentMethodModel.js'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,7 +26,7 @@ const PriceService = {
             const price = new Price(price_data);
             return await price.save();
         } catch (err) {
-            throw new Error(err.message);
+            throw err
         }
     },
     async get_calculate_fee(distance, time, tripType) {
@@ -64,6 +65,40 @@ const PriceService = {
     },
 }
 
+const PaymentService = {
+    async getPaymentMethodList (filter, projection) {
+        return await PaymentMethod.find(filter).select(projection);
+    },
+    async getPaymentMethodDetails (paymentMethodId) {
+        return await PaymentMethod.findById(paymentMethodId)
+    },
+    async createPaymentMethod (paymentMethodInfo) {
+        try {
+            const paymentMethod = new PaymentMethod(paymentMethodInfo);
+            return await paymentMethod.save();
+        } catch (err) {
+            throw err
+        }
+    },
+    async updatePaymentMethod (paymentMethodId, updateInfo) {
+        try {
+            const updatedPaymentMethod = await PaymentMethod.findByIdAndUpdate(paymentMethodId, updateInfo, {new: true});
+            return updatedPaymentMethod;
+        } catch (err) {
+            throw err;
+        }
+    },
+    async deletePaymentMethod (paymentMethodId) {
+        try {
+            const deletedPaymentMethod = await PaymentMethod.findByIdAndDelete(paymentMethodId);
+            return deletedPaymentMethod;
+        } catch (err) {
+            throw err;
+        }
+    }
+}
+
 export {
     PriceService,
+    PaymentService,
 }

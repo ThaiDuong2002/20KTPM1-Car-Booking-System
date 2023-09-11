@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:user/model_gobal/mylocation.dart';
 import 'package:user/model_gobal/pick_des.dart';
 import 'package:user/model_gobal/socket_client.dart';
+import 'package:user/presentation/booking/confirm_booking/blocs/confirm_booking_bloc.dart';
+import 'package:user/presentation/booking/in_progress/bloc_promotion/promotion_bloc.dart';
+import 'package:user/presentation/booking/in_progress/bloc_promotion/promotion_event.dart';
 import 'app/routes/route.dart';
 import 'data/common/interceptor/authorization_interceptor.dart';
 import 'data/common/module/network_module.dart';
 import 'data/common/module/shared_pref_module.dart';
+import 'package:user/presentation/booking/confirm_booking/bloc_payment_method/payment_method_bloc.dart';
+import 'package:user/presentation/booking/confirm_booking/bloc_payment_method/payment_method_event.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -94,6 +100,14 @@ class _MyAppState extends State<MyApp> {
           return networkModule;
         }),
         Provider(create: (context) => SharedPreferenceModule()),
+        BlocProvider<PromotionBloc>(
+          create: (context) => PromotionBloc()..add(PromotionEventFetchData()),
+        ),
+     
+        BlocProvider<PaymentMethodBloc>(
+          create: (context) =>
+              PaymentMethodBloc()..add(PaymentMethodEventFetchData()),
+        ),
       ],
       child: const MaterialApp(
         title: "BookingModel App",

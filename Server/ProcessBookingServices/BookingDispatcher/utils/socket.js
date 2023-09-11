@@ -40,6 +40,8 @@ const SocketListener = {
                 var id_booing = "64f17fd10036d9ad3dde74ff";
                 io.to(userActive[data.driverId]).emit("bookingId", id_booing);
                 io.to(userActive[data.userId]).emit("bookingId", id_booing);
+                io.to(userActive[data.userId]).emit("accepted_trip_to_customer", id_booing);
+                
                 socket.join(id_booing);
                 userActive[data.userId]
                 io.sockets.sockets.get(userActive[data.userId]).join(id_booing);
@@ -49,10 +51,10 @@ const SocketListener = {
 
             socket.on("chat", function (data) {
                 console.log(data);
-                const { bookingId, content } = data;
-                console.log(bookingId);
+                const { roomId, content } = data;
+                console.log(roomId);
                 console.log(content);
-                io.to(bookingId).emit("chat", content);
+                io.to(roomId).emit("chat", data);
 
             })
 
@@ -65,10 +67,24 @@ const SocketListener = {
                 // socket.broadcast.emit('finish_trip_driver', data);
                 // Xử lý deny ở đây
             });
-            
+
             socket.on('driver-location', function (data) {
                 console.log(data);
-                socket.broadcast.emit('coordinate', data);
+                // cập nhật redis ở đâu 
+                // socket.broadcast.emit('coordinate', data);
+            });
+
+            socket.on('tracking-driver', function (data) {
+
+                console.log("Tài xế cập nhật vị trí cho customer "
+                )
+                console.log(data);
+
+                io.to(userActive[data.userId]).emit("tracking-location-customer", data);
+
+
+                // cập nhật redis ở đâu 
+                // socket.broadcast.emit('coordinate', data);
             });
 
             socket.on('disconnect', function () {

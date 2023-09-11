@@ -91,8 +91,8 @@ class HomeView extends StatelessWidget {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(
-              MediaQuery.of(context).size.height * 0.08), // 10% of screen height
+          preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
+              0.08), // 10% of screen height
           child: AppBar(
             backgroundColor: COLOR_BLUE_MAIN,
             flexibleSpace: Center(
@@ -182,9 +182,9 @@ class HomeView extends StatelessWidget {
                       ...IconBooking.map((item) {
                         Widget filter = Container();
                         if (item['slug'] == 'send' || item['slug'] == 'food') {
-                          filter = Opacity(
-                            opacity: 0.5,
-                            child: Expanded(
+                          filter = Expanded(
+                            child: Opacity(
+                              opacity: 0.5,
                               child: InkWell(
                                 onTap: () {},
                                 child: Column(

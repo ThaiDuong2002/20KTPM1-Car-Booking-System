@@ -12,7 +12,7 @@ const AddressController = {
             const filter = req.body
             const projection = {
                 name: 1,
-                formatted_address: 1,
+                formattedAddress: 1,
                 type: 1,
             }
             const user = await UserService.getUserById(user_id)

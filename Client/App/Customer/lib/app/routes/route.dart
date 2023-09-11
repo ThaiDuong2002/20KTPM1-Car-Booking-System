@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:user/model_gobal/mylocation.dart';
-import 'package:user/presentation/booking/confirm_booking/views/confirm_booking_page.dart';
+
 import 'package:user/presentation/booking/in_progress/views/in_progress_booking_view.dart';
+import 'package:user/presentation/booking/chat_socket/views/chat_socket_view.dart';
 import 'package:user/presentation/booking/rating/view/rating_booking_view.dart';
 import 'package:user/presentation/callcenter/callcenter_page.dart';
 import 'package:user/presentation/detail_notification/views/detail_notification_page.dart';
@@ -328,6 +329,25 @@ class AppRoute {
               CheckAddressView(
             currentLocation: data,
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+
+      case AppRouterName.chatPagePage:
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              ChatSocketView(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
             const end = Offset.zero;

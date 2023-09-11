@@ -5,17 +5,23 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart' hide Marker;
+import 'package:provider/provider.dart';
+import 'package:user/presentation/booking/confirm_booking/bloc_payment_method/payment_method_bloc.dart';
+import 'package:user/presentation/booking/confirm_booking/blocs/confirm_booking_event.dart';
+import 'package:user/presentation/booking/in_progress/bloc_promotion/promotion_bloc.dart';
+import 'package:user/presentation/booking/in_progress/bloc_promotion/promotion_state.dart';
+import 'package:user/presentation/widget/loading.dart';
 import 'dart:ui' as ui;
 import '../../../../app/constant/color.dart';
 import '../../../../app/constant/size.dart';
 import '../../../../model_gobal/pick_des.dart';
 import '../../../widget/custom_text.dart';
 import '../../decode/flexible_polyline.dart';
+import '../../in_progress/bloc_promotion/promotion_event.dart';
+import '../bloc_payment_method/payment_method_state.dart';
 import '../blocs/confirm_booking_bloc.dart';
-import '../blocs/confirm_booking_event.dart';
 import '../blocs/confirm_booking_state.dart';
 
 import 'package:intl/intl.dart';
@@ -38,9 +44,14 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
   late LatLng currentPosition;
   late LatLng desPosition;
   late LatLng currentPositionCamera;
+  static String id_promotion = '';
+  static double discount_promotion = 0;
   BitmapDescriptor? customIcon;
+  int checkPaymentMethod = 0;
   BitmapDescriptor? customIcon2;
   late double driverToPickupBearing;
+  int inittialCameraDistance = 16;
+  Color selected = Colors.blue;
 
   // Cargar imagen del Marker
   Future<void> getIcons() async {
@@ -126,6 +137,9 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
     }
   ];
 
+  Set<Circle> circles = {};
+  String? selectedOption;
+
   Future<List<LatLng>> fetchRoutePoints(
       LatLng start, LatLng end, String apiKey) async {
     Dio dio = Dio();
@@ -169,7 +183,14 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
       widget.data.currentPosition!.latitude! - 0.001,
       widget.data.currentPosition!.longitude!,
     );
-
+    circles.add(Circle(
+      circleId: const CircleId("1"),
+      center: currentPosition,
+      radius: 100,
+      fillColor: Colors.blueAccent.withOpacity(0.3),
+      strokeColor: Colors.blueAccent.withOpacity(0.8),
+      strokeWidth: 1,
+    ));
     driverToPickupBearing = calculateBearing(currentPosition, desPosition);
     // Lấy hướng la bàn (bearing)
 
@@ -177,6 +198,17 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
     getIcons();
 
     drawPolyliness();
+    if (widget.data.pickUpLocation!.distance > 50 &&
+        widget.data.pickUpLocation!.distance < 500) {
+      inittialCameraDistance = 17;
+    }
+    if (widget.data.pickUpLocation!.distance < 20) {
+      inittialCameraDistance = 15;
+    }
+    if (widget.data.pickUpLocation!.distance > 40 &&
+        widget.data.pickUpLocation!.distance < 60) {
+      inittialCameraDistance = 15;
+    }
   }
 
   Future<List<LatLng>> fetchRouteCoordinates(
@@ -251,47 +283,13 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
     print("tress hhihi");
 
     return BlocListener<ConfirmBookingBloc, ConfirmBookingState>(
+      bloc: ConfirmBookingBloc(),
       listener: (context, state) {
         // TODO: implement listener
         if (state is ConfirmBookingHaveDriver) {
           Navigator.pushNamed(context, '/inProgressPage',
               arguments: widget.data);
         }
-        if(state is ConfirmBookingWattingDriver){
-         showDialog<void>(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Center(
-                  child: TextCustom(
-                      text: "Hệ thống",
-                      color: COLOR_TEXT_BLACK,
-                      fontSize: FONT_SIZE_LARGE,
-                      fontWeight: FontWeight.bold),
-                ),
-                content: SizedBox(
-                  height: 180,
-                  child: Column(
-                    children: [
-                      Lottie.asset(
-                        'assets/find_driver.json',
-                        width: 150,
-                        height: 150,
-                      ),
-                      TextCustom(
-                          text: "Đang tìm tài xế phù hợp với bạn",
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_NORMAL,
-                          fontWeight: FontWeight.normal),
-                    ],
-                  ),
-                ),
-                
-              );
-            },
-          );
-          }
-
       },
       child: Scaffold(
         extendBody: true,
@@ -306,231 +304,683 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                 color: Colors.black.withOpacity(0.1), // Màu shadow
                 spreadRadius: 0.2, // Bán kính của shadow
                 blurRadius: 0.2, // Độ mờ của shadow
-                offset: Offset(0, -4), // Vị trí của shadow (phía trên)
+                offset: const Offset(0, -4), // Vị trí của shadow (phía trên)
               )
             ],
             color: Colors.white,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           ),
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          child: BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
+            builder: (context, state) {
+              print(state);
+              if (state is ConfirmBookingWattingDriver) {
+                return Column(children: [
                   Center(
-                    child: Container(
-                      width: 50,
-                      height: 5,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10)),
+                    child: Lottie.asset(
+                      'assets/find_driver.json',
+                      width: 150,
+                      height: 150,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const TextCustom(
-                          text: "Phương tiện di chuyển",
-                          color: COLOR_TEXT_BLACK,
-                          fontSize: FONT_SIZE_LARGE,
-                          fontWeight: FontWeight.w600),
-                      InkWell(
-                        onTap: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                print("!23");
-                                return Container(
-                                  height: 500,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 20),
-                                  color: Colors.white30,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const TextCustom(
-                                              text: "Ưu đãi hiện có",
-                                              color: COLOR_TEXT_BLACK,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600),
-                                          Container(
-                                            margin:
-                                                const EdgeInsets.only(left: 10),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 10),
-                                            decoration: BoxDecoration(
-                                              color: COLOR_BLUE_MAIN,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: Colors.grey.shade300),
-                                            ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                print("Về trang Search page");
-                                              },
-                                              child: const TextCustom(
-                                                  text: "Áp dụng",
-                                                  color: Colors.white,
-                                                  fontSize: FONT_SIZE_LARGE,
-                                                  fontWeight: FontWeight.w500),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(left: 10),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: COLOR_BLUE_MAIN,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: const TextCustom(
-                              text: "Ưu đãi",
-                              color: Colors.white,
-                              fontSize: FONT_SIZE_LARGE,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      )
-                    ],
+                  const TextCustom(
+                      textAlign: TextAlign.center,
+                      text: "Đang tìm tài xế phù hợp với bạn",
+                      color: COLOR_TEXT_BLACK,
+                      fontSize: FONT_SIZE_LARGE,
+                      fontWeight: FontWeight.w500)
+                ]);
+              }
+              if (state is ConfirmBookingLoading) {
+                return Column(children: [
+                  Center(
+                    child: Lottie.asset(
+                      'assets/loading.json',
+                      width: 120,
+                      height: 120,
+                    ),
                   ),
-                  const Divider(),
-                  Expanded(child:
-                      BlocBuilder<ConfirmBookingBloc, ConfirmBookingState>(
-                    builder: (context, state) {
-                      if (state is ConfirmBookingLoading) {
-                        return Column(children: [
-                          Center(
-                            child: Lottie.asset(
-                              'assets/loading.json',
-                              width: 120,
-                              height: 120,
-                            ),
+                  const TextCustom(
+                      textAlign: TextAlign.center,
+                      text: "Hệ thống đang tính toán giá tiền",
+                      color: COLOR_TEXT_MAIN,
+                      fontSize: FONT_SIZE_LARGE,
+                      fontWeight: FontWeight.w500)
+                ]);
+              }
+              if (state is ConfirmBookingSuccess) {
+                int selectedIndex = 0; // Mặc định không có mục nào được chọn
+                return Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 50,
+                            height: 5,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(10)),
                           ),
-                          TextCustom(
-                              textAlign: TextAlign.center,
-                              text: "Hệ thống đang tính toán giá tiền",
-                              color: COLOR_TEXT_MAIN,
-                              fontSize: FONT_SIZE_LARGE,
-                              fontWeight: FontWeight.w500)
-                        ]);
-                      }
-                      if (state is ConfirmBookingSuccess) {
-                        return ListView.separated(
-                          separatorBuilder: (context, index) => const Divider(),
-                          itemCount: state.data.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        state.data[index].pathIamge,
-                                        width: 60,
-                                        height: 60,
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const TextCustom(
+                                text: "Phương tiện di chuyển",
+                                color: COLOR_TEXT_BLACK,
+                                fontSize: FONT_SIZE_LARGE,
+                                fontWeight: FontWeight.w600),
+                            InkWell(
+                              onTap: () {
+                                print("123");
+                                // Provider.of<PromotionBloc>(context,
+                                //         listen: false)
+                                //     .add(PromotionEventFetchData());
+                                final confirmBookingBloc =
+                                    BlocProvider.of<ConfirmBookingBloc>(
+                                        context);
+
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      print("!23");
+                                      return BlocProvider.value(
+                                        value: confirmBookingBloc,
+                                        child: BlocBuilder<PromotionBloc,
+                                            PromotionState>(
+                                          builder: (contexts, statePromotion) {
+                                            if (statePromotion
+                                                is PromotionStateInitial) {
+                                              return const SizedBox();
+                                            }
+                                            if (statePromotion
+                                                is PromotionStateLoading) {
+                                              return SizedBox(
+                                                  width: 150,
+                                                  height: 300,
+                                                  child: LoadingDialog());
+                                            }
+                                            if (statePromotion
+                                                is PromotionStateSuccess) {
+                                              int select = -1;
+                                              return Container(
+                                                height: 500,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 20),
+                                                color: Colors.white30,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: <Widget>[
+                                                    const SizedBox(height: 10),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        const TextCustom(
+                                                            text:
+                                                                "Ưu đãi hiện có",
+                                                            color:
+                                                                COLOR_TEXT_BLACK,
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600),
+                                                        Container(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 10),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      10,
+                                                                  vertical: 10),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color:
+                                                                COLOR_BLUE_MAIN,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10),
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade300),
+                                                          ),
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              print("123");
+
+                                                              confirmBookingBloc.add(
+                                                                  ApplyPromotionEvent(
+                                                                      data: state
+                                                                          .data,
+                                                                      promotionId:
+                                                                          id_promotion,
+                                                                      discount:
+                                                                          discount_promotion));
+
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                            child: const TextCustom(
+                                                                text: "Áp dụng",
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize:
+                                                                    FONT_SIZE_LARGE,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    StatefulBuilder(
+                                                      builder:
+                                                          (context, setStates) {
+                                                        return ListView.builder(
+                                                          itemCount:
+                                                              statePromotion
+                                                                  .promotionList
+                                                                  .length,
+                                                          shrinkWrap: true,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            return InkWell(
+                                                              onTap: () {
+                                                                setStates(() {
+                                                                  select =
+                                                                      index;
+
+                                                                  id_promotion =
+                                                                      statePromotion
+                                                                          .promotionList[
+                                                                              index]
+                                                                          .id;
+                                                                  discount_promotion = statePromotion
+                                                                      .promotionList[
+                                                                          index]
+                                                                      .discount;
+                                                                });
+
+                                                                print(
+                                                                    "Update rồi");
+                                                              },
+                                                              child: Container(
+                                                                padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        10,
+                                                                    vertical:
+                                                                        10),
+                                                                height: 100,
+                                                                decoration: BoxDecoration(
+                                                                    color: select ==
+                                                                            index
+                                                                        ? Colors
+                                                                            .blue
+                                                                            .shade100
+                                                                        : Colors
+                                                                            .white,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10)),
+                                                                margin: const EdgeInsets
+                                                                        .symmetric(
+                                                                    vertical:
+                                                                        10),
+                                                                child: Row(
+                                                                  children: [
+                                                                    ClipRRect(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10),
+                                                                      child: Image
+                                                                          .asset(
+                                                                        'assets/images/promotion/3.png',
+                                                                        height:
+                                                                            80,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child:
+                                                                          Container(
+                                                                        margin: const EdgeInsets.only(
+                                                                            left:
+                                                                                10),
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            const SizedBox(
+                                                                              height: 10,
+                                                                            ),
+                                                                            TextCustom(
+                                                                                text: statePromotion.promotionList[index].name,
+                                                                                color: COLOR_TEXT_BLACK,
+                                                                                fontSize: FONT_SIZE_NORMAL,
+                                                                                fontWeight: FontWeight.w600),
+                                                                            const SizedBox(
+                                                                              height: 10,
+                                                                            ),
+                                                                            TextCustom(
+                                                                                text: statePromotion.promotionList[index].description,
+                                                                                color: COLOR_TEXT_MAIN,
+                                                                                fontSize: FONT_SIZE_NORMAL,
+                                                                                fontWeight: FontWeight.w500),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            } else {
+                                              return const SizedBox();
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    });
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(left: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: COLOR_BLUE_MAIN,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border:
+                                      Border.all(color: Colors.grey.shade300),
+                                ),
+                                child: const TextCustom(
+                                    text: "Ưu đãi",
+                                    color: Colors.white,
+                                    fontSize: FONT_SIZE_LARGE,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            )
+                          ],
+                        ),
+                        const Divider(),
+                        StatefulBuilder(
+                          builder: (context, setStates) {
+                            return Expanded(
+                              child: ListView.separated(
+                                separatorBuilder: (context, index) =>
+                                    const Divider(),
+                                itemCount: state.data.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      setStates(() {
+                                        selectedIndex = index;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: selectedIndex == index
+                                            ? Colors.blue.shade100
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
-                                      SizedBox(width: 10),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      child: Column(
                                         children: [
-                                          TextCustom(
-                                              text:
-                                                  state.data[index].nameVihcle,
-                                              color: COLOR_TEXT_BLACK,
-                                              fontSize: FONT_SIZE_LARGE,
-                                              fontWeight: FontWeight.w500),
-                                          TextCustom(
-                                              text: state.data[index]
-                                                  .descriptionVihcle,
-                                              color: COLOR_TEXT_BLACK,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w500),
+                                          Row(
+                                            children: [
+                                              Image.asset(
+                                                state.data[index].pathIamge,
+                                                width: 60,
+                                                height: 60,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  TextCustom(
+                                                      text: state.data[index]
+                                                          .nameVihcle,
+                                                      color: COLOR_TEXT_BLACK,
+                                                      fontSize: FONT_SIZE_LARGE,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                  TextCustom(
+                                                      text: state.data[index]
+                                                          .descriptionVihcle
+                                                          .toString(),
+                                                      color: COLOR_TEXT_BLACK,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ],
+                                              ),
+                                              const Spacer(),
+                                              Column(
+                                                children: [
+                                                  state.data[index]
+                                                              .promotionDiscountVihcle ==
+                                                          0
+                                                      ? SizedBox()
+                                                      : Text(
+                                                          formatCurrency(double
+                                                                      .parse(state
+                                                                          .data[
+                                                                              index]
+                                                                          .priceVihcle)
+                                                                  .toInt() +
+                                                              (double.parse(state
+                                                                          .data[
+                                                                              index]
+                                                                          .promotionDiscountVihcle
+                                                                          .toString()) *
+                                                                      double.parse(state
+                                                                              .data[index]
+                                                                              .priceVihcle)
+                                                                          .toInt())
+                                                                  .toInt()),
+                                                          style: TextStyle(
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough,
+                                                          ),
+                                                        ),
+                                                  TextCustom(
+                                                      text: formatCurrency(
+                                                          double.parse(state
+                                                                  .data[index]
+                                                                  .priceVihcle)
+                                                              .toInt()),
+                                                      color: COLOR_TEXT_BLACK,
+                                                      fontSize: FONT_SIZE_LARGE,
+                                                      fontWeight:
+                                                          FontWeight.w500)
+                                                ],
+                                              )
+                                            ],
+                                          ),
                                         ],
                                       ),
-                                      Spacer(),
-                                      TextCustom(
-                                          text: formatCurrency(int.parse(
-                                              state.data[index].priceVihcle)),
-                                          color: COLOR_TEXT_BLACK,
-                                          fontSize: FONT_SIZE_LARGE,
-                                          fontWeight: FontWeight.w500)
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           },
-                        );
-                      }
-                      return SizedBox();
-                    },
-                  ))
-                ],
-              ),
-              Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10, bottom: 0),
-                    color: Colors.white,
-                    child: InkWell(
-                      onTap: () {
-                        // Navigator.pushNamed(context, '/inProgressPage',
-                        //     arguments: widget.data);
-                        BlocProvider.of<ConfirmBookingBloc>(context).add(
-                            ConfirmBookingRequestTrip(
-                                customerImage:
-                                    "https://khoinguonsangtao.vn/wp-content/uploads/2022/08/hinh-anh-avatar-sadboiz.jpg",
-                                customerName: "Thanh Bui",
-                                customerPhone: "0368826352",
-                                destinationLocation: desPosition,
-                                destinationName: widget
-                                    .data.pickUpLocation!.label
-                                    .toString(),
-                                distance: widget.data.pickUpLocation!.distance,
-                                price: 100000,
-                                sourceLocation: currentPosition,
-                                sourceName: "123"));
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 10, bottom: 10),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: COLOR_BLUE_MAIN,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: const TextCustom(
-                            textAlign: TextAlign.center,
-                            text: "Đặt xe",
-                            color: Colors.white,
-                            fontSize: FONT_SIZE_LARGE,
-                            fontWeight: FontWeight.w500),
-                      ),
+                        )
+                      ],
                     ),
-                  ))
-            ],
+                    Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 10, bottom: 0),
+                          color: Colors.white,
+                          child: InkWell(
+                            onTap: () {
+                              final confirmBookingBloc =
+                                  BlocProvider.of<ConfirmBookingBloc>(context);
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return BlocProvider.value(
+                                    value: confirmBookingBloc,
+                                    child: BlocBuilder<PaymentMethodBloc,
+                                        PaymentMethodState>(
+                                      builder: (context, state) {
+                                        if (state is PaymentMethodInitial) {
+                                          return SizedBox(
+                                              width: 150,
+                                              height: 300,
+                                              child: LoadingDialog());
+                                        }
+                                        if (state is PaymentMethodLoading) {
+                                          return SizedBox(
+                                              width: 150,
+                                              height: 300,
+                                              child: LoadingDialog());
+                                        }
+                                        if (state is PaymentMethodSuccess) {
+                                          return Stack(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                height: 350,
+                                                child: Column(children: [
+                                                  const TextCustom(
+                                                      text:
+                                                          "Phương thức thanh toán",
+                                                      color: COLOR_TEXT_BLACK,
+                                                      fontSize: FONT_SIZE_LARGE,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                  const SizedBox(height: 10),
+                                                  Expanded(
+                                                      child: StatefulBuilder(
+                                                    builder:
+                                                        (context, setStates) {
+                                                      return ListView.separated(
+                                                        itemBuilder:
+                                                            (context, index) {
+                                                          return InkWell(
+                                                            onTap: () {
+                                                              setStates(() {
+                                                                checkPaymentMethod =
+                                                                    index;
+                                                              });
+                                                            },
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: checkPaymentMethod ==
+                                                                        index
+                                                                    ? Colors
+                                                                        .blue
+                                                                        .shade100
+                                                                    : Colors
+                                                                        .white,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                              ),
+                                                              child: Row(
+                                                                children: [
+                                                                  Image.asset(
+                                                                    state
+                                                                        .data[
+                                                                            index]
+                                                                        .image,
+                                                                    width: 50,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      width:
+                                                                          10),
+                                                                  TextCustom(
+                                                                      text: state
+                                                                          .data[
+                                                                              index]
+                                                                          .name,
+                                                                      color:
+                                                                          COLOR_TEXT_BLACK,
+                                                                      fontSize:
+                                                                          FONT_SIZE_NORMAL,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                        separatorBuilder:
+                                                            (context, index) =>
+                                                                const Divider(),
+                                                        itemCount:
+                                                            state.data.length,
+                                                      );
+                                                    },
+                                                  ))
+                                                ]),
+                                              ),
+                                              Positioned(
+                                                bottom: 0,
+                                                left: 0,
+                                                right: 0,
+                                                child: Container(
+                                                  height: 50,
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  margin: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 15,
+                                                      vertical: 15),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: COLOR_BLUE_MAIN,
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10)),
+                                                  ),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      confirmBookingBloc.add(ConfirmBookingRequestTrip(
+                                                          sourceLocation: LatLng(
+                                                              10.75539299045719,
+                                                              106.68182394229112),
+                                                          destinationLocation:
+                                                              LatLng(10.761,
+                                                                  106.682),
+                                                          sourceName:
+                                                              "Cà phê Three O'Clock",
+                                                          destinationName:
+                                                              "Trường Đại Học Sư Phạm",
+                                                          distance: 500.10,
+                                                          price: 60.2,
+                                                          customerName:
+                                                              "Thanh Bui ",
+                                                          customerPhone:
+                                                              "0368826352",
+                                                          userId: "456",
+                                                          customerImage:
+                                                              "https://khoinguonsangtao.vn/wp-content/uploads/2022/08/hinh-anh-avatar-sadboiz.jpg",
+                                                          type: "Car",
+                                                          promotionId:
+                                                              "64c49eac0ff5e724021ac421",
+                                                          paymentMethodId:
+                                                              "64cb6802bf5a624f310fe49e"));
+
+                                                      
+                                                    
+                                                    },
+                                                    child: const Center(
+                                                      child: TextCustom(
+                                                          text:
+                                                              "Chọn thanh toán & Đặt xe",
+                                                          color:
+                                                              COLOR_TEXT_BLACK,
+                                                          fontSize:
+                                                              FONT_SIZE_LARGE,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          );
+                                        }
+                                        return const SizedBox();
+                                      },
+                                    ),
+                                  );
+                                },
+                              );
+                              // BlocProvider.of<ConfirmBookingBloc>(context).add(
+                              //     ConfirmBookingRequestTrip(
+                              //         sourceLocation: LatLng(
+                              //             widget.data.currentPosition!.latitude!,
+                              //             widget.data.currentPosition!.longitude!),
+                              //         destinationLocation: LatLng(
+                              //             widget.data.pickUpLocation!.lat,
+                              //             widget.data.pickUpLocation!.lng),
+                              //         sourceName: widget.data.currentPosition!.name.toString(),
+                              //         destinationName: widget.data.pickUpLocation!.label.toString(),
+                              //         distance: widget.data.pickUpLocation!.distance,
+                              //         price: double.parse(state.data[selectedIndex].priceVihcle),
+                              //         customerName: "Thanh Bui ",
+                              //         customerPhone: "0368826352",
+                              //         userId: "456",
+                              //         customerImage:
+                              //             "https://khoinguonsangtao.vn/wp-content/uploads/2022/08/hinh-anh-avatar-sadboiz.jpg",
+                              //         type: state.data[selectedIndex].nameVihcle,
+                              //         promotionId: "64c49eac0ff5e724021ac421",
+                              //         paymentMethodId:
+                              //             "64cb6802bf5a624f310fe49e"));
+
+                              //     arguments: widget.data);
+                            },
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.only(top: 10, bottom: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: COLOR_BLUE_MAIN,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: const TextCustom(
+                                  textAlign: TextAlign.center,
+                                  text: "Thanh toán",
+                                  color: Colors.white,
+                                  fontSize: FONT_SIZE_LARGE,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ))
+                  ],
+                );
+              }
+
+              return const SizedBox();
+            },
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
@@ -552,6 +1002,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
               tiltGesturesEnabled: false,
               trafficEnabled: true,
               compassEnabled: false,
+              circles: circles,
               myLocationButtonEnabled: true,
               minMaxZoomPreference: const MinMaxZoomPreference(12, 20),
               markers: Set<Marker>.of(_markers),
@@ -563,17 +1014,16 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
               mapType: MapType.normal,
               myLocationEnabled: true,
               initialCameraPosition: CameraPosition(
-                  target: currentPositionCamera,
-                  zoom: 15,
-                  tilt: 70.0,
-                  bearing: driverToPickupBearing),
+                target: currentPositionCamera,
+                zoom: inittialCameraDistance.toDouble(),
+              ),
             ),
             Positioned(
               top: 460,
               right: 10,
               left: 10,
               child: Container(
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -594,8 +1044,8 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                             width: 25,
                             height: 25,
                           ),
-                          SizedBox(width: 10),
-                          Expanded(
+                          const SizedBox(width: 10),
+                          const Expanded(
                             child: TextCustom(
                                 text: "Vị trí của tôi",
                                 color: COLOR_TEXT_BLACK,
@@ -605,7 +1055,9 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                         ],
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      color: Colors.grey.shade500,
+                    ),
                     Container(
                       margin: const EdgeInsets.only(left: 10),
                       child: Row(
@@ -616,7 +1068,7 @@ class _ConfirmBookingPageState extends State<ConfirmBookingPage> {
                             width: 25,
                             height: 25,
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: TextCustom(
                                 text: widget.data.pickUpLocation!.label

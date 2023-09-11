@@ -1,7 +1,6 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
-import PlaceIcon from "@mui/icons-material/Place";
 
 import { mockDataHistoryBooking } from "data/mockData";
 import {
@@ -113,7 +112,7 @@ const CustomerHistoryBooking = (props) => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{booking?.createdAt}</TableCell>
                     <TableCell>
-                      <Typography>{booking.pickUpLocation?.address}</Typography>
+                      <Typography>{booking.pickupLocation?.address}</Typography>
                       <IconButton
                         onClick={() => handlePickUpBtnClick()}
                         target="_blank"
