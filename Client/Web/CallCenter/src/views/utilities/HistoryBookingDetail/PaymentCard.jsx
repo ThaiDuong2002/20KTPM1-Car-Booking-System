@@ -187,7 +187,7 @@ const PaymentCard = (props) => {
                     variant="h4"
                     sx={{ color: theme.palette.grey[800] }}
                   >
-                    {bookingInfo.paymentMethodId.name}
+                    {bookingInfo.paymentMethodId?.name}
                   </Typography>
                 </Grid>
               </Grid>

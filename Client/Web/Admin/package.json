@@ -2,7 +2,7 @@
   "name": "admin_dashboard",
   "version": "3.3.2",
   "private": true,
-  "homepage": "https://berrydashboard.io/free",
+  "homepage": "https://localhost:4001/admin_dashboard/login",
   "dependencies": {
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",
@@ -15,6 +15,7 @@
     "@mui/x-data-grid": "^6.10.2",
     "@tabler/icons": "^1.72.0",
     "apexcharts": "^3.35.3",
+    "axios": "^1.5.0",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "formik": "^2.2.9",

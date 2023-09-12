@@ -2,7 +2,7 @@
   "name": "consultant_application",
   "version": "3.3.2",
   "private": true,
-  "homepage": "https://localhost:4000/login",
+  "homepage": "https://localhost:4000/call_center/login",
   "dependencies": {
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",

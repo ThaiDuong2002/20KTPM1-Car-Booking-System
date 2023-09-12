@@ -13,14 +13,27 @@ const UtilsConsultant = Loadable(
   lazy(() => import("../views/utilities/Consultant"))
 );
 const UtilsSalary = Loadable(lazy(() => import("../views/utilities/Salary")));
-const UtilsUnitPrice = Loadable(
-  lazy(() => import("../views/utilities/UnitPrice"))
+const BussinessUnitPrice = Loadable(
+  lazy(() => import("../views/bussiness/unit-price/UnitPrice"))
 );
+const BussinessEditUnitPrice = Loadable(
+  lazy(() => import("../views/bussiness/unit-price/EditUnitPrice"))
+);
+
+const BussinessRuleList = Loadable(
+  lazy(() => import("../views/bussiness/rules/RuleList"))
+);
+
+const Home = Loadable(lazy(() => import("../views/dashboard/DashboardHome")));
 
 const MainRoutes = {
   path: "/",
   element: <MainLayout />,
   children: [
+    {
+      path: "dashboard",
+      element: <Home />,
+    },
     {
       path: "utils",
       children: [
@@ -57,12 +70,21 @@ const MainRoutes = {
     //     },
     //   ],
     // },
+
     {
-      path: "utils",
+      path: "bussiness",
       children: [
         {
-          path: "unit-price",
-          element: <UtilsUnitPrice />,
+          path: "unit_price",
+          element: <BussinessUnitPrice />,
+        },
+        {
+          path: "unit_price/edit",
+          element: <BussinessEditUnitPrice />,
+        },
+        {
+          path: "rules",
+          element: <BussinessRuleList />,
         },
       ],
     },

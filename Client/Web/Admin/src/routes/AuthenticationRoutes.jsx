@@ -15,11 +15,11 @@ const AuthenRoutes = {
   element: <AnthenLayout />,
   children: [
     {
-      path: "/pages/login/login3",
+      path: "/login",
       element: <AuthLogin3 />,
     },
     {
-      path: "/pages/register/register3",
+      path: "/registry",
       element: "",
     },
   ],
