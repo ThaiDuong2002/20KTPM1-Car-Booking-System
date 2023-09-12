@@ -2,24 +2,24 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const PriceSchema = new Schema(
+const RuleSchema = new Schema(
     {
-        type: {
+        name: {
             type: String,
             required: true,
         },
-        baseFare: {
-            type: Number,
+        condition: {
+            type: String,
             required: true,
         },
-        distanceFare: {
-            type: Number,
+        action: {
+            type: String,
             required: true,
-        },
+        }
     },
     {
         timestamps: true,
     }
 );
 
-export const Price = mongoose.model('Price', PriceSchema, "prices");
+export const Rule = mongoose.model('Rule', RuleSchema, 'rules');

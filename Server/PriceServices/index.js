@@ -5,6 +5,7 @@ import db from './configs/db.js';
 import { errorHandler, notFound } from './helper/errorHandler.js';
 import PriceRoute from './routes/priceRoute.js';
 import PaymentMethodRoute from './routes/paymentMethodRoute.js';
+import RuleRoute from './routes/ruleRoute.js';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const initializeExpress = (app) => {
 db();
 initializeExpress(app);
 app.use("/payment_method", PaymentMethodRoute)
+app.use("/rules", RuleRoute)
 app.use(PriceRoute)
 app.use(notFound);
 app.use(errorHandler);
