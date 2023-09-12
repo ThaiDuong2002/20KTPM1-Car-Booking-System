@@ -1,9 +1,12 @@
+import 'package:driver/global/services/bloc/auth/auth_bloc.dart';
+import 'package:driver/global/services/bloc/auth/auth_event.dart';
 import 'package:driver/global/utils/constants/colors.dart';
 import 'package:driver/global/utils/helpers/dialogs/confirm_dialog.dart';
 import 'package:driver/global/utils/helpers/navigation/launch_screen.dart';
 import 'package:driver/global/utils/style/common_style.dart';
 import 'package:driver/global/widgets/app_button.dart';
 import 'package:driver/global/widgets/common_widget.dart';
+import 'package:driver/main.dart';
 import 'package:driver/modules/info/bank/bank_view.dart';
 import 'package:driver/modules/info/profile/edit/edit_profile_view.dart';
 import 'package:driver/modules/info/vehicle/vehicle_view.dart';
@@ -11,6 +14,7 @@ import 'package:driver/modules/info/wallet/wallet_view.dart';
 import 'package:driver/modules/rides/list/ride_list.dart';
 import 'package:driver/modules/setting/setting_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class DrawerView extends StatefulWidget {
@@ -21,7 +25,24 @@ class DrawerView extends StatefulWidget {
 }
 
 class _DrawerViewState extends State<DrawerView> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  void initState() {
+    initUserInfo();
+    super.initState();
+  }
+
+  String userFirstname = '';
+  String userLastname = '';
+  String userEmail = '';
+  String userAvatar = '';
+
+  void initUserInfo() async {
+    userFirstname = await secureStorage.read(key: 'userFirstName') ?? '';
+    userLastname = await secureStorage.read(key: 'userLastName') ?? '';
+    userEmail = await secureStorage.read(key: 'userEmail') ?? '';
+    userAvatar = await secureStorage.read(key: 'userAvatar') ?? '';
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +62,22 @@ class _DrawerViewState extends State<DrawerView> {
                     children: [
                       ClipRRect(
                         borderRadius: radius(),
-                        child: commonCachedNetworkImage(
-                            'https://thebowdoinharpoon.com/2016/12/14/professor-really-spicing-up-class-as-course-questionnaire-nears/',
-                            height: 65,
-                            width: 65,
-                            fit: BoxFit.cover),
+                        child: Image.network(
+                          userAvatar,
+                          width: 65,
+                          height: 65,
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Text('Thái Dương', style: boldTextStyle()),
+                      Text(
+                        '$userLastname $userFirstname',
+                        style: boldTextStyle(),
+                      ),
                       const SizedBox(height: 4),
-                      Text('thaiduong032002@gmail.com', style: secondaryTextStyle()),
+                      Text(
+                        userEmail,
+                        style: secondaryTextStyle(),
+                      ),
                     ],
                   );
                 }),
@@ -144,14 +171,17 @@ class _DrawerViewState extends State<DrawerView> {
                 color: primaryColor,
                 textStyle: boldTextStyle(color: Colors.white),
                 onTap: () async {
-                  await showConfirmDialogCustom(_scaffoldKey.currentState!.context,
-                      primaryColor: primaryColor,
-                      dialogType: DialogType.CONFIRMATION,
-                      title: 'Are you sure you want to logout?',
-                      positiveText: 'Yes',
-                      negativeText: 'No', onAccept: (v) async {
-                    await Future.delayed(const Duration(milliseconds: 500));
-                  });
+                  await showConfirmDialogCustom(
+                    scaffoldKey.currentContext!,
+                    primaryColor: primaryColor,
+                    dialogType: DialogType.CONFIRMATION,
+                    title: 'Are you sure you want to logout?',
+                    positiveText: 'Yes',
+                    negativeText: 'No',
+                    onAccept: (v) async {
+                      context.read<AuthBloc>().add(const AuthLogoutEvent());
+                    },
+                  );
                 },
               ),
             )

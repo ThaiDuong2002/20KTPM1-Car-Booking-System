@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:driver/global/endpoints/auth_endpoint.dart';
+import 'package:driver/main.dart';
 
 class AuthInterceptor extends Interceptor {
   final Dio _dio;
@@ -11,6 +15,8 @@ class AuthInterceptor extends Interceptor {
   void resetTokens(String? newAccessToken, String? newRefreshToken) {
     accessToken = newAccessToken;
     refreshToken = newRefreshToken;
+    secureStorage.write(key: 'accessToken', value: accessToken);
+    secureStorage.write(key: 'refreshToken', value: refreshToken);
   }
 
   @override
@@ -28,7 +34,9 @@ class AuthInterceptor extends Interceptor {
   @override
   Future<void> onResponse(Response response, ResponseInterceptorHandler handler) async {
     // Xử lý phản hồi ở đây (ví dụ: kiểm tra xác thực, làm mới Access Token)
-    if (response.statusCode == 401) {}
+    if (response.statusCode == 401) {
+      await refreshNewToken();
+    }
 
     super.onResponse(response, handler);
   }
@@ -42,17 +50,18 @@ class AuthInterceptor extends Interceptor {
 
   // Hàm để làm mới Access Token bằng Refresh Token (điều này cần được triển khai trong ứng dụng của bạn)
   Future<String?> refreshNewToken() async {
+    refreshToken = await secureStorage.read(key: 'refreshToken');
     try {
       final response = await _dio.post(
-        'http://localhost:3000/api/authen/refresh-token',
+        refreshTokenApi,
         data: {
-          'refresh_token': refreshToken,
+          'refreshToken': refreshToken,
         },
       );
-
-      final newAccessToken = response.data['access_token'];
-      resetTokens(newAccessToken, refreshToken);
-      return newAccessToken;
+      final dataJson = jsonDecode(response.toString());
+      final data = dataJson['data'];
+      resetTokens(data['accessToken'], data['refreshToken']);
+      return data['accessToken'];
     } catch (error) {
       return null;
     }

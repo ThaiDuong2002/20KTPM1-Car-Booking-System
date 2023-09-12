@@ -4,10 +4,9 @@ class UserModel {
   String? lastname;
   String? email;
   String? phone;
-  String? password;
   String? avatar;
-  String? token;
-  bool? isVerified;
+  String? accessToken;
+  String? refreshToken;
 
   UserModel({
     this.id,
@@ -15,10 +14,9 @@ class UserModel {
     this.lastname,
     this.email,
     this.phone,
-    this.password,
     this.avatar,
-    this.token,
-    this.isVerified,
+    this.accessToken,
+    this.refreshToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -28,10 +26,9 @@ class UserModel {
       lastname: json['lastname'],
       email: json['email'],
       phone: json['phone'],
-      password: json['password'],
       avatar: json['avatar'],
-      token: json['token'],
-      isVerified: json['isVerified'],
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
     );
   }
 }

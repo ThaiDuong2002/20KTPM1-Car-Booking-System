@@ -68,6 +68,7 @@ dependencies:
   equatable: ^2.0.5
   tuple: ^2.0.2
   flutter_compass: ^0.7.0
+  http: ^0.13.6
 
 
 dev_dependencies:

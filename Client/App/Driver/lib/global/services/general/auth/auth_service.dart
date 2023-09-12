@@ -1,4 +1,3 @@
-
 import 'package:driver/global/services/general/auth/auth_provider.dart';
 import 'package:driver/global/services/general/auth/auth_user.dart';
 import 'package:driver/global/services/general/auth/database_auth_provider.dart';
@@ -11,26 +10,20 @@ class AuthService implements AuthProvider {
   factory AuthService.initialize() => AuthService(DatabaseAuthProvider());
 
   @override
-  // TODO: implement currentUser
-  AuthUser? get currentUser => throw UnimplementedError();
+  AuthUser? get currentUser => _provider.currentUser;
 
   @override
-  Future<void> initialize() {
-    // TODO: implement initialize
-    throw UnimplementedError();
-  }
+  Future<AuthUser> logIn({
+    required String identifier,
+    required String password,
+  }) =>
+      _provider.logIn(
+        identifier: identifier,
+        password: password,
+      );
 
   @override
-  Future<AuthUser> logIn({required String email, required String password}) {
-    // TODO: implement logIn
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> logOut() {
-    // TODO: implement logOut
-    throw UnimplementedError();
-  }
+  Future<void> logOut() => _provider.logOut();
 
   @override
   Future<AuthUser> signUp(
@@ -48,8 +41,21 @@ class AuthService implements AuthProvider {
     required String licensePlate,
     required String licenseFrontImage,
     required String licenseBackImage,
-  }) {
-    // TODO: implement signUp
-    throw UnimplementedError();
-  }
+  }) =>
+      _provider.signUp(
+        capacity,
+        email: email,
+        password: password,
+        firstname: firstname,
+        lastname: lastname,
+        phone: phone,
+        avatar: avatar,
+        dob: dob,
+        vehicleImage: vehicleImage,
+        vehicleType: vehicleType,
+        vehicleColor: vehicleColor,
+        licensePlate: licensePlate,
+        licenseFrontImage: licenseFrontImage,
+        licenseBackImage: licenseBackImage,
+      );
 }
