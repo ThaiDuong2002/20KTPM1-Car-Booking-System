@@ -1,12 +1,8 @@
-import {Booking, PreBooking} from "../models/BookingModel.js";
-import {User} from "../models/UserModel.js";
-import {Vehicle} from "../models/VehicleModel.js";
-import {Promotion} from "../models/PromotionModel.js";
-import {PaymentMethod} from "../models/PaymentMethodModel.js";
-import {Refund} from "../models/RefundModel.js";
+import { Booking, PreBooking } from "../models/BookingModel.js";
+import { User } from "../models/UserModel.js";
 
-import axios from "axios";
 import amqp from "amqplib";
+import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -166,6 +162,22 @@ const BookingService = {
             connection.close();
         }, 500);
     },
+    async getBookingByCustomerId(userId) {
+        try {
+            const bookings = await Booking.find({ "userId": userId });
+            return bookings;
+        } catch (error) {
+            return new Error(error.message);
+        }
+    },
+    async getBookingByDriverId(driverId) {
+        try {
+            const bookings = await Booking.find({ "driverId": driverId });
+            return bookings;
+        } catch (error) {
+            return new Error(error.message);
+        }
+    },
 };
 
 const UserService = {
@@ -204,4 +216,5 @@ const MapService = {
     },
 };
 
-export {PreBookingService, BookingService, UserService, MapService};
+export { BookingService, MapService, PreBookingService, UserService };
+

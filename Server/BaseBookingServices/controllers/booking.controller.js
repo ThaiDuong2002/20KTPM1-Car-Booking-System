@@ -178,6 +178,44 @@ const BookingController = {
       next(createError.InternalServerError(err.message));
     }
   },
+  async get_booking_list_by_driver(req, res, next) {
+    try {
+      const driverId = req.params.id;
+      const list = await BookingService.getBookingByDriverId(driverId);
+      if (!list) {
+        return next(createError.BadRequest("Get list failed"));
+      }
+      if (list.length === 0) {
+        return next(createError.NotFound("No booking found"));
+      }
+      res.status(200).json({
+        message: "Get bookings list successfully",
+        status: 200,
+        data: list,
+      });
+    } catch (err) {
+      next(createError.InternalServerError(err.message));
+    }
+  },
+  async get_booking_list_by_user(req, res, next) {
+    try {
+      const userId = req.params.id;
+      const list = await BookingService.getBookingByCustomerId(userId);
+      if (!list) {
+        return next(createError.BadRequest("Get list failed"));
+      }
+      if (list.length === 0) {
+        return next(createError.NotFound("No booking found"));
+      }
+      res.status(200).json({
+        message: "Get bookings list successfully",
+        status: 200,
+        data: list,
+      });
+    } catch (err) {
+      next(createError.InternalServerError(err.message));
+    }
+  }
 };
 
 export default BookingController;
