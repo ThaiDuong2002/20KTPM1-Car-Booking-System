@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:driver/global/endpoints/location_socket_endpoint.dart';
-import 'package:driver/global/services/location/location_permission.dart';
-import 'package:driver/global/services/socket/socket_service.dart';
+import 'package:driver/global/services/general/location/location_permission.dart';
+import 'package:driver/global/services/general/socket/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -92,7 +92,7 @@ class LocationService extends ChangeNotifier {
 
   void _startLocationUpdatess(SendPort sendPortToIsolate) async {
     final location = GeolocationService();
-    Timer.periodic(const Duration(seconds: 5), (timer) async {
+    Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
       final position = await location.getCurrentLocation();
       final locationData = {
         'lat': position.latitude,

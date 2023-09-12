@@ -26,87 +26,86 @@ bookingLocator.registerService('googleService', googleService);
 bookingLocator.registerService('twilioService', twilioService);
 bookingLocator.registerService('goongService', goongService);
 
+let connection = null;
 let channel = null;
-
-async function publishBookingInfo(bookingData) {
-    const connection = await amqp.connect(config.AMQP_URL);
-    const channel = await connection.createChannel();
-    const exchangeName = config.EXCHANGE_NAME;
-    const routingKey = config.DISPATCHER_ROUTING_KEY;
-    await channel.assertExchange(exchangeName, 'direct', {durable: false});
-    channel.publish(exchangeName, routingKey, Buffer.from(JSON.stringify(bookingData)));
-    console.log(`[x] Booking info:`, bookingData);
-    console.log('[x] Sent to booking dispatcher');
-}
 
 // Run app
 async function locator() {
     try {
-        const connection = await amqp.connect(config.AMQP_URL);
-        channel = await connection.createChannel(); // Store the channel reference
+        connection = await amqp.connect(config.AMQP_URL);
+        channel = await connection.createChannel();
         const exchangeName = config.EXCHANGE_NAME;
         const queueName = config.QUEUE_NAME;
         const routingKey = config.LOCATOR_ROUTING_KEY;
         await channel.assertExchange(exchangeName, 'direct', {durable: false});
         const assertQueueResponse = await channel.assertQueue(queueName);
         const queue = assertQueueResponse.queue;
-        await channel.bindQueue(queue, exchangeName, routingKey);
+        channel.bindQueue(queue, exchangeName, routingKey);
         console.log(`[*] Booking locator.`);
         console.log(`[*] Waiting for booking info.`);
 
         // Consume message
         await channel.consume(queue, async (msg) => {
-            try {
-                const bookingData = JSON.parse(msg.content.toString());
-                console.log(`[x] Received booking info:`, bookingData);
-                const pickupCoordinate = bookingData.pickupLocation;
-                const destinationCoordinate = bookingData.destinationLocation;
+            if(msg !== null) {
+                const bookingInfo = JSON.parse(msg.content.toString());
+                console.log(`[x] Received booking info:`, bookingInfo);
 
+                const pickupCoordinate = bookingInfo.pickupLocation;
+                const destinationCoordinate = bookingInfo.destinationLocation;
                 let message_data
                 let locatedCoordinate
-                if (!pickupCoordinate.coordinate) {
-                    // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
-                    locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
-                    if (locatedCoordinate.length === 0) {
-                        message_data = {
-                            message: 'Your pickup address is not found',
-                            phone: bookingData.customerPhone
+                try {
+                    if (!pickupCoordinate.coordinate) {
+                        // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
+                        locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
+                        console.log("locatedCoordinate", locatedCoordinate)
+                        if (locatedCoordinate.length === 0) {
+                            message_data = {
+                                message: 'Your pickup address is not found',
+                                phone: bookingInfo.customerPhone
+                            }
+                            // await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
+                            throw new Error('Your pickup address is not found');
+                        } else {
+                            bookingInfo.pickupLocation.coordinate = {
+                                lat: locatedCoordinate[0].geometry.location.lat,
+                                lng: locatedCoordinate[0].geometry.location.lng,
+                            };
                         }
-                        await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
-                    } else {
-                        bookingData.pickupLocation.coordinate = {
-                            lat: locatedCoordinate[0].geometry.location.lat,
-                            lng: locatedCoordinate[0].geometry.location.lng,
-                        };
                     }
-                }
 
-                if (!destinationCoordinate.coordinate) {
-                    // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
-                    locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
-                    if (locatedCoordinate.length === 0) {
-                        message_data = {
-                            message: 'Your destination address is not found',
-                            phone: bookingData.customerPhone
+                    if (!destinationCoordinate.coordinate) {
+                        // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
+                        locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
+                        console.log("locatedCoordinate", locatedCoordinate)
+                        if (locatedCoordinate.length === 0) {
+                            message_data = {
+                                message: 'Your destination address is not found',
+                                phone: bookingInfo.customerPhone
+                            }
+                            // await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
+                            throw new Error('Your destination address is not found');
+                        } else {
+                            bookingInfo.destinationLocation.coordinate = {
+                                lat: locatedCoordinate[0].geometry.location.lat,
+                                lng: locatedCoordinate[0].geometry.location.lng,
+                            };
                         }
-                        await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
-                    } else {
-                        bookingData.destinationLocation.coordinate = {
-                            lat: locatedCoordinate[0].geometry.location.lat,
-                            lng: locatedCoordinate[0].geometry.location.lng,
-                        };
                     }
+                    // Publish to dispatcher
+                    const json_string_data = JSON.stringify(bookingInfo)
+                    channel.publish(exchangeName, config.DISPATCHER_ROUTING_KEY, Buffer.from(json_string_data));
+                } catch (error) {
+                    console.log("Locator Error: ", error.message)
+                } finally {
+                    channel.ack(msg); // Acknowledge the message
                 }
-
-                channel.ack(msg); // Acknowledge the message
-                await publishBookingInfo(bookingData);
-                console.log(bookingData);
-            } catch (error) {
-                console.error('Error processing booking info:', error);
+            } else {
+                console.log("Locator Error: No message received");
             }
         });
     } catch (error) {
-        console.error('Error receiving booking info:', error);
+        console.log("Error receiving booking info:", error.message);
     }
 }
 
@@ -118,6 +117,9 @@ process.on('SIGINT', async () => {
         console.log('Shutting down...');
         if (channel) {
             await channel.close(); // Close the channel
+        }
+        if (connection) {
+            await connection.close(); // Close the connection
         }
         process.exit(0);
     } catch (error) {

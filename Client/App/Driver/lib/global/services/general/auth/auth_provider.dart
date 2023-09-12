@@ -1,4 +1,4 @@
-import 'package:driver/global/services/auth/auth_user.dart';
+import 'package:driver/global/services/general/auth/auth_user.dart';
 
 abstract class AuthProvider {
   AuthUser? get currentUser;

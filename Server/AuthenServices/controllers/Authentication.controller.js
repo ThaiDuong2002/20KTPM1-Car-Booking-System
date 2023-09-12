@@ -72,7 +72,8 @@ const AuthenController = {
             }
 
             // Create new user
-            const newUser = await UserService.createUser(userRole, registerInfo)
+            registerInfo.userRole = userRole
+            const newUser = await UserService.createUser(registerInfo)
 
             // Response
             const response = {
@@ -89,7 +90,7 @@ const AuthenController = {
                 message: "Register successfully",
                 status: 201,
                 data: {
-                    user: newUser
+                    user: response
                 }
             })
         } catch (error) {

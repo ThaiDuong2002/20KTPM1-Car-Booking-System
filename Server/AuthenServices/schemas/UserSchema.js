@@ -108,8 +108,16 @@ DriverSchema.add({
     },
 });
 
-export const User = mongoose.model('User', UserSchema);
-export const Admin = User.discriminator('Admin', AdminSchema);
-export const Consultant = User.discriminator('Consultant', ConsultantSchema);
-export const Customer = User.discriminator('Customer', CustomerSchema);
-export const Driver = User.discriminator('Driver', DriverSchema);
+const UserModel = mongoose.model('User', UserSchema);
+const AdminModel = UserModel.discriminator('Admin', AdminSchema);
+const ConsultantModel = UserModel.discriminator('Consultant', ConsultantSchema);
+const CustomerModel = UserModel.discriminator('Customer', CustomerSchema);
+const DriverModel = UserModel.discriminator('Driver', DriverSchema);
+
+export {
+    UserModel,
+    AdminModel,
+    ConsultantModel,
+    CustomerModel,
+    DriverModel,
+}

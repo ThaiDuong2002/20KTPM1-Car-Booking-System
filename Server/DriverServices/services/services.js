@@ -37,13 +37,15 @@ const UserService = {
 
 const DriverService = {
     async updateDriverLocationToRedis (driverId, lat, lng, tripType) {
-        const data_json_string = JSON.stringify({driverId, lat, lng, tripType});
+        const key = `driver-${driverId}`;
+        const data_json_string = JSON.stringify({key, driverId, lat, lng, tripType})
         console.log(data_json_string)
-        await redis.set(driverId, data_json_string);
+        await redis.set(key, data_json_string)
+        return key
     },
     async getDriverLocations () {
         // Use the KEYS command to get all keys that match the pattern (e.g., all keys)
-        const allKeys = await redis.keys('*');
+        const allKeys = await redis.keys('driver-*');
 
         if (!allKeys || allKeys.length === 0) {
             return [];

@@ -35,6 +35,12 @@ CarSchema.add({
     },
 });
 
-export const Vehicle = mongoose.model('Vehicle', VehicleSchema, 'vehicles');
-export const Motorbike = Vehicle.discriminator('Motorbike', MotorbikeSchema);
-export const Car = Vehicle.discriminator('Car', CarSchema);
+const VehicleModel = mongoose.model('Vehicle', VehicleSchema, 'vehicles');
+const MotorbikeModel = VehicleModel.discriminator('Motorbike', MotorbikeSchema);
+const CarModel = VehicleModel.discriminator('Car', CarSchema);
+
+export {
+    VehicleModel,
+    MotorbikeModel,
+    CarModel,
+}

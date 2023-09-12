@@ -162,25 +162,32 @@ const BookingService = {
     }
   },
   async sendToBookingReception(data) {
-    // Create connection
-    const connection = await amqp.connect(config.AMQP_URL);
-    const channel = await connection.createChannel();
-    const exchangeName = config.EXCHANGE_NAME;
-    const routingKey = config.RECEPTION_ROUTING_KEY;
-    await channel.assertExchange(exchangeName, "direct", { durable: false });
+    let connection = null;
+    let channel = null;
+    try {
+      // Create connection
+      connection = await amqp.connect(config.AMQP_URL);
+      channel = await connection.createChannel();
+      const exchangeName = config.EXCHANGE_NAME;
+      const routingKey = config.RECEPTION_ROUTING_KEY;
+      await channel.assertExchange(exchangeName, "direct", { durable: false });
 
-    // Publish message
-    channel.publish(
-      exchangeName,
-      routingKey,
-      Buffer.from(JSON.stringify(data))
-    );
-    console.log(`[x] Sent to booking reception service`, data);
-
-    // Close connection
-    setTimeout(() => {
-      connection.close();
-    }, 500);
+      // Publish message
+      const json_string_data = JSON.stringify(data);
+      channel.publish(exchangeName, routingKey, Buffer.from(json_string_data));
+      console.log(`[x] Sent to booking reception service`, json_string_data);
+    } catch (error) {
+      console.log("Error sending customer info:", error.message);
+    }
+    // // Close connection
+    // setTimeout(async () => {
+    //     if (channel) {
+    //         await channel.close();
+    //     }
+    //     if (connection) {
+    //         await connection.close();
+    //     }
+    // }, 5000)
   },
 };
 

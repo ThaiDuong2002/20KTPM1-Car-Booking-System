@@ -1,21 +1,32 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:dio/dio.dart';
 import 'package:dotted_line/dotted_line.dart';
-import 'package:driver/global/services/location/location_service.dart';
-import 'package:driver/global/services/socket/socket_booking_service.dart';
+import 'package:driver/global/decode/flexible_polyline.dart';
+import 'package:driver/global/services/bloc/booking/booking_bloc.dart';
+import 'package:driver/global/services/bloc/booking/booking_event.dart';
+import 'package:driver/global/services/bloc/booking/booking_state.dart';
+import 'package:driver/global/services/general/location/location_service.dart';
 import 'package:driver/global/utils/constants/colors.dart';
 import 'package:driver/global/utils/constants/size.dart';
+import 'package:driver/global/utils/extensions/string_extension.dart';
 import 'package:driver/global/utils/helpers/dialogs/confirm_dialog.dart';
+import 'package:driver/global/utils/helpers/navigation/launch_screen.dart';
 import 'package:driver/global/utils/style/common_style.dart';
 import 'package:driver/global/widgets/app_button.dart';
 import 'package:driver/global/widgets/common_widget.dart';
+import 'package:driver/global/widgets/loader.dart';
+import 'package:driver/main.dart';
 import 'package:driver/modules/home/widgets/drawer_view.dart';
+import 'package:driver/modules/rides/chat/chat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -28,31 +39,37 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final _googleMapsApi = dotenv.get('GOOGLE_MAPS_API_KEY', fallback: '');
+  final _hereWeGoApi = dotenv.get('API_HERE_WE_GO', fallback: '');
   Uint8List? icon;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GoogleMapController? _mapController;
   final LocationService locationService = LocationService();
-  final BookingSocket bookingSocket = BookingSocket();
+  static final Set<Polyline> _polylines = {};
 
   final Set<Marker> _markers = {};
-  final List<LatLng> _polylineCoordinates = [];
-
-  LatLng? _destinationLocation;
 
   bool _isOffline = false;
-  bool _serviceData = true;
+  static bool _isBookingAccepted = false;
+  static bool _isStartRiding = false;
+  static bool _isFinishedRiding = false;
 
   LatLng? _driverLocation;
   late LatLng? _sourceLocation;
+  late LatLng? _destinationLocation;
+
+  double _currentHeading = 0.0;
 
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 1));
     _driverLocationUpdate();
-    getPolyPoints();
     super.initState();
+    FlutterCompass.events!.listen((event) {
+      setState(() {
+        _currentHeading = event.heading!;
+      });
+    });
   }
 
   @override
@@ -99,8 +116,8 @@ class _HomeViewState extends State<HomeView> {
           CameraPosition(
             target: position,
             zoom: 17,
-            tilt: 60,
-            bearing: 30,
+            tilt: 90,
+            bearing: _currentHeading,
           ),
         ),
       );
@@ -112,8 +129,6 @@ class _HomeViewState extends State<HomeView> {
     icon = await getImages('assets/images/marker.png', 150);
     setState(() {
       _driverLocation = LatLng(position.latitude, position.longitude);
-      _sourceLocation = const LatLng(10.7629, 106.682);
-      _destinationLocation = const LatLng(10.7692, 106.688);
       _determinePosition().then(
         (value) => {
           setState(
@@ -131,43 +146,90 @@ class _HomeViewState extends State<HomeView> {
           icon: BitmapDescriptor.fromBytes(icon!),
         ),
       );
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('source'),
-          position: _sourceLocation!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        ),
-      );
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('destination'),
-          position: _destinationLocation!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        ),
-      );
-      _serviceData = false;
+      // if (_sourceLocation != null && _destinationLocation != null) {
+      //   _markers.add(
+      //     Marker(
+      //       markerId: const MarkerId('source'),
+      //       position: _sourceLocation!,
+      //       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      //     ),
+      //   );
+      //   _markers.add(
+      //     Marker(
+      //       markerId: const MarkerId('destination'),
+      //       position: _destinationLocation!,
+      //       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      //     ),
+      //   );
+      // }
     });
   }
 
-  Future<void> getPolyPoints() async {
-    PolylinePoints polylinePoints = PolylinePoints();
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      _googleMapsApi, // Your Google Map Key
-      PointLatLng(_sourceLocation!.latitude, _sourceLocation!.longitude),
-      PointLatLng(_destinationLocation!.latitude, _destinationLocation!.longitude),
-    );
+  // Future<void> getPolyPoints() async {
+  //   PolylinePoints polylinePoints = PolylinePoints();
+  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+  //     _googleMapsApi, // Your Google Map Key
+  //     PointLatLng(_sourceLocation!.latitude, _sourceLocation!.longitude),
+  //     PointLatLng(_destinationLocation!.latitude, _destinationLocation!.longitude),
+  //   );
 
-    if (result.points.isNotEmpty) {
-      for (var point in result.points) {
-        _polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        );
-        _polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        );
-      }
+  //   if (result.points.isNotEmpty) {
+  //     for (var point in result.points) {
+  //       _polylineCoordinates.add(
+  //         LatLng(point.latitude, point.longitude),
+  //       );
+  //       _polylineCoordinates.add(
+  //         LatLng(point.latitude, point.longitude),
+  //       );
+  //     }
+  //     setState(() {});
+  //   }
+  // }
+
+  Future<void> drawPolyliness(LatLng? sourceLocation, LatLng? destinationLocation) async {
+    if (sourceLocation == null || destinationLocation == null) {
+      _polylines.clear();
       setState(() {});
+      return;
     }
+    List<LatLng> routePoints =
+        await fetchRouteCoordinates(sourceLocation, destinationLocation, _hereWeGoApi);
+    _polylines.clear();
+    _polylines.add(Polyline(
+      polylineId: PolylineId(sourceLocation.toString()),
+      visible: true,
+
+      width: 8, //width of polyline
+      points: routePoints,
+      color: Colors.lightBlue, //color of polyline
+    ));
+    setState(() {});
+  }
+
+  Future<List<LatLng>> fetchRouteCoordinates(
+      LatLng origin, LatLng destination, String apiKey) async {
+    try {
+      final url =
+          'https://router.hereapi.com/v8/routes?origin=${origin.latitude},${origin.longitude}&transportMode=car&destination=${destination.latitude},${destination.longitude};sideOfStreetHint=${origin.latitude},${origin.longitude};matchSideOfStreet=always&return=polyline,summary&apikey=$apiKey';
+
+      final Dio dio = Dio();
+      final response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        final polyline = response.data['routes'][0]['sections'][0]['polyline'];
+        final coords = FlexiblePolyline.decode(polyline);
+        List<LatLng> data = [];
+        for (var element in coords) {
+          data.add(LatLng(element.lat, element.lng));
+        }
+        return data;
+      } else {
+        throw Exception('Failed to load route coordinates');
+      }
+    } catch (e) {
+      debugPrint('error: $e');
+    }
+    return [];
   }
 
   @override
@@ -209,33 +271,14 @@ class _HomeViewState extends State<HomeView> {
                     onAccept: (v) {
                       _isOffline = value;
                       locationService.toggleSwitch(value);
-
                       bookingSocket.toggleSwitch(value);
                       bookingSocket.sendFirstRegister('registerClientId');
+
                       setState(() {});
                     },
                   );
                 },
               ),
-              // Switch(
-              //   value: _isOffline,
-              //   activeColor: Colors.black,
-              //   inactiveThumbColor: Colors.red,
-              //   onChanged: (value) async {
-              //     await showConfirmDialogCustom(
-              //       dialogType: DialogType.CONFIRMATION,
-              //       primaryColor: primaryColor,
-              //       title: _isOffline
-              //           ? 'Are you certain you want to go offline?'
-              //           : 'Are you certain you want to go online?',
-              //       context,
-              //       onAccept: (v) {
-              //         _isOffline = value;
-              //         setState(() {});
-              //       },
-              //     );
-              //   },
-              // ),
               const SizedBox(width: 25),
               IconButton(
                 icon: const Icon(Icons.notifications_on_outlined),
@@ -251,7 +294,10 @@ class _HomeViewState extends State<HomeView> {
                     Consumer<LocationService>(
                       builder: (context, value, child) {
                         try {
-                          if (value.currentPosition != null) {
+                          if (_isFinishedRiding) {
+                            drawPolyliness(null, null);
+                          }
+                          if (value.currentPosition != null && _isBookingAccepted) {
                             _updateDriverMarker(LatLng(
                               value.currentPosition!.latitude,
                               value.currentPosition!.longitude,
@@ -267,6 +313,17 @@ class _HomeViewState extends State<HomeView> {
                                 icon: BitmapDescriptor.fromBytes(icon!),
                               ),
                             );
+                            if (_isStartRiding) {
+                              drawPolyliness(
+                                _destinationLocation!,
+                                value.currentPosition!,
+                              );
+                            } else {
+                              drawPolyliness(
+                                _sourceLocation!,
+                                value.currentPosition!,
+                              );
+                            }
                           }
                           return GoogleMap(
                             compassEnabled: true,
@@ -276,7 +333,7 @@ class _HomeViewState extends State<HomeView> {
                             myLocationEnabled: true,
                             initialCameraPosition: CameraPosition(
                               target: _driverLocation!,
-                              zoom: 17,
+                              zoom: 15,
                               tilt: 60,
                               bearing: 30,
                             ),
@@ -284,14 +341,7 @@ class _HomeViewState extends State<HomeView> {
                             onMapCreated: (mapController) {
                               _mapController = mapController;
                             },
-                            polylines: {
-                              Polyline(
-                                polylineId: const PolylineId("route"),
-                                points: _polylineCoordinates,
-                                color: const Color.fromARGB(255, 97, 150, 255),
-                                width: 6,
-                              ),
-                            },
+                            polylines: _polylines,
                           );
                         } catch (e) {
                           debugPrint('error: $e');
@@ -340,446 +390,976 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                     ),
-                    _serviceData == true
-                        ? SizedBox.expand(
-                            child: Stack(
-                              children: [
-                                DraggableScrollableSheet(
-                                  initialChildSize: 0.4,
-                                  minChildSize: 0.4,
-                                  builder: (context, scrollController) {
-                                    scrollController.addListener(() {});
-                                    return Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(defaultRadius),
-                                          topRight: Radius.circular(defaultRadius),
-                                        ),
+                    BlocListener<BookingBloc, BookingState>(
+                      listener: (context, state) async {
+                        if (state is BookingInitialState) {
+                          _isBookingAccepted = false;
+                          _isStartRiding = false;
+                          _isFinishedRiding = false;
+                          _sourceLocation = null;
+                          _destinationLocation = null;
+                          _markers.clear();
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon: BitmapDescriptor.fromBytes(icon!),
+                            ),
+                          );
+                          _updateDriverMarker(LatLng(
+                            _driverLocation!.latitude,
+                            _driverLocation!.longitude,
+                          ));
+                        } else if (state is BookingRequestedState) {
+                          _sourceLocation = state.sourceLocation;
+                          _destinationLocation = state.destinationLocation;
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('source'),
+                              position: _sourceLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('destination'),
+                              position: _destinationLocation!,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                            ),
+                          );
+                          _updateDriverMarker(LatLng(
+                            (state.sourceLocation.latitude + state.destinationLocation.latitude) /
+                                2,
+                            (state.sourceLocation.longitude + state.destinationLocation.longitude) /
+                                2,
+                          ));
+                          await drawPolyliness(
+                            state.sourceLocation,
+                            state.destinationLocation,
+                          );
+                        } else if (state is BookingAcceptedState) {
+                          _isBookingAccepted = true;
+                          _markers.clear();
+                          _sourceLocation = state.sourceLocation;
+                          _destinationLocation = state.destinationLocation;
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('source'),
+                              position: _sourceLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
+                        } else if (state is BookingRejectedState) {
+                          _isBookingAccepted = false;
+                          _isStartRiding = false;
+                          _sourceLocation = null;
+                          _destinationLocation = null;
+                          _markers.clear();
+                          _updateDriverMarker(
+                            LatLng(
+                              _driverLocation!.latitude,
+                              _driverLocation!.longitude,
+                            ),
+                          );
+                          BlocProvider.of<BookingBloc>(context).add(
+                            const BookingWaitingEvent(),
+                          );
+                        } else if (state is BookingFinishRidingState) {
+                          _isBookingAccepted = false;
+                          _isStartRiding = false;
+                          _isFinishedRiding = true;
+                          _sourceLocation = null;
+                          _destinationLocation = null;
+                          _markers.clear();
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon: BitmapDescriptor.fromBytes(icon!),
+                            ),
+                          );
+                          _updateDriverMarker(LatLng(
+                            _driverLocation!.latitude,
+                            _driverLocation!.longitude,
+                          ));
+                          chat.messages.clear();
+                        } else if (state is BookingStartRidingState) {
+                          _markers.clear();
+                          _isBookingAccepted = true;
+                          _isStartRiding = true;
+                          _sourceLocation = state.sourceLocation;
+                          _destinationLocation = state.destinationLocation;
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('driver'),
+                              position: _driverLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('source'),
+                              position: _sourceLocation!,
+                              icon:
+                                  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            ),
+                          );
+                          _markers.add(
+                            Marker(
+                              markerId: const MarkerId('destination'),
+                              position: _destinationLocation!,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                            ),
+                          );
+                        }
+                      },
+                      child: BlocBuilder<BookingBloc, BookingState>(
+                        builder: (context, state) {
+                          if (state is BookingFinishRidingState) {
+                            return Positioned(
+                              bottom: 0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(16),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(defaultRadius),
+                                    topRight: Radius.circular(defaultRadius),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: primaryColor.withOpacity(0.05),
+                                        borderRadius: radius(),
                                       ),
-                                      child: SingleChildScrollView(
-                                        controller: scrollController,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.center,
-                                              child: Container(
-                                                margin: const EdgeInsets.only(top: 16),
-                                                height: 6,
-                                                width: 60,
-                                                decoration: BoxDecoration(
-                                                  color: primaryColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(defaultRadius),
-                                                ),
-                                                alignment: Alignment.center,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 16),
-                                              child: Text(
-                                                'Request',
-                                                style: primaryTextStyle(size: 18),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                top: 8,
-                                                bottom: 8,
-                                                left: 16,
-                                                right: 16,
-                                              ),
-                                              width: MediaQuery.of(context).size.width,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(defaultRadius),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      color: Colors.black.withOpacity(0.2),
-                                                      blurRadius: 3),
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Trip detail'.capitalizeFirstLetter(),
+                                            style: boldTextStyle(),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              const Column(
+                                                children: [
+                                                  Icon(Icons.near_me, color: Colors.green),
+                                                  SizedBox(height: 4),
+                                                  SizedBox(
+                                                    height: 50,
+                                                    child: DottedLine(
+                                                      direction: Axis.vertical,
+                                                      lineLength: double.infinity,
+                                                      lineThickness: 1,
+                                                      dashLength: 2,
+                                                      dashColor: primaryColor,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 2),
+                                                  Icon(Icons.location_on, color: Colors.red),
                                                 ],
                                               ),
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                              const SizedBox(width: 16),
+                                              Expanded(
                                                 child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius.circular(defaultRadius),
-                                                          child: commonCachedNetworkImage(
-                                                            'https://thebowdoinharpoon.com/2016/12/14/professor-really-spicing-up-class-as-course-questionnaire-nears/',
-                                                            height: 35,
-                                                            width: 35,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(width: 12),
-                                                        Expanded(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text(
-                                                                'Thai Duong',
-                                                                style: boldTextStyle(size: 14),
-                                                              ),
-                                                              const SizedBox(height: 4),
-                                                              Text(
-                                                                '0912345678',
-                                                                style: secondaryTextStyle(),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: primaryColor,
-                                                            borderRadius: BorderRadius.circular(
-                                                                defaultRadius),
-                                                          ),
-                                                          padding: const EdgeInsets.all(6),
-                                                          child: Text(
-                                                            '15 min',
-                                                            style:
-                                                                boldTextStyle(color: Colors.white),
-                                                          ),
-                                                        )
-                                                      ],
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      state.sourceName,
+                                                      style: primaryTextStyle(size: 14),
                                                     ),
-                                                    const SizedBox(height: 16),
-                                                    Divider(
-                                                      color: Colors.grey.withOpacity(0.5),
-                                                      height: 0,
-                                                      indent: 15,
-                                                      endIndent: 15,
+                                                    const SizedBox(height: 35),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      state.destinationName,
+                                                      style: primaryTextStyle(size: 14),
                                                     ),
-                                                    const SizedBox(height: 16),
-                                                    Row(
-                                                      children: [
-                                                        const Column(
-                                                          children: [
-                                                            Icon(
-                                                              Icons.near_me,
-                                                              color: Colors.green,
-                                                              size: 18,
-                                                            ),
-                                                            SizedBox(height: 2),
-                                                            SizedBox(
-                                                              height: 34,
-                                                              child: DottedLine(
-                                                                direction: Axis.vertical,
-                                                                lineLength: double.infinity,
-                                                                lineThickness: 2,
-                                                                dashLength: 2,
-                                                                dashColor: primaryColor,
-                                                              ),
-                                                            ),
-                                                            SizedBox(height: 2),
-                                                            Icon(
-                                                              Icons.location_on,
-                                                              color: Colors.red,
-                                                              size: 18,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        const SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment.start,
-                                                            children: [
-                                                              const SizedBox(height: 2),
-                                                              Text(
-                                                                '123 Nguyen Luong Bang, Ho Chi Minh City',
-                                                                style: primaryTextStyle(size: 14),
-                                                                maxLines: 2,
-                                                              ),
-                                                              const SizedBox(height: 22),
-                                                              Text(
-                                                                '123 Nguyen Luong Bang, Ho Chi Minh City',
-                                                                style: primaryTextStyle(size: 14),
-                                                                maxLines: 2,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Divider(
-                                                      color: Colors.grey.withOpacity(0.5),
-                                                      height: 0,
-                                                      indent: 15,
-                                                      endIndent: 15,
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: inkWellWidget(
-                                                            onTap: () {
-                                                              showConfirmDialogCustom(
-                                                                dialogType: DialogType.DELETE,
-                                                                primaryColor: primaryColor,
-                                                                title:
-                                                                    'Are you sure want to cancel this request?',
-                                                                positiveText: 'Yes',
-                                                                negativeText: 'No',
-                                                                context,
-                                                                onAccept: (v) {},
-                                                              );
-                                                            },
-                                                            child: Container(
-                                                              padding: const EdgeInsets.all(8),
-                                                              decoration: BoxDecoration(
-                                                                borderRadius: BorderRadius.circular(
-                                                                    defaultRadius),
-                                                                border:
-                                                                    Border.all(color: Colors.red),
-                                                              ),
-                                                              child: Text(
-                                                                'Decline',
-                                                                style: boldTextStyle(
-                                                                    color: Colors.red),
-                                                                textAlign: TextAlign.center,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(width: 16),
-                                                        Expanded(
-                                                          child: AppButtonWidget(
-                                                            padding: EdgeInsets.zero,
-                                                            text: 'Accept',
-                                                            shapeBorder: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(
-                                                                  defaultRadius),
-                                                            ),
-                                                            color: primaryColor,
-                                                            textStyle:
-                                                                boldTextStyle(color: Colors.white),
-                                                            onTap: () {
-                                                              showConfirmDialogCustom(
-                                                                primaryColor: primaryColor,
-                                                                dialogType: DialogType.ACCEPT,
-                                                                positiveText: 'Yes',
-                                                                negativeText: 'No',
-                                                                title:
-                                                                    'Are you sure want to accept this request?',
-                                                                context,
-                                                                onAccept: (v) {},
-                                                              );
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
                                                   ],
                                                 ),
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                )
-                              ],
-                            ),
-                          )
-                        : Positioned(
-                            bottom: 0,
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.all(16),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(defaultRadius),
-                                  topRight: Radius.circular(defaultRadius),
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(defaultRadius),
-                                        child: commonCachedNetworkImage(
-                                          'https://thebowdoinharpoon.com/2016/12/14/professor-really-spicing-up-class-as-course-questionnaire-nears/',
-                                          height: 35,
-                                          width: 35,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Thai Duong',
-                                              style: boldTextStyle(size: 14),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '0912345678',
-                                              style: secondaryTextStyle(),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      inkWellWidget(
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) {
-                                              return const AlertDialog(
-                                                contentPadding: EdgeInsets.all(0),
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: primaryColor,
-                                            borderRadius: BorderRadius.circular(defaultRadius),
-                                          ),
-                                          child: Text(
-                                            'SOS',
-                                            style: boldTextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Divider(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    height: 0,
-                                    indent: 15,
-                                    endIndent: 15,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    children: [
-                                      const Column(
-                                        children: [
-                                          Icon(
-                                            Icons.near_me,
-                                            color: Colors.green,
-                                            size: 18,
-                                          ),
-                                          SizedBox(height: 2),
-                                          SizedBox(
-                                            height: 34,
-                                            child: DottedLine(
-                                              direction: Axis.vertical,
-                                              lineLength: double.infinity,
-                                              lineThickness: 1,
-                                              dashLength: 2,
-                                              dashColor: primaryColor,
-                                            ),
-                                          ),
-                                          SizedBox(height: 2),
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Colors.red,
-                                            size: 18,
+                                            ],
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: primaryColor.withOpacity(0.05),
+                                        borderRadius: radius(),
+                                      ),
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Customer Information'.capitalizeFirstLetter(),
+                                            style: boldTextStyle(),
+                                          ),
+                                          const Divider(height: 30, thickness: 1),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                FontAwesome.user,
+                                                size: 18,
+                                                color: textSecondaryColor,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                state.customerName,
+                                                style: primaryTextStyle(),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(2),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.green, borderRadius: radius(6)),
+                                                child: const Icon(Icons.call_sharp,
+                                                    color: Colors.white, size: 16),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                state.customerPhone,
+                                                style: primaryTextStyle(),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: primaryColor.withOpacity(0.05),
+                                          borderRadius: BorderRadius.circular(8)),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          totalCount(
+                                            title: 'Total',
+                                            description: '',
+                                            subTitle: state.price.toString(),
+                                            isTotal: true,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider(height: 30, thickness: 1),
+                                    AppButtonWidget(
+                                      width: MediaQuery.of(context).size.width,
+                                      text: 'Close',
+                                      color: primaryColor,
+                                      textStyle: boldTextStyle(color: Colors.white),
+                                      onTap: () {
+                                        BlocProvider.of<BookingBloc>(context).add(
+                                          const BookingWaitingEvent(),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          if (state is BookingStartRidingState) {
+                            return Positioned(
+                              bottom: 0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(16),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(defaultRadius),
+                                    topRight: Radius.circular(defaultRadius),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        const Column(
                                           children: [
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              '123 Nguyen Luong Bang, Ho Chi Minh City',
-                                              style: primaryTextStyle(size: 14),
-                                              maxLines: 2,
+                                            Icon(
+                                              Icons.near_me,
+                                              color: Colors.green,
+                                              size: 18,
                                             ),
-                                            const SizedBox(height: 22),
-                                            Text(
-                                              '123 Nguyen Luong Bang, Ho Chi Minh City',
-                                              style: primaryTextStyle(size: 14),
-                                              maxLines: 2,
+                                            SizedBox(height: 2),
+                                            SizedBox(
+                                              height: 34,
+                                              child: DottedLine(
+                                                direction: Axis.vertical,
+                                                lineLength: double.infinity,
+                                                lineThickness: 1,
+                                                dashLength: 2,
+                                                dashColor: primaryColor,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2),
+                                            Icon(
+                                              Icons.location_on,
+                                              color: Colors.red,
+                                              size: 18,
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                state.sourceName,
+                                                style: primaryTextStyle(size: 14),
+                                                maxLines: 2,
+                                              ),
+                                              const SizedBox(height: 22),
+                                              Text(
+                                                state.destinationName,
+                                                style: primaryTextStyle(size: 14),
+                                                maxLines: 2,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    AppButtonWidget(
+                                      width: MediaQuery.of(context).size.width,
+                                      text: 'Finish Ride',
+                                      color: primaryColor,
+                                      textStyle: boldTextStyle(color: Colors.white),
+                                      onTap: () {
+                                        bookingSocket.endTrip('finish_trip', {
+                                          'driverId': '123',
+                                          'customerId': '123',
+                                          'tripId': '123',
+                                        });
+                                        BlocProvider.of<BookingBloc>(context).add(
+                                          BookingFinishEvent(
+                                            sourceLocation: state.sourceLocation,
+                                            destinationLocation: state.destinationLocation,
+                                            sourceName: state.sourceName,
+                                            destinationName: state.destinationName,
+                                            distance: state.distance,
+                                            price: state.price,
+                                            customerName: state.customerName,
+                                            userId: state.userId,
+                                            type: state.type,
+                                            promotionId: state.promotionId,
+                                            paymentMethodId: state.paymentMethodId,
+                                            customerPhone: state.customerPhone,
+                                            customerImage: state.customerImage,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 32),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          if (state is BookingAcceptedState) {
+                            return Positioned(
+                              bottom: 0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.all(16),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(defaultRadius),
+                                    topRight: Radius.circular(defaultRadius),
                                   ),
-                                  const SizedBox(height: 16),
-                                  Divider(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    height: 0,
-                                    indent: 15,
-                                    endIndent: 15,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      inkWellWidget(
-                                        onTap: () {},
-                                        child: Column(
-                                          children: [
-                                            const Icon(
-                                              Icons.call,
-                                              size: 25,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(defaultRadius),
+                                          child: Image.network(
+                                            state.customerImage,
+                                            width: 40,
+                                            height: 40,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                state.customerName,
+                                                style: boldTextStyle(size: 14),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                state.customerPhone,
+                                                style: secondaryTextStyle(),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        inkWellWidget(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) {
+                                                return const AlertDialog(
+                                                  contentPadding: EdgeInsets.all(0),
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
                                               color: primaryColor,
+                                              borderRadius: BorderRadius.circular(defaultRadius),
                                             ),
-                                            const SizedBox(height: 4),
-                                            Text('Call', style: secondaryTextStyle()),
-                                          ],
+                                            child: Text(
+                                              '${state.distance.toString()} km',
+                                              style: boldTextStyle(color: Colors.white),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      inkWellWidget(
-                                        onTap: () {},
-                                        child: Column(
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Divider(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      height: 0,
+                                      indent: 15,
+                                      endIndent: 15,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        const Column(
                                           children: [
-                                            const Icon(
-                                              Icons.chat,
-                                              size: 25,
-                                              color: primaryColor,
+                                            Icon(
+                                              Icons.near_me,
+                                              color: Colors.green,
+                                              size: 18,
                                             ),
-                                            const SizedBox(height: 4),
-                                            Text('Chat', style: secondaryTextStyle()),
+                                            SizedBox(height: 2),
+                                            SizedBox(
+                                              height: 34,
+                                              child: DottedLine(
+                                                direction: Axis.vertical,
+                                                lineLength: double.infinity,
+                                                lineThickness: 1,
+                                                dashLength: 2,
+                                                dashColor: primaryColor,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2),
+                                            Icon(
+                                              Icons.location_on,
+                                              color: Colors.red,
+                                              size: 18,
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  AppButtonWidget(
-                                    width: MediaQuery.of(context).size.width,
-                                    text: 'Start Ride',
-                                    color: primaryColor,
-                                    textStyle: boldTextStyle(color: Colors.white),
-                                    onTap: () {},
-                                  ),
-                                  const SizedBox(height: 32),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                state.sourceName,
+                                                style: primaryTextStyle(size: 14),
+                                                maxLines: 2,
+                                              ),
+                                              const SizedBox(height: 22),
+                                              Text(
+                                                state.destinationName,
+                                                style: primaryTextStyle(size: 14),
+                                                maxLines: 2,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 8),
+                                          child: Text(
+                                            "Price: ${state.price.toString()}",
+                                            style: boldTextStyle(size: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Divider(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      height: 0,
+                                      indent: 15,
+                                      endIndent: 15,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        inkWellWidget(
+                                          onTap: () {},
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                Icons.call,
+                                                size: 25,
+                                                color: primaryColor,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text('Call', style: secondaryTextStyle()),
+                                            ],
+                                          ),
+                                        ),
+                                        inkWellWidget(
+                                          onTap: () {
+                                            launchScreen(
+                                              context,
+                                              const ChatSocketView(),
+                                              pageRouteAnimation: PageRouteAnimation.Slide,
+                                            );
+                                          },
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                Icons.chat,
+                                                size: 25,
+                                                color: primaryColor,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text('Chat', style: secondaryTextStyle()),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    AppButtonWidget(
+                                      width: MediaQuery.of(context).size.width,
+                                      text: 'Start Ride',
+                                      color: primaryColor,
+                                      textStyle: boldTextStyle(color: Colors.white),
+                                      onTap: () {
+                                        bookingSocket.startTrip('start_trip', {
+                                          'driverId': '123',
+                                          'customerId': '123',
+                                          'tripId': '123',
+                                        });
+                                        BlocProvider.of<BookingBloc>(context).add(
+                                          BookingInProgressEvent(
+                                            sourceLocation: state.sourceLocation,
+                                            destinationLocation: state.destinationLocation,
+                                            sourceName: state.sourceName,
+                                            destinationName: state.destinationName,
+                                            distance: state.distance,
+                                            price: state.price,
+                                            customerName: state.customerName,
+                                            userId: state.userId,
+                                            type: state.type,
+                                            promotionId: state.promotionId,
+                                            paymentMethodId: state.paymentMethodId,
+                                            customerPhone: state.customerPhone,
+                                            customerImage: state.customerImage,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 32),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          if (state is BookingRequestedState) {
+                            _destinationLocation = state.destinationLocation;
+                            _sourceLocation = state.sourceLocation;
+                            return SizedBox.expand(
+                              child: Stack(
+                                children: [
+                                  DraggableScrollableSheet(
+                                    initialChildSize: 0.4,
+                                    minChildSize: 0.4,
+                                    builder: (context, scrollController) {
+                                      scrollController.addListener(() {});
+                                      return Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(defaultRadius),
+                                            topRight: Radius.circular(defaultRadius),
+                                          ),
+                                        ),
+                                        child: SingleChildScrollView(
+                                          controller: scrollController,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.center,
+                                                child: Container(
+                                                  margin: const EdgeInsets.only(top: 16),
+                                                  height: 6,
+                                                  width: 60,
+                                                  decoration: BoxDecoration(
+                                                    color: primaryColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(defaultRadius),
+                                                  ),
+                                                  alignment: Alignment.center,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 16),
+                                                child: Text(
+                                                  'Request',
+                                                  style: primaryTextStyle(size: 18),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                  top: 8,
+                                                  bottom: 8,
+                                                  left: 16,
+                                                  right: 16,
+                                                ),
+                                                width: MediaQuery.of(context).size.width,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(defaultRadius),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black.withOpacity(0.2),
+                                                      blurRadius: 3,
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          ClipRRect(
+                                                            borderRadius: BorderRadius.circular(
+                                                                defaultRadius),
+                                                            child: Image.network(
+                                                              state.customerImage,
+                                                              width: 40,
+                                                              height: 40,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(width: 12),
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text(
+                                                                  state.customerName,
+                                                                  style: boldTextStyle(size: 14),
+                                                                ),
+                                                                const SizedBox(height: 4),
+                                                                Text(
+                                                                  state.customerPhone,
+                                                                  style: secondaryTextStyle(),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              color: primaryColor,
+                                                              borderRadius: BorderRadius.circular(
+                                                                  defaultRadius),
+                                                            ),
+                                                            padding: const EdgeInsets.all(6),
+                                                            child: Text(
+                                                              '${state.distance.toString()} km',
+                                                              style: boldTextStyle(
+                                                                  color: Colors.white),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      const SizedBox(height: 16),
+                                                      Row(
+                                                        children: [
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(left: 8),
+                                                            child: Text(
+                                                              "Price: ${state.price.toString()}",
+                                                              style: boldTextStyle(size: 14),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Divider(
+                                                        color: Colors.grey.withOpacity(0.5),
+                                                        height: 0,
+                                                        indent: 15,
+                                                        endIndent: 15,
+                                                      ),
+                                                      const SizedBox(height: 16),
+                                                      Row(
+                                                        children: [
+                                                          const Column(
+                                                            children: [
+                                                              Icon(
+                                                                Icons.near_me,
+                                                                color: Colors.green,
+                                                                size: 18,
+                                                              ),
+                                                              SizedBox(height: 2),
+                                                              SizedBox(
+                                                                height: 34,
+                                                                child: DottedLine(
+                                                                  direction: Axis.vertical,
+                                                                  lineLength: double.infinity,
+                                                                  lineThickness: 2,
+                                                                  dashLength: 2,
+                                                                  dashColor: primaryColor,
+                                                                ),
+                                                              ),
+                                                              SizedBox(height: 2),
+                                                              Icon(
+                                                                Icons.location_on,
+                                                                color: Colors.red,
+                                                                size: 18,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(width: 16),
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.start,
+                                                              children: [
+                                                                const SizedBox(height: 2),
+                                                                Text(
+                                                                  state.sourceName,
+                                                                  style: primaryTextStyle(size: 14),
+                                                                  maxLines: 2,
+                                                                ),
+                                                                const SizedBox(height: 22),
+                                                                Text(
+                                                                  state.destinationName,
+                                                                  style: primaryTextStyle(size: 14),
+                                                                  maxLines: 2,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Divider(
+                                                        color: Colors.grey.withOpacity(0.5),
+                                                        height: 0,
+                                                        indent: 15,
+                                                        endIndent: 15,
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: inkWellWidget(
+                                                              onTap: () {
+                                                                showConfirmDialogCustom(
+                                                                  dialogType: DialogType.DELETE,
+                                                                  primaryColor: primaryColor,
+                                                                  title:
+                                                                      'Are you sure want to cancel this request?',
+                                                                  positiveText: 'Yes',
+                                                                  negativeText: 'No',
+                                                                  context,
+                                                                  onAccept: (v) {
+                                                                    bookingSocket.rejectedTrip(
+                                                                        'reject-trip', {
+                                                                      'driverId': '123',
+                                                                      'customerId': '123',
+                                                                      'tripId': '123',
+                                                                    });
+                                                                    BlocProvider.of<BookingBloc>(
+                                                                            context)
+                                                                        .add(
+                                                                      const BookingRejectingEvent(),
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                              child: Container(
+                                                                padding: const EdgeInsets.all(8),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                          defaultRadius),
+                                                                  border:
+                                                                      Border.all(color: Colors.red),
+                                                                ),
+                                                                child: Text(
+                                                                  'Decline',
+                                                                  style: boldTextStyle(
+                                                                      color: Colors.red),
+                                                                  textAlign: TextAlign.center,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(width: 16),
+                                                          Expanded(
+                                                            child: AppButtonWidget(
+                                                              padding: EdgeInsets.zero,
+                                                              text: 'Accept',
+                                                              shapeBorder: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.circular(
+                                                                    defaultRadius),
+                                                              ),
+                                                              color: primaryColor,
+                                                              textStyle: boldTextStyle(
+                                                                  color: Colors.white),
+                                                              onTap: () {
+                                                                showConfirmDialogCustom(
+                                                                  primaryColor: primaryColor,
+                                                                  dialogType: DialogType.ACCEPT,
+                                                                  positiveText: 'Yes',
+                                                                  negativeText: 'No',
+                                                                  title:
+                                                                      'Are you sure want to accept this request?',
+                                                                  context,
+                                                                  onAccept: (v) {
+                                                                    bookingSocket.acceptedTrip(
+                                                                        'accepted_trip', {
+                                                                      'driverId': '123',
+                                                                      'sourceLocation':
+                                                                          state.sourceLocation,
+                                                                      'destinationLocation':
+                                                                          state.destinationLocation,
+                                                                      'sourceName':
+                                                                          state.sourceName,
+                                                                      'destinationName':
+                                                                          state.destinationName,
+                                                                      'distance': state.distance,
+                                                                      'price': state.price,
+                                                                      'customerName':
+                                                                          state.customerName,
+                                                                      'userId': state.userId,
+                                                                      'type': state.type,
+                                                                      'promotionId':
+                                                                          state.promotionId,
+                                                                      'paymentMethodId':
+                                                                          state.paymentMethodId,
+                                                                      'customerPhone':
+                                                                          state.customerPhone,
+                                                                      'customerImage':
+                                                                          state.customerImage,
+                                                                    });
+                                                                    BlocProvider.of<BookingBloc>(
+                                                                            context)
+                                                                        .add(
+                                                                      BookingAcceptingEvent(
+                                                                        sourceLocation:
+                                                                            state.sourceLocation,
+                                                                        destinationLocation: state
+                                                                            .destinationLocation,
+                                                                        sourceName:
+                                                                            state.sourceName,
+                                                                        destinationName:
+                                                                            state.destinationName,
+                                                                        distance: state.distance,
+                                                                        price: state.price,
+                                                                        customerName:
+                                                                            state.customerName,
+                                                                        userId: state.userId,
+                                                                        type: state.type,
+                                                                        promotionId:
+                                                                            state.promotionId,
+                                                                        paymentMethodId:
+                                                                            state.paymentMethodId,
+                                                                        customerPhone:
+                                                                            state.customerPhone,
+                                                                        customerImage:
+                                                                            state.customerImage,
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
                                 ],
                               ),
-                            ),
-                          ),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+                    )
                   ],
                 )
-              : const SizedBox(),
+              : const Loader(),
         ),
       ),
     );

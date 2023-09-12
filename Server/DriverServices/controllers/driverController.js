@@ -125,11 +125,16 @@ const DriverController = {
         try {
             const driverId = req.headers['x-user-id']
             const {lat, lng, tripType} = req.body
-            await DriverService.updateDriverLocationToRedis(driverId, lat, lng, tripType)
+            const key = await DriverService.updateDriverLocationToRedis(driverId, lat, lng, tripType)
             res.json({
                 message: "Update driver's location successfully",
                 status: 200,
-                data: []
+                data: {
+                    key: key,
+                    driverId: driverId,
+                    lat: lat,
+                    lng: lng,
+                }
             })
         } catch (error) {
             next(createError.BadRequest(error.message))
