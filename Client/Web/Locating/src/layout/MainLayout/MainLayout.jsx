@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
+import io from "socket.io-client";
+import { useEffect, useState } from "react";
 
 // material-ui
 import { styled, useTheme } from "@mui/material/styles";
@@ -21,6 +23,7 @@ import { SET_MENU } from "store/actions";
 
 // assets
 import { IconChevronRight } from "@tabler/icons";
+import axiosClient from "axiosConfig/axiosClient";
 
 // styles
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -71,6 +74,33 @@ const MainLayout = () => {
     dispatch({ type: SET_MENU, opened: !leftDrawerOpened });
   };
 
+  const [socket, setSocket] = useState(null);
+  const [notifications, setNotifications] = useState(null);
+
+  // useEffect(() => {
+  //   const socket = io("http://localhost:5000");
+  //   setSocket(socket);
+  //   console.log("Socket: ", socket);
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const response = await axiosClient.get("/notifications");
+  //       setNotifications(response.data.data);
+
+  //       console.log("Notification List: ", response.data.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   fetchData();
+  // }, []);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -88,7 +118,11 @@ const MainLayout = () => {
         }}
       >
         <Toolbar>
-          <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
+          <Header
+            handleLeftDrawerToggle={handleLeftDrawerToggle}
+            // socket={socket}
+            // notificationList={notifications}
+          />
         </Toolbar>
       </AppBar>
 

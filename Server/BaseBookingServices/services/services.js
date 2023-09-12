@@ -15,7 +15,7 @@ const config = process.env;
 
 const PreBookingService = {
   async getPreBookingList(filter, projection) {
-    return PreBooking.find(filter).select(projection);
+    return PreBooking.find(filter).select(projection).sort({ createdAt: -1 });
   },
   async getPreBookingDetails(preBookingId, populate_options) {
     const query = PreBooking.findById(preBookingId);
@@ -34,10 +34,22 @@ const PreBookingService = {
     try {
       const preBooking = new PreBooking(preBookingData);
       await preBooking.save();
-      const response = await axios.post("http://localhost:5000/notify", {
-        // You can send data with the request if needed
-        // For example: key1: 'value1', key2: 'value2', ...
+      await axios.post("http://socket-services:5000/notify", {
+        body: preBooking,
       });
+      const notificationContent =
+        "Booking ID: " + preBooking._id + "need to be located";
+      console.log("content: ", notificationContent);
+
+      await axios.post("http://notification-services:3009/", {
+        title: "Locate Address",
+        content: notificationContent,
+        time: "2023-07-29T12:34:56Z",
+        userId: "64f1aab3c8ecec186c0a2dde",
+        deviceId: "5f4e8f16-1bf6-45a1-a882-8f7e90e16d20",
+        type: "system",
+      });
+
       return preBooking;
     } catch (err) {
       throw new Error(err.message);

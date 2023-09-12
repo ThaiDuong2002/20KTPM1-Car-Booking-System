@@ -16,6 +16,7 @@
     "@tabler/icons": "^1.72.0",
     "apexcharts": "^3.35.3",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
     "material-ui-popup-state": "^4.0.1",
@@ -33,7 +34,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start --port 4001",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

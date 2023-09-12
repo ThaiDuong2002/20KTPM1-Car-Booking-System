@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 // material-ui
@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
   useMediaQuery,
+  Badge,
 } from "@mui/material";
 
 // third-party
@@ -31,6 +32,10 @@ import NotificationList from "./NotificationList";
 
 // assets
 import { IconBell } from "@tabler/icons";
+
+import { SocketContext } from "socket/SocketProvider";
+import axiosClient from "axiosConfig/axiosClient";
+import { set } from "date-fns";
 
 // notification status options
 const status = [
@@ -54,12 +59,16 @@ const status = [
 
 // ==============================|| NOTIFICATION ||============================== //
 
-const NotificationSection = () => {
+const NotificationSection = (props) => {
+  const socket = useContext(SocketContext);
+  // const notificationList = props.notificationList;
   const theme = useTheme();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const [notifications, setNotifications] = useState([{}]);
+  const [notificationList, setNotificationList] = useState([]);
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
@@ -75,8 +84,8 @@ const NotificationSection = () => {
     }
     setOpen(false);
   };
-
   const prevOpen = useRef(open);
+
   useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
@@ -87,6 +96,14 @@ const NotificationSection = () => {
   const handleChange = (event) => {
     if (event?.target.value) setValue(event?.target.value);
   };
+
+  useEffect(() => {
+    socket.on("notification", (notificationData) => {
+      console.log(notificationData.title);
+      console.log("Body: ", notificationData.body);
+      setNotifications((prev) => [...prev, notificationData]);
+    });
+  }, [socket]);
 
   return (
     <>
@@ -99,29 +116,35 @@ const NotificationSection = () => {
           },
         }}
       >
-        <ButtonBase sx={{ borderRadius: "12px" }}>
-          <Avatar
-            variant="rounded"
-            sx={{
-              ...theme.typography.commonAvatar,
-              ...theme.typography.mediumAvatar,
-              transition: "all .2s ease-in-out",
-              background: theme.palette.secondary.light,
-              color: theme.palette.secondary.dark,
-              '&[aria-controls="menu-list-grow"],&:hover': {
-                background: theme.palette.secondary.dark,
-                color: theme.palette.secondary.light,
-              },
-            }}
-            ref={anchorRef}
-            aria-controls={open ? "menu-list-grow" : undefined}
-            aria-haspopup="true"
-            onClick={handleToggle}
-            color="inherit"
-          >
-            <IconBell stroke={1.5} size="1.3rem" />
-          </Avatar>
-        </ButtonBase>
+        <Badge
+          badgeContent={notifications.length}
+          overlap="circular"
+          color="secondary"
+        >
+          <ButtonBase sx={{ borderRadius: "12px" }}>
+            <Avatar
+              variant="rounded"
+              sx={{
+                ...theme.typography.commonAvatar,
+                ...theme.typography.mediumAvatar,
+                transition: "all .2s ease-in-out",
+                background: theme.palette.secondary.light,
+                color: theme.palette.secondary.dark,
+                '&[aria-controls="menu-list-grow"],&:hover': {
+                  background: theme.palette.secondary.dark,
+                  color: theme.palette.secondary.light,
+                },
+              }}
+              ref={anchorRef}
+              aria-controls={open ? "menu-list-grow" : undefined}
+              aria-haspopup="true"
+              onClick={handleToggle}
+              color="inherit"
+            >
+              <IconBell stroke={1.5} size="1.3rem" />
+            </Avatar>
+          </ButtonBase>
+        </Badge>
       </Box>
       <Popper
         placement={matchesXs ? "bottom" : "bottom-end"}

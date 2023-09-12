@@ -122,8 +122,8 @@ services:
       - ./ProcessBookingServices/PythonDispatcher/.env
 
   # Socket Service
-  socker-services:
-    build: ./SockerServices
+  socket-services:
+    build: ./SocketServices
     ports:
       - 5000:5000
   #   env_file:

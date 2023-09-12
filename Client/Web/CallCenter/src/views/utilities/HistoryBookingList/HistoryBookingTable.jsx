@@ -19,6 +19,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { mockDataHistoryBooking } from "data/mockData";
+
 import ScrollBar from "react-perfect-scrollbar";
 
 const HistoryBookingTable = (props) => {
@@ -32,7 +34,9 @@ const HistoryBookingTable = (props) => {
     async function fetchData() {
       try {
         const response = await axiosClient.get("booking/history/0795907075");
+        // const response = await axiosClient.get("test");
         setData(response.data.data);
+
         console.log("Repponse: ", response.data.data);
       } catch (error) {
         console.log(error);

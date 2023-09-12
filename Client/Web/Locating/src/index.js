@@ -13,6 +13,8 @@ import { store } from "store";
 import "./assets/scss/_themes-vars.module.scss";
 import config from "./config";
 
+import SocketProvider from "socket/SocketProvider";
+
 // ==============================|| REACT DOM RENDER  ||============================== //
 
 const container = document.getElementById("root");
@@ -20,7 +22,9 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 root.render(
   <Provider store={store}>
     <BrowserRouter basename={config.basename}>
-      <App />
+      <SocketProvider>
+        <App />
+      </SocketProvider>
     </BrowserRouter>
   </Provider>
 );

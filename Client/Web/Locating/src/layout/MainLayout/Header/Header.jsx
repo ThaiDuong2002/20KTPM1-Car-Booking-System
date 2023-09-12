@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useEffect } from "react";
 
 // MUI
 import { useTheme } from "@mui/material/styles";
@@ -13,7 +14,9 @@ import LogoSection from "./LogoSection/LogoSection";
 import { IconMenu2 } from "@tabler/icons";
 import { width } from "@mui/system";
 
-const Header = () => {
+const Header = (props) => {
+  // const socket = props.socket;
+  // const notificationList = props.notificationList;
   const theme = useTheme();
 
   return (
@@ -59,7 +62,10 @@ const Header = () => {
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
-      <NotificationSection />
+      <NotificationSection
+      // socket={socket}
+      // notificationList={notificationList}
+      />
       <ProfileSection />
     </>
   );

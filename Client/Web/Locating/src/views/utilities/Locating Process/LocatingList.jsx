@@ -27,13 +27,14 @@ import { mockDataHistoryBooking } from "data/mockData";
 const LocatingList = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [data, setData] = useState(mockDataHistoryBooking);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosClient.get("");
+        const response = await axiosClient.get("/bookings/pre_booking");
         setData(response.data.data);
+        console.log("Repponse: ", response.data.data);
       } catch (error) {
         console.log(error);
       }

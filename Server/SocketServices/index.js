@@ -18,8 +18,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/notify", (req, res) => {
-  io.emit("notification", "There is a booking that need to be located");
+app.post("/notify", (req, res) => {
+  const body = req.body;
+  const title = "New Booking";
+  const notificationData = { title, body };
+  io.emit("notification", notificationData);
   res.send("Message was sent");
 });
 
