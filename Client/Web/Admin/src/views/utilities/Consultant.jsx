@@ -47,7 +47,7 @@ const Consultant = () => {
     },
   ];
   return (
-    <MainCard title="Consultan Management">
+    <MainCard title="Consultant Management">
       <Box
         m="0 0 0 0"
         height="70vh"
