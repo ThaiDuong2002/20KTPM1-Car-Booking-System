@@ -15,7 +15,7 @@ const dashboard = {
       id: "home",
       title: "Call Center",
       type: "item",
-      url: "/dashboard/home",
+      url: "/dashboard",
       icon: icons.IconDashboard,
       breadcrumbs: false,
     },

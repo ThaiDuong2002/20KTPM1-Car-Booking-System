@@ -28,12 +28,7 @@ const MainRoutes = {
     },
     {
       path: "dashboard",
-      children: [
-        {
-          path: "home",
-          element: <DashboardHome />,
-        },
-      ],
+      element: <DashboardHome />,
     },
     {
       path: "utils",
