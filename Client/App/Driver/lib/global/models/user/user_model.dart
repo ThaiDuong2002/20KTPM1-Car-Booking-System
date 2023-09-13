@@ -1,34 +1,37 @@
 class UserModel {
-  String? id;
-  String? firstname;
-  String? lastname;
-  String? email;
-  String? phone;
-  String? avatar;
-  String? accessToken;
-  String? refreshToken;
+  final String id;
+  final String firstname;
+  final String lastname;
+  final String email;
+  final String phone;
+  final String avatar;
+  final List<String> driverLicense;
+  final String vehicleId;
+  final bool isActive;
 
   UserModel({
-    this.id,
-    this.firstname,
-    this.lastname,
-    this.email,
-    this.phone,
-    this.avatar,
-    this.accessToken,
-    this.refreshToken,
+    required this.id,
+    required this.firstname,
+    required this.lastname,
+    required this.email,
+    required this.phone,
+    required this.avatar,
+    required this.driverLicense,
+    required this.vehicleId,
+    required this.isActive,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
+      id: json['_id'],
       firstname: json['firstname'],
       lastname: json['lastname'],
       email: json['email'],
       phone: json['phone'],
       avatar: json['avatar'],
-      accessToken: json['accessToken'],
-      refreshToken: json['refreshToken'],
+      driverLicense: json['driverLicense'].cast<String>(),
+      vehicleId: json['vehicleId'],
+      isActive: json['isActive'],
     );
   }
 }

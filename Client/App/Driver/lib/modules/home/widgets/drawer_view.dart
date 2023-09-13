@@ -46,7 +46,7 @@ class _DrawerViewState extends State<DrawerView> {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return userAvatar != '' ? Drawer(
       backgroundColor: Colors.white,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -188,6 +188,6 @@ class _DrawerViewState extends State<DrawerView> {
           ],
         ),
       ),
-    );
+    ) : const Center(child: CircularProgressIndicator());
   }
 }

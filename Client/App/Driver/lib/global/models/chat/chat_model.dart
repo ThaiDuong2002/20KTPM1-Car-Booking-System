@@ -1,5 +1,5 @@
 class ChatModel {
-  static  List<Map<String, dynamic>> _messages = [];
+  static  final List<Map<String, dynamic>> _messages = [];
 
   get messages => _messages;
 

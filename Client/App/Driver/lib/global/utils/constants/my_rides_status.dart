@@ -13,9 +13,11 @@ const ARRIVED = 'arrived';
 // ignore: constant_identifier_names
 const IN_PROGRESS = 'in_progress';
 // ignore: constant_identifier_names
-const CANCELED = 'canceled';
+const CANCELED = 'Canceled';
 // ignore: constant_identifier_names
-const COMPLETED = 'completed';
+const COMPLETED = 'Completed';
+// ignore: constant_identifier_names
+const PREBOOK = 'Pre-book';
 // ignore: constant_identifier_names
 const COMPLAIN_COMMENT = "complaintcomment";
 // ignore: constant_identifier_names

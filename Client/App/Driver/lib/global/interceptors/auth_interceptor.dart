@@ -22,10 +22,10 @@ class AuthInterceptor extends Interceptor {
   @override
   Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     // Kiểm tra và thêm Access Token vào tiêu đề yêu cầu
-    accessToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGYxNzA5YTBjNGNlMWRiODc3ZmIwODMiLCJ1c2VyVHlwZSI6ImRyaXZlciIsImlhdCI6MTY5Mzg1MTI0NSwiZXhwIjoxNjkzODUxODQ1fQ.zDPmq-n4-EV2xnvWZVp5V3kccV03PNLSoSxQ-TAXgDM';
+    accessToken = await secureStorage.read(key: 'accessToken');
     if (accessToken != null) {
       options.headers['Authorization'] = 'Bearer $accessToken';
+      options.headers['x-user-role'] = 'driver';
     }
 
     super.onRequest(options, handler);

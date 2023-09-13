@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:driver/global/endpoints/vehicle_type_endpoint.dart';
 import 'package:driver/global/interceptors/auth_interceptor.dart';
 import 'package:driver/global/models/vehicle/vehicle_type_model.dart';
+import 'package:driver/global/services/exceptions/dio_service_exception.dart';
 
 class VehicleTypeService {
   final Dio _dio = Dio();
@@ -18,8 +19,9 @@ class VehicleTypeService {
         final rs = jsonDecode(vehicleType.toString());
         final data = rs['data'];
         return VehicleTypeModel.fromJson(data);
+      } else {
+        throw UnknowFetchingDataException();
       }
-      return Future.error(vehicleType.statusMessage ?? 'Error');
     } catch (e) {
       return Future.error(e);
     }
@@ -33,8 +35,9 @@ class VehicleTypeService {
         final rs = jsonDecode(vehicleType.toString());
         final data = rs['data'];
         return data.map<VehicleTypeModel>((item) => VehicleTypeModel.fromJson(item)).toList();
+      } else {
+        throw UnknowFetchingDataException();
       }
-      return Future.error(vehicleType.statusMessage ?? 'Error');
     } catch (e) {
       return Future.error(e);
     }

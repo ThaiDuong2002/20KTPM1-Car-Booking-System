@@ -72,9 +72,11 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     liveTracking();
     FlutterCompass.events!.listen((event) {
-      setState(() {
-        _currentHeading = event.heading!;
-      });
+      if (mounted) {
+        setState(() {
+          _currentHeading = event.heading!;
+        });
+      }
     });
   }
 
@@ -516,7 +518,7 @@ class _HomeViewState extends State<HomeView> {
                             _driverLocation!.latitude,
                             _driverLocation!.longitude,
                           ));
-                          
+
                           chat.messages.clear();
                         } else if (state is BookingStartRidingState) {
                           _markers.clear();
