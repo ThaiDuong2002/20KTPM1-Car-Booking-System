@@ -56,8 +56,8 @@ async function locator() {
                 let locatedCoordinate
                 try {
                     if (!pickupCoordinate.coordinate) {
-                        // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
-                        locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
+                        locatedCoordinate = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
+                        // locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
                         console.log("locatedCoordinate", locatedCoordinate)
                         if (locatedCoordinate.length === 0) {
                             message_data = {
@@ -75,8 +75,8 @@ async function locator() {
                     }
 
                     if (!destinationCoordinate.coordinate) {
-                        // const coordinates = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
-                        locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
+                        locatedCoordinate = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', destinationCoordinate.address);
+                        // locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
                         console.log("locatedCoordinate", locatedCoordinate)
                         if (locatedCoordinate.length === 0) {
                             message_data = {
