@@ -56,17 +56,17 @@ const initialValues = {
 };
 
 const submit = {
-  customerName: "Nguyen Van A",
-  customerPhone: "0123456789",
+  customerName: "",
+  customerPhone: "",
   pickupLocation: {
     coordinate: null,
-    address: "ABC",
+    address: "",
   },
   dropOffLocation: {
     coordinate: null,
-    address: "DEF",
+    address: "",
   },
-  type: "Motorbike",
+  type: "",
 };
 
 const initialCoordinateValue = {
@@ -132,35 +132,34 @@ const FormBooking = () => {
         coordinate: pickUpLocationCoordinate,
         address: values.pickUpLocation,
       },
-      dropOffLocation: {
+      destinationLocation: {
         coordinate: dropOffLocationCoordinate,
         address: values.dropOffLocation,
       },
-      type: values.vehicleType,
+      type: values.vehicleType.label,
     };
     console.log("Pick Up Coordinate: ", { pickUpLocationCoordinate });
     console.log("Form values: ", postBody);
-    // try {
-    //   const response = await axiosClient.post(
-    //     "/bookings",
-    //     JSON.stringify(values)
-    //   );
-    //   // Xử lý phản hồi từ API nếu cần
-    //   console.log("Booking successful:", response.data);
-    // } catch (error) {
-    //   // Xử lý lỗi nếu gửi yêu cầu không thành công
-    //   console.error("Error creating booking:", error);
-    // }
+    try {
+      const response = await axiosClient.post(
+        "bookings/booking/consultant/",
+        JSON.stringify(postBody)
+      );
+      console.log("Booking successful:", response.data);
+    } catch (error) {
+      // Xử lý lỗi nếu gửi yêu cầu không thành công
+      console.error("Error creating booking:", error);
+    }
   };
 
   const handlePhoneNumberChange = async (event) => {
     try {
       const phoneNumber = event.target.value;
       const historyListResponse = await axiosClient.get(
-        `booking/history/${phoneNumber}`
+        `bookings/booking/history/${phoneNumber}`
       );
       const mostlyLocationlistResponse = await axiosClient.get(
-        `booking/most_location/${phoneNumber}`
+        `bookings/booking/most_location/${phoneNumber}`
       );
       setHistoryList(historyListResponse.data.data);
       setMostlyLocationList(mostlyLocationlistResponse.data.data);

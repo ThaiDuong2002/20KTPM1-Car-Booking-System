@@ -24,6 +24,9 @@ const BussinessRuleList = Loadable(
   lazy(() => import("../views/bussiness/rules/RuleList"))
 );
 
+const BussinessVehicle = Loadable(
+  lazy(() => import("../views/bussiness/vehicles/vehicleList"))
+);
 const Home = Loadable(lazy(() => import("../views/dashboard/DashboardHome")));
 
 const MainRoutes = {
@@ -85,6 +88,10 @@ const MainRoutes = {
         {
           path: "rules",
           element: <BussinessRuleList />,
+        },
+        {
+          path: "vehicles",
+          element: <BussinessVehicle />,
         },
       ],
     },

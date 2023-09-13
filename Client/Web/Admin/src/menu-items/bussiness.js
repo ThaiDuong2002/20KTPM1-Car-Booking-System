@@ -1,8 +1,8 @@
 // assets
-import { IconBrandChrome, IconHelp } from "@tabler/icons";
+import { IconBrandChrome, IconHelp, IconMotorbike } from "@tabler/icons";
 
 // constant
-const icons = { IconBrandChrome, IconHelp };
+const icons = { IconBrandChrome, IconHelp, IconMotorbike };
 
 const bussiness = {
   id: "bussiness",
@@ -22,6 +22,14 @@ const bussiness = {
       type: "item",
       url: "/bussiness/rules",
       icon: icons.IconBrandChrome,
+      breadcrumbs: false,
+    },
+    {
+      id: "vehicles",
+      title: "Vehicles",
+      type: "item",
+      url: "/bussiness/vehicles",
+      icon: icons.IconMotorbike,
       breadcrumbs: false,
     },
   ],

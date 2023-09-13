@@ -15,7 +15,7 @@ const dashboard = {
       id: "default",
       title: "Locating System",
       type: "item",
-      url: "/dashboard/default",
+      url: "/dashboard",
       icon: icons.IconDashboard,
       breadcrumbs: false,
     },

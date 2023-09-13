@@ -75,7 +75,7 @@ const Login = () => {
                             gutterBottom
                             variant={matchDownSM ? "h3" : "h2"}
                           >
-                            Admin Dashboard
+                            Locating Dashboard
                           </Typography>
                           <Typography
                             variant="caption"

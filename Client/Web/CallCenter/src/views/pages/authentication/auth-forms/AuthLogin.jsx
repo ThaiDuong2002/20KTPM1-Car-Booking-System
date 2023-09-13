@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const FirebaseLogin = ({ ...others }) => {
+const Login = ({ ...others }) => {
   const theme = useTheme();
   const scriptedRef = useScriptRef();
   const customization = useSelector((state) => state.customization);
@@ -243,4 +243,4 @@ const FirebaseLogin = ({ ...others }) => {
   );
 };
 
-export default FirebaseLogin;
+export default Login;

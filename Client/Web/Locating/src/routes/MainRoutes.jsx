@@ -9,10 +9,16 @@ const Locating = Loadable(
   lazy(() => import("../views/utilities/Locating Process/LocatingList"))
 );
 
+const Dashboard = Loadable(lazy(() => import("../views/dashboard/dashboard")));
+
 const MainRoutes = {
   path: "/",
   element: <MainLayout />,
   children: [
+    {
+      path: "dashboard",
+      element: <Dashboard />,
+    },
     {
       path: "utils",
       children: [

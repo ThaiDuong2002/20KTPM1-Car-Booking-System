@@ -33,7 +33,9 @@ const HistoryBookingTable = (props) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosClient.get("booking/history/0795907075");
+        const response = await axiosClient.get(
+          "bookings/booking/history/0795907075"
+        );
         // const response = await axiosClient.get("test");
         setData(response.data.data);
 

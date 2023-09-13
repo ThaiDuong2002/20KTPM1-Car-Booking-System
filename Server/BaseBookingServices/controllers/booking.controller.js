@@ -4,6 +4,7 @@ import { BookingService, UserService } from "../services/services.js";
 const BookingController = {
   async consultantBooking(req, res, next) {
     try {
+      console.log("Consultant: ", req.body);
       await BookingService.sendToBookingReception(req.body);
       res.json({
         message: "The booking is being processed.",

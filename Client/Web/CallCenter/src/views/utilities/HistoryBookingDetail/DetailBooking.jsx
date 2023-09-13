@@ -103,7 +103,7 @@ const DetailBooking = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axiosClient.get(`/booking/${bookingId}`);
+        const response = await axiosClient.get(`bookings/booking/${bookingId}`);
         setData(response.data.data);
         console.log("Detail Booking: ", data);
       } catch (error) {

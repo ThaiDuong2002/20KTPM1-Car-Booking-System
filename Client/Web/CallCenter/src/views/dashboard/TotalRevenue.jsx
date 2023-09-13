@@ -152,7 +152,7 @@ const TotalRevenue = ({ isLoading }) => {
                         mb: 0.75,
                       }}
                     >
-                      $500.00
+                      214000 VND
                     </Typography>
                   </Grid>
                   <Grid item>

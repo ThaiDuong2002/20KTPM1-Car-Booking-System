@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 // material-ui
 import { useTheme } from "@mui/material/styles";
@@ -39,6 +40,7 @@ const FirebaseLogin = ({ ...others }) => {
   const scriptedRef = useScriptRef();
   const customization = useSelector((state) => state.customization);
   const [checked, setChecked] = useState(true);
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
@@ -47,6 +49,10 @@ const FirebaseLogin = ({ ...others }) => {
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
+  };
+
+  const handleSubmit = () => {
+    navigate("/dashboard");
   };
 
   return (
@@ -77,8 +83,8 @@ const FirebaseLogin = ({ ...others }) => {
 
       <Formik
         initialValues={{
-          email: "info@codedthemes.com",
-          password: "123456",
+          email: "",
+          password: "",
           submit: null,
         }}
         validationSchema={Yup.object().shape({
@@ -88,21 +94,22 @@ const FirebaseLogin = ({ ...others }) => {
             .required("Email is required"),
           password: Yup.string().max(255).required("Password is required"),
         })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          try {
-            if (scriptedRef.current) {
-              setStatus({ success: true });
-              setSubmitting(false);
-            }
-          } catch (err) {
-            console.error(err);
-            if (scriptedRef.current) {
-              setStatus({ success: false });
-              setErrors({ submit: err.message });
-              setSubmitting(false);
-            }
-          }
-        }}
+        // onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+        //   try {
+        //     if (scriptedRef.current) {
+        //       setStatus({ success: true });
+        //       setSubmitting(false);
+        //     }
+        //   } catch (err) {
+        //     console.error(err);
+        //     if (scriptedRef.current) {
+        //       setStatus({ success: false });
+        //       setErrors({ submit: err.message });
+        //       setSubmitting(false);
+        //     }
+        //   }
+        // }}
+        onSubmit={handleSubmit}
       >
         {({
           errors,
