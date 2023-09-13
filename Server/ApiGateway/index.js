@@ -38,6 +38,7 @@ const routes = {
   "/api/promotions": `http://promotion-services:${process.env.PORT_PROMOTION}`,
   "/api/notifications": `http://notification-services:${process.env.PORT_NOTIFICATION}`,
   "/api/prices": `http://price-services:${process.env.PORT_PRICE}`,
+  "/api/loggings": `http://logging-services:${process.env.PORT_LOGGING}`,
 };
 
 const unless = (path, middleware) => {

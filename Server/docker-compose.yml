@@ -121,10 +121,16 @@ services:
     env_file:
       - ./ProcessBookingServices/PythonDispatcher/.env
 
+  # Logging services
+  logging-services:
+    build: ./LoggingServices
+    ports:
+      - 3015:3015
+    env_file:
+      - ./LoggingServices/.env
+
   # Socket Service
   socket-services:
     build: ./SocketServices
     ports:
       - 5000:5000
-  #   env_file:
-  #
