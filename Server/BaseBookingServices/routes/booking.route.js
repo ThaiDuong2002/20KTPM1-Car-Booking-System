@@ -12,7 +12,7 @@ router.post("/", authorization(["consultant", "customer"]), BookingController.ad
 router.put("/:id", BookingController.update_booking);
 router.delete("/:id", BookingController.delete_booking);
 router.post("/consultant", BookingController.consultantBooking);
-router.get("/driver/:id", authorization(["driver"]), BookingController.get_booking_list_by_driver);
-router.get("/user/:id/", authorization(["customer"]) , BookingController.get_booking_list_by_user);
+router.get("/driver/:id", BookingController.get_booking_list_by_driver);
+router.get("/user/:id/" , BookingController.get_booking_list_by_user);
 
 export default router;

@@ -181,18 +181,20 @@ const BookingController = {
   async get_booking_list_by_driver(req, res, next) {
     try {
       const driverId = req.params.id;
-      const list = await BookingService.getBookingByDriverId(driverId);
-      if (!list) {
-        return next(createError.BadRequest("Get list failed"));
+      const user = await UserService.get_user_by_id(driverId);
+      if (!user) {
+        return next(createError.BadRequest("Driver not exist"));
+      } else {
+        const list = await BookingService.getBookingByDriverId(driverId);
+        if (!list) {
+          return next(createError.BadRequest("Get list failed"));
+        }
+        res.status(200).json({
+          message: "Get bookings list successfully",
+          status: 200,
+          data: list,
+        });
       }
-      if (list.length === 0) {
-        return next(createError.NotFound("No booking found"));
-      }
-      res.status(200).json({
-        message: "Get bookings list successfully",
-        status: 200,
-        data: list,
-      });
     } catch (err) {
       next(createError.InternalServerError(err.message));
     }
