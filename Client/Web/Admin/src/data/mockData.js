@@ -4,7 +4,7 @@ export const mockDataCustomers = [
     name: "Nguyen Van A",
     email: "nva@gmail.com",
     age: 35,
-    phone: "0111111111",
+    phone: "0795907075",
     registryDate: "27-07-2023",
     registrarId: 123512,
   },
@@ -79,7 +79,7 @@ export const mockDataDrivers = [
   },
   {
     id: 2,
-    name: "Nguyen Van B",
+    name: "AAAAa",
     email: "nvb@gmail.com",
     age: 30,
     phone: "0222222222",
@@ -91,7 +91,7 @@ export const mockDataDrivers = [
   },
   {
     id: 3,
-    name: "Nguyen Thi Minh Thao",
+    name: "Nguyen Van Tuan",
     email: "ntmthao@gmail.com",
     age: 21,
     phone: "0333333333",
@@ -103,7 +103,7 @@ export const mockDataDrivers = [
   },
   {
     id: 5,
-    name: "Nguyen Vo Minh Tri",
+    name: "Bui Quang Thanh",
     email: "nvmtri@gmail.com",
     age: 18,
     phone: "0444444444",
@@ -115,7 +115,7 @@ export const mockDataDrivers = [
   },
   {
     id: 6,
-    name: "Bui Quang Thanh",
+    name: "alalala",
     email: "bqthanh@gmail.com",
     age: 21,
     phone: "0555555555",
@@ -125,18 +125,7 @@ export const mockDataDrivers = [
     licenseId: "55-A5 555.55",
     registrarId: 123456,
   },
-  {
-    id: 7,
-    name: "Pham Giang Thai Duong",
-    email: "pgtduong@gmail.com",
-    age: 21,
-    phone: "0666666666",
-    registryDate: "02-08-2023",
-    typeOfRide: "Motor Bike",
-    autoMaker: "Yamaha - Exciter",
-    licenseId: "66-A6 666.66",
-    registrarId: 123549,
-  },
+
   {
     id: 8,
     name: "Vu Ngoc An",

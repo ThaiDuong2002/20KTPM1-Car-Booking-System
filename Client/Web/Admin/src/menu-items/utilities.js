@@ -37,14 +37,14 @@ const utilities = {
       icon: icons.IconPalette,
       breadcrumbs: false,
     },
-    {
-      id: "consultant",
-      title: "Consultant",
-      type: "item",
-      url: "/utils/consultant",
-      icon: icons.IconShadow,
-      breadcrumbs: false,
-    },
+    // {
+    //   id: "consultant",
+    //   title: "Consultant",
+    //   type: "item",
+    //   url: "/utils/consultant",
+    //   icon: icons.IconShadow,
+    //   breadcrumbs: false,
+    // },
     // {
     //   id: 'icons',
     //   title: 'Icons',

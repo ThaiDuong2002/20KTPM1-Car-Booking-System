@@ -24,14 +24,14 @@ const bussiness = {
       icon: icons.IconBrandChrome,
       breadcrumbs: false,
     },
-    {
-      id: "vehicles",
-      title: "Vehicles",
-      type: "item",
-      url: "/bussiness/vehicles",
-      icon: icons.IconMotorbike,
-      breadcrumbs: false,
-    },
+    // {
+    //   id: "vehicles",
+    //   title: "Vehicles",
+    //   type: "item",
+    //   url: "/bussiness/vehicles",
+    //   icon: icons.IconMotorbike,
+    //   breadcrumbs: false,
+    // },
   ],
 };
 

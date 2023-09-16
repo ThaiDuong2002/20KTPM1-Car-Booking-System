@@ -32,85 +32,104 @@ let channel = null;
 
 // Run app
 async function locator() {
-    try {
-        connection = await amqp.connect(config.AMQP_URL);
-        channel = await connection.createChannel();
-        const exchangeName = config.EXCHANGE_NAME;
-        const queueName = config.QUEUE_NAME;
-        const routingKey = config.LOCATOR_ROUTING_KEY;
-        await channel.assertExchange(exchangeName, "direct", { durable: false });
-        const assertQueueResponse = await channel.assertQueue(queueName);
-        const queue = assertQueueResponse.queue;
-        channel.bindQueue(queue, exchangeName, routingKey);
-        console.log(`[*] Booking locator.`);
-        console.log(`[*] Waiting for booking info.`);
+  try {
+    connection = await amqp.connect(config.AMQP_URL);
+    channel = await connection.createChannel();
+    const exchangeName = config.EXCHANGE_NAME;
+    const queueName = config.QUEUE_NAME;
+    const routingKey = config.LOCATOR_ROUTING_KEY;
+    await channel.assertExchange(exchangeName, "direct", { durable: false });
+    const assertQueueResponse = await channel.assertQueue(queueName);
+    const queue = assertQueueResponse.queue;
+    channel.bindQueue(queue, exchangeName, routingKey);
+    console.log(`[*] Booking locator.`);
+    console.log(`[*] Waiting for booking info.`);
 
-        let booking = {};
+    // Consume message
+    await channel.consume(queue, async (msg) => {
+      if (msg !== null) {
+        const bookingInfo = JSON.parse(msg.content.toString());
 
-        // Consume message
-        await channel.consume(queue, async (msg) => {
-            if (msg !== null) {
-                const bookingInfo = JSON.parse(msg.content.toString());
-                booking = bookingInfo;
-                console.log(`[x] Received booking info:`, bookingInfo);
+        console.log(`[x] Received booking info:`, bookingInfo);
 
-                const pickupCoordinate = bookingInfo.pickupLocation;
-                const destinationCoordinate = bookingInfo.destinationLocation;
-                let message_data
-                let locatedCoordinate
-                try {
-                    if (!pickupCoordinate.coordinate) {
-                        locatedCoordinate = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', pickupCoordinate.address);
-                        // locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
-                        console.log("locatedCoordinate", locatedCoordinate)
-                        if (locatedCoordinate.length === 0) {
-                            message_data = {
-                                message: 'Your pickup address is not found',
-                                phone: bookingInfo.customerPhone
-                            }
-                            // await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
-                            throw new Error('Your pickup address is not found');
-                        } else {
-                            bookingInfo.pickupLocation.coordinate = {
-                                lat: locatedCoordinate[0].geometry.location.lat,
-                                lng: locatedCoordinate[0].geometry.location.lng,
-                            };
-                        }
-                    }
+        axios
+          .post("http://booking-services:3005/pre_booking", bookingInfo)
+          .then((response) => {
+            console.log("Response Pre_Booking: ", response);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
 
-                    if (!destinationCoordinate.coordinate) {
-                        locatedCoordinate = await bookingLocator.executeService('goongService', 'getPlaceCoordinates', destinationCoordinate.address);
-                        // locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
-                        console.log("locatedCoordinate", locatedCoordinate)
-                        if (locatedCoordinate.length === 0) {
-                            message_data = {
-                                message: 'Your destination address is not found',
-                                phone: bookingInfo.customerPhone
-                            }
-                            // await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
-                            throw new Error('Your destination address is not found');
-                        } else {
-                            bookingInfo.destinationLocation.coordinate = {
-                                lat: locatedCoordinate[0].geometry.location.lat,
-                                lng: locatedCoordinate[0].geometry.location.lng,
-                            };
-                        }
-                    }
-                    // Publish to dispatcher
-                    const json_string_data = JSON.stringify(bookingInfo)
-                    channel.publish(exchangeName, config.DISPATCHER_ROUTING_KEY, Buffer.from(json_string_data));
-                } catch (error) {
-                    console.log("Locator Error: ", error.message)
-                } finally {
-                    channel.ack(msg); // Acknowledge the message
-                }
+        const pickupCoordinate = bookingInfo.pickupLocation;
+        const destinationCoordinate = bookingInfo.destinationLocation;
+        let message_data;
+        let locatedCoordinate;
+        try {
+          if (!pickupCoordinate.coordinate) {
+            locatedCoordinate = await bookingLocator.executeService(
+              "goongService",
+              "getPlaceCoordinates",
+              pickupCoordinate.address
+            );
+            // locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', pickupCoordinate.address);
+            console.log("locatedCoordinate", locatedCoordinate);
+            if (locatedCoordinate.length === 0) {
+              message_data = {
+                message: "Your pickup address is not found",
+                phone: bookingInfo.customerPhone,
+              };
+              // await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
+              throw new Error("Your pickup address is not found");
             } else {
-                console.log("Locator Error: No message received");
+              bookingInfo.pickupLocation.coordinate = {
+                lat: locatedCoordinate[0].geometry.location.lat,
+                lng: locatedCoordinate[0].geometry.location.lng,
+              };
             }
-        });
-    } catch (error) {
-        console.log("Error receiving booking info:", error.message);
-    }
+          }
+
+          if (!destinationCoordinate.coordinate) {
+            locatedCoordinate = await bookingLocator.executeService(
+              "goongService",
+              "getPlaceCoordinates",
+              destinationCoordinate.address
+            );
+            // locatedCoordinate = await bookingLocator.executeService('googleService', 'getPlaceCoordinates', destinationCoordinate.address);
+            console.log("locatedCoordinate", locatedCoordinate);
+            if (locatedCoordinate.length === 0) {
+              message_data = {
+                message: "Your destination address is not found",
+                phone: bookingInfo.customerPhone,
+              };
+              // await bookingLocator.executeService('twilioService', 'sendMessage', message_data);
+              throw new Error("Your destination address is not found");
+            } else {
+              bookingInfo.destinationLocation.coordinate = {
+                lat: locatedCoordinate[0].geometry.location.lat,
+                lng: locatedCoordinate[0].geometry.location.lng,
+              };
+            }
+          }
+          // Publish to dispatcher
+          const json_string_data = JSON.stringify(bookingInfo);
+          channel.publish(
+            exchangeName,
+            config.DISPATCHER_ROUTING_KEY,
+            Buffer.from(json_string_data)
+          );
+        } catch (error) {
+          console.log("Locator Error: ", error.message);
+        } finally {
+          channel.ack(msg); // Acknowledge the message
+        }
+      } else {
+        console.log("Locator Error: No message received");
+      }
+    });
+  } catch (error) {
+    console.log("Error receiving booking info:", error.message);
+  }
 }
 
 locator().then(() => console.log("Booking locator service started"));

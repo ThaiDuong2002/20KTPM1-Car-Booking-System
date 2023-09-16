@@ -47,24 +47,88 @@ async function dispatcher() {
     console.log(`[*] Waiting for booking info.`);
 
     // Consume message
-    channel.consume(queue, (msg) => {
+    await channel.consume(queue, async (msg) => {
       if (msg !== null) {
         const bookingInfo = JSON.parse(msg.content.toString());
         console.log(`[x] Received booking info:`, bookingInfo);
 
-        // const distance = axios.get("");
-        // const price = axios.get("");
-        // const postBody = {
-        //   sourceLocation: bookingInfo.pickupLocation.coordinate,
-        //   destinationLocation: bookingInfo.destinationLocation.coordinate,
-        //   sourceName: bookingInfo.pickupLocation.address,
-        //   destinationName: bookingInfo.destinationLocation.address,
-        //   distance: distance,
-        //   price: price,
-        //   customerName: bookingInfo.customerName,
-        //   customerPhone: bookingInfo.customerPhone,
-        //   customerImage: ""
-        // };
+        const origins =
+          bookingInfo.pickupLocation.coordinate.lat +
+          "," +
+          bookingInfo.pickupLocation.coordinate.lng;
+        const destinations =
+          bookingInfo.destinationLocation.coordinate.lat +
+          "," +
+          bookingInfo.destinationLocation.coordinate.lng;
+
+        let distanceVal;
+        let priceVal;
+
+        // axios
+        //   .get("https://rsapi.goong.io/DistanceMatrix", {})
+        //   .then((response) => {
+        //     // distanceVal = response.data.rows[0].elements.map(
+        //     //   (element) => element.distance.value
+        //     // );
+        //     distanceVal = response.data.rows[0].elements[0].distance.value;
+        //     console.log("Distance: " + distanceVal);
+
+        //     const requestData = {
+        //       distance: distanceVal,
+        //       time: "2023-09-04T18:30:00",
+        //       tripType: "car",
+        //       badWeather: true,
+        //     };
+        //     const requestBody = JSON.stringify(requestData);
+        //     axios
+        //       .get("http://price-services:3012/fee", {
+        //         data: requestBody,
+        //       })
+        //       .then((response) => {
+        //         priceVal = response.data.data;
+        //         console.log("Price", priceVal);
+        //       })
+        //       .catch((error) => {
+        //         console.error("Error:", error);
+        //       });
+        //   })
+        //   .catch((error) => {
+        //     console.error("Error:", error);
+        //   });
+
+        const distance = 5.06;
+        const price = 12143.08;
+
+        const postBody = {
+          sourceLocation: bookingInfo.pickupLocation.coordinate,
+          destinationLocation: bookingInfo.destinationLocation.coordinate,
+          sourceName: bookingInfo.pickupLocation.address,
+          destinationName: bookingInfo.destinationLocation.address,
+          distance: distance,
+          price: price,
+          customerName: bookingInfo.customerName,
+          customerPhone: bookingInfo.customerPhone,
+          userId: "",
+          customerImage:
+            "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg",
+          type: "car",
+          promotionId: "",
+          paymentMethodId: "",
+        };
+
+        console.log("Post Body: ", postBody);
+
+        axios
+          .post(
+            "http://booking-dispatcher-services:3013/requestTripFromCustomer",
+            postBody
+          )
+          .then((response) => {
+            console.log("Response: ", response);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
 
         // const pickupLocationCoordination = bookingInfo.pickupLocation.coordinate;
         // const tripType = bookingInfo.type;
@@ -139,7 +203,7 @@ process.on("SIGINT", async () => {
     });
 
     // Health check
-    app.get("/requestTripFromCustomer", async (req, res) => {
+    app.post("/requestTripFromCustomer", async (req, res) => {
       try {
         // const trip = {
         //     sourceLocation: { lat: 10.763067461221109, lng: 106.68250385945508 }, // Vị trí San Francisco, California
@@ -153,26 +217,17 @@ process.on("SIGINT", async () => {
         //     customerImage: "https://khoinguonsangtao.vn/wp-content/uploads/2022/08/hinh-anh-avatar-sadboiz.jpg"
         // };
 
-        const trip = {
-          sourceLocation: req.body.sourceLocation,
-          destinationLocation: req.body.destinationLocation,
-          sourceName: req.body.sourceName,
-          destinationName: req.body.destinationName,
-          distance: req.body.distance,
-          price: req.body.price,
-          customerName: req.body.customerName,
-          customerPhone: req.body.customerPhone,
-          customerImage: req.body.customerImage,
-        };
+        console.log("ReqBody: ", req.body);
+        const trip = req.body;
 
         const payload = {
           lat: trip.sourceLocation.lat,
           lng: trip.sourceLocation.lng,
-          trip_type: req.body.trip_type,
+          trip_type: req.body.type,
         };
         // Call the /find-drivers API
         const response = await axios.post(
-          "http://localhost:3011/find_drivers",
+          "http://python-dispatcher-services:3014/find_drivers",
           payload
         );
 
@@ -192,6 +247,7 @@ process.on("SIGINT", async () => {
 
         // Send booking info to the driver
         if (userActive[response.data.driver[0].id.toString()]) {
+          console.log(userActive[response.data.driver[0].id.toString()]);
           io.to(userActive[response.data.driver[0].id.toString()]).emit(
             "newTrip",
             trip

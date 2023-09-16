@@ -28,6 +28,7 @@ import User1 from "../../../../assets/images/users/user-round.svg";
 import System from "assets/images/system.png";
 import { useEffect, useState } from "react";
 import axiosClient from "axiosConfig/axiosClient";
+import { useNavigate } from "react-router-dom";
 
 // styles
 const ListItemWrapper = styled("div")(({ theme }) => ({
@@ -57,6 +58,7 @@ const initialNotification = {
 const NotificationList = () => {
   const theme = useTheme();
   const [notificationList, setNotificationList] = useState([]);
+  const navigate = useNavigate();
 
   const chipSX = {
     height: 24,
@@ -95,6 +97,10 @@ const NotificationList = () => {
     fetchData();
   }, []);
 
+  const handleItemClicked = () => {
+    navigate("//utils/locating-process");
+  };
+
   return (
     <List
       sx={{
@@ -119,7 +125,7 @@ const NotificationList = () => {
       {notificationList.map((notification) => {
         return (
           <>
-            <ListItemWrapper key={notification._id}>
+            <ListItemWrapper key={notification._id} onClick={handleItemClicked}>
               <ListItem alignItems="center">
                 <ListItemAvatar>
                   <Avatar alt="John Doe" src={System} />

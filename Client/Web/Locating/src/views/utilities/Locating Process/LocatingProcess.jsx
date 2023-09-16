@@ -38,7 +38,9 @@ const LocatingProcess = () => {
   const [dropOffCoordinate, setDropOffCoordinate] = useState(null);
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyDFoSXIW5NU-Znq3muefbeV96tCzzm9YVI",
+    // googleMapsApiKey: "AIzaSyDFoSXIW5NU-Znq3muefbeV96tCzzm9YVI",
+    googleMapsApiKey: "AIzaSyCMLT-TdypxBr0EYYuEvVIQTt1-zBWoQWg",
+    // googleMapsApiKey: "AIzaSyCMLT-TdypxBr0EYYuEvVIQTt1-zBWoQWg",
   });
 
   async function calculateRoute() {

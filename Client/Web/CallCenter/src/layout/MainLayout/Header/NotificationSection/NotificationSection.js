@@ -179,7 +179,7 @@ const NotificationSection = () => {
                             />
                           </Stack>
                         </Grid>
-                        <Grid item>
+                        {/* <Grid item>
                           <Typography
                             component={Link}
                             to="#"
@@ -188,7 +188,7 @@ const NotificationSection = () => {
                           >
                             Mark as all read
                           </Typography>
-                        </Grid>
+                        </Grid> */}
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
@@ -199,7 +199,7 @@ const NotificationSection = () => {
                           overflowX: "hidden",
                         }}
                       >
-                        <Grid container direction="column" spacing={2}>
+                        {/* <Grid container direction="column" spacing={2}>
                           <Grid item xs={12}>
                             <Box sx={{ px: 2, pt: 0.25 }}>
                               <TextField
@@ -226,7 +226,7 @@ const NotificationSection = () => {
                           <Grid item xs={12} p={0}>
                             <Divider sx={{ my: 0 }} />
                           </Grid>
-                        </Grid>
+                        </Grid> */}
                         <NotificationList />
                       </PerfectScrollbar>
                     </Grid>
