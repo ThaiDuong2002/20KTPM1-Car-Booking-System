@@ -94,9 +94,11 @@ def get_distance_and_duration(api_key, origins, destinations, vehicle="car"):
 def find_drivers():
     # Nhận dữ liệu từ request
     drivers = retrieve_drivers_location()
+    
     customer_lat = request.json.get('lat')
     customer_lng = request.json.get('lng')
     trip_type = request.json.get('trip_type')
+    # drivers =[];
 
 
    
@@ -124,7 +126,7 @@ def find_drivers():
                 driver['lat'], driver['lng'])
             driver_cell_id = s2sphere.CellId.from_lat_lng(driver_latlng).id()
 
-            if (range_min <= driver_cell_id <= range_max) and driver['trip_type'] == trip_type:
+            if (range_min <= driver_cell_id <= range_max) and driver['tripType'] == trip_type:
                 drivers_inside_polygon.append(driver)
             else:
                 drivers_inside_polygon_outside.append(driver)

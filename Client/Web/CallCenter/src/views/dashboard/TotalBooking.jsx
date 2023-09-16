@@ -132,7 +132,7 @@ const TotalBooking = ({ isLoading }) => {
                               mb: 0.75,
                             }}
                           >
-                            22
+                            7
                           </Typography>
                         ) : (
                           <Typography
@@ -144,7 +144,7 @@ const TotalBooking = ({ isLoading }) => {
                               mb: 0.75,
                             }}
                           >
-                            30
+                            29
                           </Typography>
                         )}
                       </Grid>

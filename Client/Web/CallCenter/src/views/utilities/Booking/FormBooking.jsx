@@ -7,6 +7,7 @@ import axiosClient from "axiosConfig/axiosClient";
 import CustomerHistoryBooking from "./CustomerHistoryBooking";
 import MostlyVistedLocation from "./MostlyVistedLocation";
 import { gridSpacing } from "store/constant";
+import { useNavigate } from "react-router";
 
 //MUI
 import { useTheme } from "@mui/material/styles";
@@ -25,6 +26,7 @@ import {
   TableRow,
   IconButton,
   Typography,
+  Modal,
 } from "@mui/material";
 import ScrollBar from "react-perfect-scrollbar";
 import CheckIcon from "@mui/icons-material/Check";
@@ -40,16 +42,11 @@ import AnimateButton from "ui-component/extended/AnimateButton";
 import { margin } from "@mui/system";
 import { values } from "lodash";
 
-const vehicleType = [
-  { label: "Motor" },
-  { label: "Car - 5 Capacity" },
-  { label: "Car - 7 Capacity" },
-  { label: "Car - 9 Capacity" },
-];
+const vehicleType = [{ label: "Motor" }, { label: "Car" }];
 
 const initialValues = {
-  customerName: "Nguyen Van A",
-  phoneNumber: "079590707",
+  customerName: "",
+  phoneNumber: "",
   pickUpLocation: "",
   dropOffLocation: "",
   vehicleType: "",
@@ -78,7 +75,28 @@ const bookingSchema = yup.object().shape({
   phoneNumber: yup.string().max(20).required("Phone Number is required"),
 });
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
 const FormBooking = () => {
+  //Modal
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    navigate("/utils/booking");
+  };
+  const navigate = useNavigate();
+
   const theme = useTheme();
   const [historyList, setHistoryList] = useState([]);
   const [mostlyLocationList, setMostlyLocationList] = useState([]);
@@ -145,6 +163,7 @@ const FormBooking = () => {
         "bookings/booking/consultant/",
         JSON.stringify(postBody)
       );
+      setOpen(true);
       console.log("Booking successful:", response.data);
     } catch (error) {
       // Xử lý lỗi nếu gửi yêu cầu không thành công
@@ -569,6 +588,27 @@ const FormBooking = () => {
           </Card>
         </Grid>
       </Grid>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style} borderRadius={5}>
+          <Typography
+            id="modal-modal-title"
+            variant="h3"
+            component="h2"
+            fontWeight={2}
+          >
+            Successful Reception
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            The vehicle booking request is currently being processed by the
+            system.
+          </Typography>
+        </Box>
+      </Modal>
     </>
   );
 };

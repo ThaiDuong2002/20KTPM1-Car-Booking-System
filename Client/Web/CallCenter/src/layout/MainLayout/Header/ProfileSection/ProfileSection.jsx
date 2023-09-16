@@ -34,7 +34,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import MainCard from "ui-component/cards/MainCard";
 import Transitions from "ui-component/extended/Transitions";
 // import UpgradePlanCard from "./UpgradePlanCard";
-import User1 from "assets/images/users/user-round.svg";
+import User1 from "assets/user.png";
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from "@tabler/icons";
@@ -175,7 +175,7 @@ const ProfileSection = () => {
                           variant="h4"
                           sx={{ fontWeight: 400 }}
                         >
-                          Johne Doe
+                          Call Center
                         </Typography>
                       </Stack>
                       <Typography variant="subtitle2">Project Admin</Typography>
@@ -212,7 +212,7 @@ const ProfileSection = () => {
                     <Box sx={{ p: 2 }}>
                       {/* <UpgradePlanCard /> */}
                       {/* <Divider /> */}
-                      <Card
+                      {/* <Card
                         sx={{
                           bgcolor: theme.palette.primary.light,
                           my: 2,
@@ -270,7 +270,7 @@ const ProfileSection = () => {
                           </Grid>
                         </CardContent>
                       </Card>
-                      <Divider />
+                      <Divider /> */}
                       <List
                         component="nav"
                         sx={{

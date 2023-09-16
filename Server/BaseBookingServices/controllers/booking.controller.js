@@ -50,6 +50,7 @@ const BookingController = {
         id: req.headers["x-user-id"],
         role: req.headers["x-user-role"],
       };
+
       bookingInfo.userId = userInfo.id;
       // Create booking
       const newBooking = await BookingService.create_booking(bookingInfo);
