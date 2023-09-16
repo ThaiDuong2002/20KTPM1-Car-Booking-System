@@ -19,6 +19,11 @@ import {
   Marker,
   DirectionsRenderer,
 } from "@react-google-maps/api";
+import { configDotenv } from "dotenv";
+
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const LocatingProcess = () => {
   const location = useLocation();
@@ -38,9 +43,7 @@ const LocatingProcess = () => {
   const [dropOffCoordinate, setDropOffCoordinate] = useState(null);
 
   const { isLoaded } = useLoadScript({
-    // googleMapsApiKey: "AIzaSyDFoSXIW5NU-Znq3muefbeV96tCzzm9YVI",
-    googleMapsApiKey: "AIzaSyCMLT-TdypxBr0EYYuEvVIQTt1-zBWoQWg",
-    // googleMapsApiKey: "AIzaSyCMLT-TdypxBr0EYYuEvVIQTt1-zBWoQWg",
+    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY,
   });
 
   async function calculateRoute() {
